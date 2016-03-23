@@ -1,0 +1,486 @@
+﻿<Page
+    x:Class="LibraTalk.Windows.Client.Views.HostPage"
+    
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:st="using:LibraProgramming.Windows.UI.Xaml.StateTriggers"
+    xmlns:i="using:Microsoft.Xaml.Interactivity"
+    xmlns:int="using:LibraProgramming.Windows.UI.Xaml.Interactivity"
+    xmlns:cvi="using:LibraTalk.Windows.Client.Views.Interop"
+    xmlns:views="using:LibraTalk.Windows.Client.Views"
+
+    mc:Ignorable="d"
+    
+    DataContext="{Binding Path=HostPageViewModel, Source={StaticResource ViewModelLocator}}"
+    
+    Loaded="OnElementLoaded"
+    Unloaded="OnElementUnloaded">
+    <Page.Resources>
+        <Style
+            x:Key="SystemAssetsFontIconStyle"
+            TargetType="FontIcon">
+            <Setter Property="FontFamily" Value="Segoe MDL2 Assets" />
+            <Setter Property="Foreground" Value="{ThemeResource AppBarItemForegroundThemeBrush}" />
+            <Setter Property="FontSize" Value="16" />
+        </Style>
+        <Style
+            x:Key="MenuPaneRadioButtonStyle"
+            TargetType="RadioButton">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{ThemeResource SystemBaseMediumColor}" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="HorizontalContentAlignment" Value="Left" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate
+                        TargetType="RadioButton">
+                        <Border
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="48" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="48" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="20" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.Resources>
+                                    <Style
+                                        TargetType="Rectangle"
+                                        x:Name="FocusVisual">
+                                        <Setter Property="Opacity" Value="0" />
+                                        <Setter Property="StrokeDashArray" Value="1,1" />
+                                        <Setter Property="StrokeEndLineCap" Value="Square" />
+                                    </Style>
+                                </Grid.Resources>
+                                <Grid
+                                    x:Name="NotCheckedBackground"
+                                    Grid.Row="0"
+                                    Grid.Column="0"
+                                    Grid.ColumnSpan="3">
+                                    <Rectangle
+                                        x:Name="PressedBackground"
+                                        Fill="{StaticResource NavButtonPressedBackgroundBrush}"
+                                        Visibility="Collapsed"
+                                    />
+                                    <Rectangle
+                                        x:Name="HoverBackground"
+                                        Fill="{StaticResource NavButtonHoverBackgroundBrush}"
+                                        Visibility="Collapsed"
+                                    />
+                                </Grid>
+                                <Grid
+                                    x:Name="CheckedBackground"
+                                    Grid.Row="0"
+                                    Grid.Column="0"
+                                    Grid.ColumnSpan="3"
+                                    Background="{StaticResource NavButtonCheckedBackgroundBrush}"
+                                    Visibility="Collapsed">
+                                    <Rectangle
+                                        x:Name="CheckedPressedBackground"
+                                        Fill="{StaticResource NavButtonCheckedPressedBackgroundBrush}"
+                                        Visibility="Collapsed"
+                                    />
+                                    <Rectangle
+                                        x:Name="CheckedHoverBackground"
+                                        Fill="{StaticResource NavButtonCheckedHoverBackgroundBrush}"
+                                        Visibility="Collapsed"
+                                    />
+                                </Grid>
+                                <Rectangle
+                                    x:Name="FocusVisualWhite"
+                                    Grid.Row="0"
+                                    Grid.Column="0"
+                                    Stroke="{ThemeResource FocusVisualWhiteStrokeThemeBrush}"
+                                    StrokeDashOffset="1.5"
+                                    Style="{StaticResource FocusVisual}"
+                                />
+                                <Rectangle
+                                    x:Name="FocusVisualBlack"
+                                    Grid.Row="0"
+                                    Grid.Column="0"
+                                    Stroke="{ThemeResource FocusVisualBlackStrokeThemeBrush}"
+                                    StrokeDashOffset="0.5"
+                                    Style="{StaticResource FocusVisual}"
+                                />
+                                <ContentPresenter
+                                    x:Name="NixonGlyph"
+                                    Grid.Row="0"
+                                    Grid.Column="0"
+                                    Content="{TemplateBinding Content}"
+                                />
+                                <ContentPresenter
+                                    x:Name="ContentPresenter"
+                                    AutomationProperties.AccessibilityView="Raw"
+                                    Grid.Column="1"
+                                    Grid.Row="0"
+                                    Margin="{TemplateBinding Padding}"
+                                    HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                    VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                    Content="{TemplateBinding Tag}"
+                                    ContentTemplate="{TemplateBinding ContentTemplate}"
+                                    ContentTransitions="{TemplateBinding ContentTransitions}"
+                                />
+                            </Grid>
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Normal" />
+                                    <VisualState x:Name="PointerOver">
+                                        <Storyboard>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="HoverBackground">
+                                                <DiscreteObjectKeyFrame KeyTime="0">
+                                                    <DiscreteObjectKeyFrame.Value>
+                                                        <Visibility>Visible</Visibility>
+                                                    </DiscreteObjectKeyFrame.Value>
+                                                </DiscreteObjectKeyFrame>
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="CheckedHoverBackground">
+                                                <DiscreteObjectKeyFrame KeyTime="0">
+                                                    <DiscreteObjectKeyFrame.Value>
+                                                        <Visibility>Visible</Visibility>
+                                                    </DiscreteObjectKeyFrame.Value>
+                                                </DiscreteObjectKeyFrame>
+                                            </ObjectAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="Pressed">
+                                        <Storyboard>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="PressedBackground">
+                                                <DiscreteObjectKeyFrame KeyTime="0">
+                                                    <DiscreteObjectKeyFrame.Value>
+                                                        <Visibility>Visible</Visibility>
+                                                    </DiscreteObjectKeyFrame.Value>
+                                                </DiscreteObjectKeyFrame>
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="CheckedPressedBackground">
+                                                <DiscreteObjectKeyFrame KeyTime="0">
+                                                    <DiscreteObjectKeyFrame.Value>
+                                                        <Visibility>Visible</Visibility>
+                                                    </DiscreteObjectKeyFrame.Value>
+                                                </DiscreteObjectKeyFrame>
+                                            </ObjectAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="Disabled">
+                                        <Storyboard>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="NixonGlyph" Storyboard.TargetProperty="Foreground">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource RadioButtonContentDisabledForegroundThemeBrush}" />
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="Foreground">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource RadioButtonContentDisabledForegroundThemeBrush}" />
+                                            </ObjectAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </VisualState>
+                                </VisualStateGroup>
+                                <VisualStateGroup x:Name="CheckStates">
+                                    <VisualState x:Name="Checked">
+                                        <Storyboard>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="CheckedBackground">
+                                                <DiscreteObjectKeyFrame KeyTime="0">
+                                                    <DiscreteObjectKeyFrame.Value>
+                                                        <Visibility>Visible</Visibility>
+                                                    </DiscreteObjectKeyFrame.Value>
+                                                </DiscreteObjectKeyFrame>
+                                            </ObjectAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="Unchecked" />
+                                    <VisualState x:Name="Indeterminate" />
+                                </VisualStateGroup>
+                                <VisualStateGroup x:Name="FocusStates">
+                                    <VisualState x:Name="Focused">
+                                        <Storyboard>
+                                            <DoubleAnimation Duration="0" Storyboard.TargetName="FocusVisualWhite" Storyboard.TargetProperty="Opacity" To="1" />
+                                            <DoubleAnimation Duration="0" Storyboard.TargetName="FocusVisualBlack" Storyboard.TargetProperty="Opacity" To="1" />
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="Unfocused" />
+                                    <VisualState x:Name="PointerFocused" />
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style
+            x:Key="SpecialMenuPaneRadioButtonStyle"
+            TargetType="RadioButton"
+            BasedOn="{StaticResource MenuPaneRadioButtonStyle}">
+            <Setter Property="Foreground" Value="{ThemeResource SystemListAccentMediumColor}" />
+        </Style>
+        <Style
+            x:Key="PageTitleTextBlockStyle"
+            TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{ThemeResource ApplicationPageHeaderTextForegroundThemeBrush}" />
+            <Setter Property="FontSize" Value="18" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Margin" Value="32,0,4,0" />
+            <Setter Property="TextAlignment" Value="Left" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="TextWrapping" Value="NoWrap" />
+        </Style>
+    </Page.Resources>
+    <i:Interaction.Behaviors>
+        <int:WindowChromeBehavior>
+            <int:WindowChromeBehavior.TitleBarColorAction>
+                <int:TitleBarColorAction
+                    BackgroundColor="{ThemeResource TitleBarBackgroundColor}"
+                    ForegroundColor="{ThemeResource TitleBarForegroundColor}"
+                    InactiveBackgroundColor="{ThemeResource TitleBarBackgroundColor}"
+                    InactiveForegroundColor="{ThemeResource TitleBarInactiveForegroundColor}"
+                    ButtonBackgroundColor="{ThemeResource TitleBarBackgroundColor}"
+                    ButtonForegroundColor="{ThemeResource TitleBarForegroundColor}"
+                    ButtonHoverBackgroundColor="{ThemeResource TitleBarButtonHoverForegroundColor}"
+                    ButtonHoverForegroundColor="{ThemeResource TitleBarForegroundColor}"
+                    ButtonInactiveBackgroundColor="{ThemeResource TitleBarBackgroundColor}"
+                    ButtonInactiveForegroundColor="{ThemeResource TitleBarInactiveForegroundColor}"
+                />
+            </int:WindowChromeBehavior.TitleBarColorAction>
+        </int:WindowChromeBehavior>
+    </i:Interaction.Behaviors>
+    <Grid
+        Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <SplitView
+            x:Name="MenuSplitView"
+            Grid.Column="0"
+            DisplayMode="CompactOverlay"
+            IsPaneOpen="{Binding ElementName=MenuToggleButton, Path=IsChecked, Mode=TwoWay}">
+            <SplitView.Pane>
+                <RelativePanel
+                    x:Name="MenuHostPanel">
+                    <ToggleButton
+                        x:Name="MenuToggleButton"
+                        Style="{StaticResource SymbolButton}"
+                        VerticalAlignment="Top"
+                        Width="48"
+                        Height="48">
+                        <ToggleButton.Content>
+                            <FontIcon
+                                x:Name="HamburgerMenuButton"
+                                Style="{StaticResource SystemAssetsFontIconStyle}"
+                                Glyph="{StaticResource HamburgerButtonGlyph}"
+                                Margin="2"
+                            />
+                        </ToggleButton.Content>
+                    </ToggleButton>
+                    <RadioButton
+                        x:Uid="HomeMenuButton"
+                        x:Name="HomeMenuButton"
+                        RelativePanel.Below="{Binding ElementName=MenuToggleButton}"
+                        Style="{StaticResource MenuPaneRadioButtonStyle}"
+                        Width="{Binding Path=OpenPaneLength, ElementName=MenuSplitView}">
+                        <RadioButton.Command>
+                            <cvi:NavigateToPageCommand Type="views:MainPage" Frame="{Binding ElementName=ContentFrame}" />
+                        </RadioButton.Command>
+                        <RadioButton.Content>
+                            <FontIcon
+                                Style="{StaticResource SystemAssetsFontIconStyle}"
+                                Glyph="{StaticResource HomeButtonGlyph}"
+                                FontSize="16"
+                            />
+                        </RadioButton.Content>
+                    </RadioButton>
+                    <RadioButton
+                        x:Uid="OptionsMenuButton"
+                        x:Name="OptionsMenuButton"
+                        RelativePanel.AlignBottomWithPanel="True"
+                        Style="{StaticResource SpecialMenuPaneRadioButtonStyle}"
+                        Width="{Binding Path=OpenPaneLength, ElementName=MenuSplitView}">
+                        <RadioButton.Command>
+                            <cvi:NavigateToPageCommand Type="views:OptionsPage" Frame="{Binding ElementName=ContentFrame}" />
+                        </RadioButton.Command>
+                        <RadioButton.Content>
+                            <FontIcon
+                                Style="{StaticResource SystemAssetsFontIconStyle}"
+                                Glyph="{StaticResource GearButtonGlyph}"
+                                FontSize="16"
+                            />
+                        </RadioButton.Content>
+                    </RadioButton>
+                </RelativePanel>
+            </SplitView.Pane>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="48" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <RelativePanel
+                    x:Name="PageHeader"
+                    Grid.Row="0"
+                    Background="{ThemeResource ApplicationPageHeaderBackgroundThemeBrush}">
+                    <TextBlock
+                        x:Name="PageTitle"
+                        RelativePanel.AlignLeftWithPanel="True"
+                        RelativePanel.AlignBottomWithPanel="True"
+                        RelativePanel.AlignTopWithPanel="True"
+                        RelativePanel.AlignRightWithPanel="True"
+                        Style="{StaticResource PageTitleTextBlockStyle}"
+                    />
+                    <ContentPresenter
+                        x:Name="PageHeaderCustomContent"
+                        RelativePanel.RightOf="{Binding ElementName=PageTile}"
+                        RelativePanel.AlignTopWithPanel="True"
+                        RelativePanel.AlignBottomWithPanel="True"
+                        RelativePanel.AlignRightWithPanel="True"
+                    />
+                </RelativePanel>
+                <Frame
+                    x:Name="ContentFrame"
+                    x:FieldModifier="public"
+                    Grid.Row="1"
+                    Navigated="OnFrameNavigated"
+                    Navigating="OnFrameNavigating"
+                />
+            </Grid>
+        </SplitView>
+<!--
+        <p:BusyIndicator
+            IsActive="{Binding Path=IsBusy}"
+            Delay="0:00:1.5">
+            <Style
+                TargetType="p:BusyIndicatorAnimation">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="p:BusyIndicatorAnimation">
+                            <Border
+                                x:Name="PART_LayoutRoot"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                                <Border.Resources>
+                                    <Storyboard
+                                        x:Name="PART_Animation"
+                                        Duration="00:00:03"
+                                        RepeatBehavior="Forever">
+                                        <ObjectAnimationUsingKeyFrames
+                                            Storyboard.TargetName="SpriteTransform"
+                                            Storyboard.TargetProperty="X">
+                                            <DiscreteObjectKeyFrame KeyTime="00:00:00.0" Value="0" />
+                                            <DiscreteObjectKeyFrame KeyTime="00:00:00.1" Value="-85" />
+                                            <DiscreteObjectKeyFrame KeyTime="00:00:00.2" Value="-170" />
+                                            <DiscreteObjectKeyFrame KeyTime="00:00:00.3" Value="-255" />
+                                            <DiscreteObjectKeyFrame KeyTime="00:00:00.4" Value="-340" />
+                                            <DiscreteObjectKeyFrame KeyTime="00:00:00.5" Value="0" />
+                                            <DiscreteObjectKeyFrame KeyTime="00:00:00.6" Value="-85" />
+                                            <DiscreteObjectKeyFrame KeyTime="00:00:00.7" Value="-170" />
+                                            <DiscreteObjectKeyFrame KeyTime="00:00:00.8" Value="-255" />
+                                            <DiscreteObjectKeyFrame KeyTime="00:00:00.9" Value="-340" />
+                                            <DiscreteObjectKeyFrame KeyTime="00:00:01.0" Value="0" />
+                                            <DiscreteObjectKeyFrame KeyTime="00:00:01.1" Value="-85" />
+                                            <DiscreteObjectKeyFrame KeyTime="00:00:01.2" Value="-170" />
+                                            <DiscreteObjectKeyFrame KeyTime="00:00:01.3" Value="-255" />
+                                            <DiscreteObjectKeyFrame KeyTime="00:00:01.4" Value="-340" />
+                                            <DiscreteObjectKeyFrame KeyTime="00:00:01.5" Value="0" />
+                                            <DiscreteObjectKeyFrame KeyTime="00:00:01.6" Value="-85" />
+                                            <DiscreteObjectKeyFrame KeyTime="00:00:01.7" Value="-170" />
+                                            <DiscreteObjectKeyFrame KeyTime="00:00:01.8" Value="-255" />
+                                            <DiscreteObjectKeyFrame KeyTime="00:00:01.9" Value="-340" />
+                                            <DiscreteObjectKeyFrame KeyTime="00:00:02.0" Value="0" />
+                                            <DiscreteObjectKeyFrame KeyTime="00:00:02.1" Value="-85" />
+                                            <DiscreteObjectKeyFrame KeyTime="00:00:02.2" Value="-170" />
+                                            <DiscreteObjectKeyFrame KeyTime="00:00:02.3" Value="-255" />
+                                            <DiscreteObjectKeyFrame KeyTime="00:00:02.4" Value="-340" />
+                                            <DiscreteObjectKeyFrame KeyTime="00:00:02.5" Value="0" />
+                                            <DiscreteObjectKeyFrame KeyTime="00:00:02.6" Value="-85" />
+                                            <DiscreteObjectKeyFrame KeyTime="00:00:02.7" Value="-170" />
+                                            <DiscreteObjectKeyFrame KeyTime="00:00:02.8" Value="-255" />
+                                            <DiscreteObjectKeyFrame KeyTime="00:00:02.9" Value="-340" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                        <ObjectAnimationUsingKeyFrames
+                                            Storyboard.TargetName="SpriteTransform"
+                                            Storyboard.TargetProperty="Y">
+                                            <DiscreteObjectKeyFrame KeyTime="00:00:00" Value="0" />
+                                            <DiscreteObjectKeyFrame KeyTime="00:00:00.5" Value="-85" />
+                                            <DiscreteObjectKeyFrame KeyTime="00:00:01.0" Value="-170" />
+                                            <DiscreteObjectKeyFrame KeyTime="00:00:01.5" Value="-255" />
+                                            <DiscreteObjectKeyFrame KeyTime="00:00:02.0" Value="-340" />
+                                            <DiscreteObjectKeyFrame KeyTime="00:00:02.5" Value="-425" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </Border.Resources>
+                                <Rectangle
+                                    Width="85"
+                                    Height="85">
+                                    <Rectangle.Fill>
+                                        <ImageBrush
+                                            ImageSource="ms-appx:///Assets/Spritesheet/cards.png"
+                                            Stretch="None"
+                                            AlignmentX="Left"
+                                            AlignmentY="Top">
+                                            <ImageBrush.Transform>
+                                                <TranslateTransform
+                                                    x:Name="SpriteTransform"
+                                                />
+                                            </ImageBrush.Transform>
+                                        </ImageBrush>
+                                    </Rectangle.Fill>
+                                </Rectangle>
+                            </Border>
+~1~
+                            <Border
+                                x:Name="PART_LayoutRoot"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                                <Border.Resources>
+                                    <Storyboard
+                                        x:Name="PART_Animation"
+                                        RepeatBehavior="Forever">
+                                        <DoubleAnimation
+                                            Storyboard.TargetName="Projection"
+                                            Storyboard.TargetProperty="RotationY"
+                                            From="0"
+                                            To="360"
+                                            Duration="0:00:5"
+                                        />
+                                    </Storyboard>
+                                </Border.Resources>
+                                <Image
+                                    Source="ms-appx:///Assets/StoreLogo.png"
+                                    Margin="0,0,0,5"
+                                    Width="50"
+                                    Height="50">
+                                    <Image.Projection>
+                                        <PlaneProjection
+                                            x:Name="Projection"
+                                        />
+                                    </Image.Projection>
+                                </Image>
+                            </Border>
+@1@
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </p:BusyIndicator>
+-->
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="LayoutStates">
+                <VisualState>
+                    <VisualState.StateTriggers>
+                        <st:AdaptiveSizeStateTrigger MinWindowWidth="720" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="MenuSplitView.DisplayMode" Value="CompactOverlay" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState>
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="0" />
+                    </VisualState.StateTriggers>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+    </Grid>
+</Page>
+

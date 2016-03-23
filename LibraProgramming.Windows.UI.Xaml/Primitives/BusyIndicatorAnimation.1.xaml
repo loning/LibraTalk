@@ -1,0 +1,25 @@
+﻿<Style
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:p="using:LibraProgramming.Windows.UI.Xaml.Primitives"
+  TargetType="p:BusyIndicatorAnimation">
+    <Setter Property="Template">
+        <Setter.Value>
+            <ControlTemplate TargetType="p:BusyIndicatorAnimation">
+                <Border
+                    x:Name="PART_LayoutRoot"
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}">
+                    <ProgressBar
+                        Foreground="{TemplateBinding Foreground}"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Center"
+                        Height="40"
+                        IsIndeterminate="True"
+                    />
+                </Border>
+            </ControlTemplate>
+        </Setter.Value>
+    </Setter>
+</Style>

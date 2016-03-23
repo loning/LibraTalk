@@ -1,0 +1,278 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{3BE83C00-6868-4607-9370-DDA54C351BD1}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>LibraProgramming.Windows.UI.Xaml</RootNamespace>
+    <AssemblyName>LibraProgramming.Windows.UI.Xaml</AssemblyName>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
+    <TargetPlatformVersion>10.0.10586.0</TargetPlatformVersion>
+    <TargetPlatformMinVersion>10.0.10240.0</TargetPlatformMinVersion>
+    <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
+    <PlatformTarget>ARM</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\ARM\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>ARM</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM'">
+    <PlatformTarget>ARM</PlatformTarget>
+    <OutputPath>bin\ARM\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>ARM</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <PlatformTarget>x64</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <PlatformTarget>x64</PlatformTarget>
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <PlatformTarget>x86</PlatformTarget>
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
+    <None Include="project.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Commands\WeakAction.cs" />
+    <Compile Include="Commands\WeakDelegateBase.cs" />
+    <Compile Include="Converters\ColorNameConverter.cs" />
+    <Compile Include="Core\ICollectionFilter.cs" />
+    <Compile Include="Core\ICollectionUpdatable.cs" />
+    <Compile Include="Core\IObjectBuilder.cs" />
+    <Compile Include="Core\IObservableCollectionView.cs" />
+    <Compile Include="Core\ObservableCollectionView.cs" />
+    <Compile Include="Core\ObservableCollectionView.CollectionView.cs" />
+    <Compile Include="Dependency\DependencyDictionary.cs" />
+    <Compile Include="Dependency\DependencyTrackerException.cs" />
+    <Compile Include="Dependency\PropertyPathComparer.cs" />
+    <Compile Include="Dependency\Tracking\DependencyTracker.cs" />
+    <Compile Include="Dependency\Tracking\DependencyTracker.DependencyTrackerBuilder.cs" />
+    <Compile Include="Dependency\Tracking\DependencySubscription.cs" />
+    <Compile Include="Dependency\Tracking\DependentPropertyBuilder.cs" />
+    <Compile Include="Dependency\Tracking\IDependencyPropertySelector.cs" />
+    <Compile Include="Dependency\Tracking\IDependencyTracker.cs" />
+    <Compile Include="Dependency\Tracking\IDependencyTrackerBuilder.cs" />
+    <Compile Include="Dependency\Tracking\IDependentPropertyBuilder.cs" />
+    <Compile Include="Dependency\Tracking\PropertyDependency.cs" />
+    <Compile Include="Infrastructure\ExpressionExtension.cs" />
+    <Compile Include="Dependency\PropertyPath.cs" />
+    <Compile Include="Messaging\BackgroundTaskEventSubscription.cs" />
+    <Compile Include="Messaging\DispatcherEventSubscription.cs" />
+    <Compile Include="Messaging\EventBase.cs" />
+    <Compile Include="Messaging\Event.cs" />
+    <Compile Include="Messaging\EventMessenger.cs" />
+    <Compile Include="Messaging\EventSubscription.cs" />
+    <Compile Include="Messaging\IActionReference.cs" />
+    <Compile Include="Messaging\IEventMessenger.cs" />
+    <Compile Include="Messaging\IEventSubscription.cs" />
+    <Compile Include="Messaging\IPredicateReference.cs" />
+    <Compile Include="Messaging\StrongActionReference.cs" />
+    <Compile Include="Messaging\StrongPredicateReference.cs" />
+    <Compile Include="Messaging\SubscriptionToken.cs" />
+    <Compile Include="Messaging\WeakActionReference.cs" />
+    <Compile Include="Messaging\WeakPredicateReference.cs" />
+    <Compile Include="Primitives\CustomTooltip.cs" />
+    <Compile Include="Interactivity\CustomTooltipService.cs" />
+    <Compile Include="Interactivity\ElementAdorner.cs" />
+    <Compile Include="Interactivity\IElementAdorner.cs" />
+    <Compile Include="Interactivity\ITitleBarColorAction.cs" />
+    <Compile Include="Interactivity\TitleBarColorAction.cs" />
+    <Compile Include="Interactivity\TooltipBehavior.cs" />
+    <Compile Include="Interactivity\WindowChromeBehavior.cs" />
+    <Compile Include="Awaitable\ButtonExtension.cs" />
+    <Compile Include="Awaitable\CustomDialogExtension.cs" />
+    <Compile Include="Awaitable\EventAsync.cs" />
+    <Compile Include="Awaitable\FrameworkElementExtension.cs" />
+    <Compile Include="Commands\AsynchronousCommand.cs" />
+    <Compile Include="Commands\AsynchronousCommandBase.cs" />
+    <Compile Include="Commands\ICancelRequired.cs" />
+    <Compile Include="Commands\RelayCommand.cs" />
+    <Compile Include="Commands\WeakDelegate.cs" />
+    <Compile Include="Commands\WeakEvent.cs" />
+    <Compile Include="Commands\WeakEventListener.cs" />
+    <Compile Include="Commands\WeakFunc.cs" />
+    <Compile Include="Commands\WeakPredicate.cs" />
+    <Compile Include="Converters\BooleanNegationConverter.cs" />
+    <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
+    <Compile Include="Converters\ColorContrastConverter.cs" />
+    <Compile Include="Core\ItemsCollection.cs" />
+    <Compile Include="Core\ObservableVector.cs" />
+    <Compile Include="CustomDialog.cs" />
+    <Compile Include="DialogCommandDispatcher.cs" />
+    <Compile Include="Localization\IStringResourceLoader.cs" />
+    <Compile Include="Localization\LocalizationManager.cs" />
+    <Compile Include="Primitives\Animations\AnimationContext.cs" />
+    <Compile Include="Primitives\Animations\SideDrawerAnimationContext.cs" />
+    <Compile Include="Primitives\BusyIndicator.cs" />
+    <Compile Include="Primitives\BusyIndicatorAnimation.cs" />
+    <Compile Include="Primitives\CollapsiblePanel.cs" />
+    <Compile Include="Primitives\Collections\DialogCommandCollection.cs" />
+    <Compile Include="Primitives\Commands\DialogCommand.cs" />
+    <Compile Include="Primitives\Commands\IDialogCommand.cs" />
+    <Compile Include="Primitives\ContentControlPrimitive.cs" />
+    <Compile Include="Primitives\ControlPrimitive.cs" />
+    <Compile Include="Primitives\DialogCommandsPanelTemplate.cs" />
+    <Compile Include="Primitives\DockPanel.cs" />
+    <Compile Include="Primitives\LiveTile.cs" />
+    <Compile Include="Primitives\MissingTemplatePartException.cs" />
+    <Compile Include="Primitives\PrimitivesLocalizationManager.cs" />
+    <Compile Include="Primitives\SettingsPane.cs" />
+    <Compile Include="Primitives\SideDrawer.cs" />
+    <Compile Include="Primitives\SidePanel.cs" />
+    <Compile Include="Primitives\Tab.cs" />
+    <Compile Include="Primitives\TabView.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StateMachine\IStateConfigurator.cs" />
+    <Compile Include="StateMachine\StateDescriptor.cs" />
+    <Compile Include="StateMachine\StateMachine.cs" />
+    <Compile Include="StateMachine\StateConfigurator.cs" />
+    <Compile Include="StateMachine\StateMachineException.cs" />
+    <Compile Include="StateMachine\StateMachineExtension.cs" />
+    <Compile Include="StateMachine\StateTransition.cs" />
+    <Compile Include="StateTriggers\AdaptiveSizeStateTrigger.cs" />
+    <Compile Include="StateTriggers\CompareStateTrigger.cs" />
+    <Compile Include="StateTriggers\CompositeStateTrigger.cs" />
+    <Compile Include="StateTriggers\CustomStateTrigger.cs" />
+    <Compile Include="StateTriggers\DeviceFamilyStateTrigger.cs" />
+    <Compile Include="StateTriggers\ITriggerValue.cs" />
+    <Compile Include="StateTriggers\NetworkConnectionStateTrigger.cs" />
+    <Compile Include="StateTriggers\OrientationStateTrigger.cs" />
+    <Compile Include="StateTriggers\UserHandPreferenceStateTrigger.cs" />
+    <Compile Include="StateTriggers\UserInteractionModeTrigger.cs" />
+    <Content Include="Properties\LibraProgramming.Windows.UI.Xaml.rd.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <PRIResource Include="Localization\Neutral\Resources.resw" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Primitives\BusyIndicatorAnimation.0.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Primitives\BusyIndicatorAnimation.1.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\Common.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Page>
+    <Page Include="Themes\DarkTheme.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Page>
+    <Page Include="Themes\Generic.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\LightTheme.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Localization\en-US\" />
+  </ItemGroup>
+  <ItemGroup>
+    <SDKReference Include="WindowsDesktop, Version=10.0.10586.0">
+      <Name>Windows Desktop Extensions for the UWP</Name>
+    </SDKReference>
+    <SDKReference Include="WindowsMobile, Version=10.0.10586.0">
+      <Name>Windows Mobile Extensions for the UWP</Name>
+    </SDKReference>
+  </ItemGroup>
+  <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
+    <VisualStudioVersion>14.0</VisualStudioVersion>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

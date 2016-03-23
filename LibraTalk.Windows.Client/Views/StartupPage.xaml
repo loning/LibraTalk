@@ -1,0 +1,48 @@
+﻿<Page
+    x:Class="LibraTalk.Windows.Client.Views.StartupPage"
+    
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:i="using:Microsoft.Xaml.Interactivity"
+    xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
+    
+    mc:Ignorable="d"
+    
+    Unloaded="OnPageUnloaded">
+
+    <Grid
+        Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.Resources>
+            <Storyboard
+                x:Name="LogoImageHorizontalAnimation"
+                RepeatBehavior="1x">
+                <DoubleAnimation
+                    Storyboard.TargetName="LogoImageProjection"
+                    Storyboard.TargetProperty="RotationY"
+                    From="0"
+                    To="360"
+                    Duration="0:00:05"
+                />
+            </Storyboard>
+        </Grid.Resources>
+        <Image
+            x:Name="LogoImage"
+            Source="Assets/SplashScreen.png"
+            Stretch="None">
+            <Image.Projection>
+                <PlaneProjection x:Name="LogoImageProjection" />
+            </Image.Projection>
+        </Image>
+        <i:Interaction.Behaviors>
+            <ic:EventTriggerBehavior
+                EventName="Loaded">
+                <ic:CallMethodAction
+                    TargetObject="{Binding ElementName=LogoImageHorizontalAnimation}"
+                    MethodName="Begin"
+                />
+            </ic:EventTriggerBehavior>
+        </i:Interaction.Behaviors>
+    </Grid>
+</Page>

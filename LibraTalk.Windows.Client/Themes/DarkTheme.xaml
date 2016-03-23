@@ -1,0 +1,25 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- Default Application Color Scheme -->
+    <SolidColorBrush x:Key="SamplePrimaryThemeBrush" Color="Red" />
+    <SolidColorBrush x:Key="SampleBackgroundThemeBrush" Color="#FF000000" />
+    <SolidColorBrush x:Key="SampleSecondaryBackgroundThemeBrush" Color="#FF555555" />
+    <!-- -->
+    <SolidColorBrush x:Key="ToggleButtonPressedForegroundThemeBrush" Color="#41FFFFFF" />
+    <SolidColorBrush x:Key="ToggleButtonCheckedPressedForegroundThemeBrush" Color="#41FFFFFF" />
+    <SolidColorBrush x:Key="NavButtonPressedBackgroundBrush" Color="{ThemeResource SystemListMediumColor}" />
+    <SolidColorBrush x:Key="NavButtonHoverBackgroundBrush" Color="{ThemeResource SystemListLowColor}" />
+    <SolidColorBrush x:Key="NavButtonCheckedBackgroundBrush" Color="{ThemeResource SystemListAccentLowColor}" />
+    <SolidColorBrush x:Key="NavButtonCheckedPressedBackgroundBrush" Color="{ThemeResource SystemListAccentMediumColor}" />
+    <SolidColorBrush x:Key="NavButtonCheckedHoverBackgroundBrush" Color="{ThemeResource SystemListAccentHighColor}" />
+    <!-- -->
+    <Color x:Key="TitleBarBackgroundColor">#FF000000</Color>
+    <Color x:Key="TitleBarForegroundColor">#FFFFFFFF</Color>
+    <Color x:Key="TitleBarInactiveForegroundColor">#FF999999</Color>
+    <Color x:Key="TitleBarButtonHoverForegroundColor">#FF555555</Color>
+    <!-- -->
+    <SolidColorBrush x:Key="ApplicationPageHeaderTextForegroundThemeBrush" Color="LightGray" />
+    <SolidColorBrush x:Key="ApplicationPageHeaderBackgroundThemeBrush" Color="#282828" />
+    
+</ResourceDictionary>
