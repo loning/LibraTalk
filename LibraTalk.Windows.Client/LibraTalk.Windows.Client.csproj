@@ -104,6 +104,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\ApplicationOptionsProvider.cs" />
     <Compile Include="Services\IApplicationOptionsProvider.cs" />
+    <Compile Include="Services\IMessageSender.cs" />
+    <Compile Include="Services\MessageSender.cs" />
     <Compile Include="ViewModels\DeferUpdate.cs" />
     <Compile Include="ViewModels\HostPageViewModel.cs" />
     <Compile Include="ViewModels\Interfaces\ICleanupRequired.cs" />

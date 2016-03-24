@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using LibraProgramming.Windows.UI.Xaml.Commands;
 using LibraProgramming.Windows.UI.Xaml.Dependency.Tracking;
 using LibraProgramming.Windows.UI.Xaml.StateMachine;
 using LibraTalk.Windows.Client.Localization;
+using LibraTalk.Windows.Client.Services;
 using LibraTalk.Windows.Client.ViewModels.Interfaces;
 
 namespace LibraTalk.Windows.Client.ViewModels
@@ -24,6 +27,7 @@ namespace LibraTalk.Windows.Client.ViewModels
 
     public class MainPageViewModel : ObservableViewModel, ISetupRequired, ICleanupRequired, IUpdateIndicator
     {
+        private readonly IMessageSender messageSender;
 //        private static readonly IDependencyTracker<MainPageViewModel> tracker;
 
 //        private readonly IDisposable subscription;
@@ -49,36 +53,25 @@ namespace LibraTalk.Windows.Client.ViewModels
                 SetProperty(ref isDataLoading, value);
             }
         }
-
-        public string Message
-        {
-            get
-            {
-                return message;
-            }
-            set
-            {
-                SetProperty(ref message, value);
-            }
-        }
-
-        public ICommand Send
+        
+        public AsynchronousCommand<string> Send
         {
             get;
         }
 
-        public MainPageViewModel()
+        public MainPageViewModel(IMessageSender messageSender)
         {
+            this.messageSender = messageSender;
 //            subscription = tracker.Subscribe(this);
             machine = new StateMachine<TalkStates, TalkActions>(TalkStates.EnteringText);
             machine.Configure(TalkStates.EnteringText)
                 .Permit(TalkActions.Send, TalkStates.SendingText);
             machine.Configure(TalkStates.SendingText)
-                .OnEnter(DoSendText)
                 .Ignore(TalkActions.Send)
                 .Permit(TalkActions.Complete, TalkStates.EnteringText);
-            Send = machine.CreateCommand(TalkActions.Send);
             Messages = new ObservableCollection<string>();
+            Send = new AsynchronousCommand<string>(DoSendMessage, text => machine.CanFire(TalkActions.Send));
+            messageSender.MessageReceived += OnMessageReceived;
         }
 
         static MainPageViewModel()
@@ -96,7 +89,7 @@ namespace LibraTalk.Windows.Client.ViewModels
         {
             using (new DeferUpdate(this))
             {
-                
+                messageSender.Receive();
             }
 
             return Task.CompletedTask;
@@ -118,14 +111,23 @@ namespace LibraTalk.Windows.Client.ViewModels
             IsDataLoading = false;
         }
 
-        private void DoSendText(TalkStates state)
+        private async Task DoSendMessage(string text)
         {
-            var text = Message;
+            var message = new Dictionary<string, string>
+            {
+                {
+                    "message", text
+                }
+            };
 
-            Message = String.Empty;
-            Messages.Add(text);
+            await messageSender.SendMessageAsync(message);
 
             machine.Fire(TalkActions.Complete);
+        }
+
+        private void OnMessageReceived(IMessageSender sender, ReceivingMessageEventArgs args)
+        {
+            messageSender.Receive();
         }
     }
 }

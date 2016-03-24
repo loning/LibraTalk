@@ -29,15 +29,16 @@
         />
         <TextBox
             x:Uid="MessageInputBox"
+            x:Name="MessageInputBox"
             Grid.Row="1"
             Grid.Column="0"
-            Text="{Binding Path=Message, Mode=TwoWay}"
         />
         <Button
             x:Uid="SendButton"
             Grid.Row="1"
             Grid.Column="1"
             Command="{Binding Path=Send}"
+            CommandParameter="{Binding Path=Text, ElementName=MessageInputBox}"
         />
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup>
