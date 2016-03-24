@@ -1,12 +1,12 @@
 using System.Threading.Tasks;
 using Orleans;
 
-namespace SampleGrainInterfaces
+namespace LibraProgramming.Grains.Interfaces
 {
     /// <summary>
-    /// Grain interface IPlayerGrain
+    /// Grain interface IChatUser
     /// </summary>
-	public interface IPlayerGrain : IGrainWithGuidKey
+	public interface IChatUser : IGrainWithGuidKey
     {
         /// <summary>
         /// Gets the player name.
@@ -20,18 +20,5 @@ namespace SampleGrainInterfaces
         /// <param name="name"></param>
         /// <returns></returns>
         Task SetName(string name);
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="text"></param>
-        /// <returns></returns>
-        Task<string> Echo(string text);
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        Task Die();
     }
 }

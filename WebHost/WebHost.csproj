@@ -110,6 +110,7 @@
   <ItemGroup>
     <Compile Include="App_Start\MonitorsBootstrap.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Controllers\MeController.cs" />
     <Compile Include="Controllers\PollController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -135,9 +136,9 @@
     <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SampleGrainInterfaces\SampleGrainInterfaces.csproj">
+    <ProjectReference Include="..\LibraProgramming.Grains.Interfaces\LibraProgramming.Grains.Interfaces.csproj">
       <Project>{9c390baa-348b-4665-8503-a3f1dcca4c64}</Project>
-      <Name>SampleGrainInterfaces</Name>
+      <Name>LibraProgramming.Grains.Interfaces</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>

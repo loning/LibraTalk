@@ -23,7 +23,7 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR TH
 
 using System;
 
-namespace SampleSetup
+namespace LibraProgramming.Grains.Host
 {
     /// <summary>
     /// Orleans test silo host

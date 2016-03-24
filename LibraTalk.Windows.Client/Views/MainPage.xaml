@@ -7,6 +7,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:stateTriggers="using:LibraProgramming.Windows.UI.Xaml.StateTriggers"
+    xmlns:controls="using:LibraTalk.Windows.Client.Controls"
 
     DataContext="{Binding Path=MainPageViewModel, Source={StaticResource ViewModelLocator}}"
     
@@ -14,31 +15,7 @@
 
     <Grid
         Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="Auto" />
-        </Grid.ColumnDefinitions>
-        <TextBlock
-            Grid.Row="0"
-            Grid.Column="0"
-            Grid.ColumnSpan="2"
-        />
-        <TextBox
-            x:Uid="MessageInputBox"
-            x:Name="MessageInputBox"
-            Grid.Row="1"
-            Grid.Column="0"
-        />
-        <Button
-            x:Uid="SendButton"
-            Grid.Row="1"
-            Grid.Column="1"
-            Command="{Binding Path=Send}"
-            CommandParameter="{Binding Path=Text, ElementName=MessageInputBox}"
+        <controls:TextCommandWindow
         />
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup>

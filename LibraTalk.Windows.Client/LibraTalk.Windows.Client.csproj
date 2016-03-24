@@ -97,6 +97,7 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Bootstraps\ServiceBootstrap.cs" />
+    <Compile Include="Controls\TextCommandWindow.cs" />
     <Compile Include="Localization\ApplicationLocalizationManager.cs" />
     <Compile Include="Localization\IApplicationLocalization.cs" />
     <Compile Include="Models\ApplicationOptions.cs" />
@@ -155,6 +156,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Themes\DarkTheme.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\Generic.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

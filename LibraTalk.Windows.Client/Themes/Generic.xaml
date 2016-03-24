@@ -1,0 +1,33 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:LibraTalk.Windows.Client.Controls">
+    <!-- -->
+    <Style TargetType="local:TextCommandWindow">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="local:TextCommandWindow">
+                    <Border
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <TextBlock
+                                x:Name="PART_HistoryTextBlock"
+                                Grid.Row="0"
+                            />
+                            <TextBox
+                                x:Name="PART_InputTextBox"
+                                Grid.Row="1"
+                            />
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

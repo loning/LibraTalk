@@ -5,8 +5,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Hosting;
 using System.Web.Http;
+using LibraProgramming.Grains.Interfaces;
 using Orleans;
-using SampleGrainInterfaces;
 using WebHost.Infrastructure;
 using WebHost.Infrastructure.Actions;
 
@@ -38,13 +38,13 @@ namespace WebHost.Controllers
         }
 
         // POST api/<controller>
-        public async Task<string> Post([FromBody]string value)
+        /*public async Task<string> Post([FromBody]string value)
         {
-            var player = GrainClient.GrainFactory.GetGrain<IPlayerGrain>(Guid.NewGuid());
+            var player = GrainClient.GrainFactory.GetGrain<IChatUser>(Guid.NewGuid());
             var result = await player.Echo(value);
 
             return result;
-        }
+        }*/
 
         // PUT api/<controller>/5
         public void Put(int id, [FromBody]string value)

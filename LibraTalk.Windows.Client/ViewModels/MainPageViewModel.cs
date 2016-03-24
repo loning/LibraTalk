@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Windows.Storage;
 using LibraProgramming.Windows.UI.Xaml.Commands;
 using LibraProgramming.Windows.UI.Xaml.Dependency.Tracking;
 using LibraProgramming.Windows.UI.Xaml.StateMachine;
@@ -36,6 +37,7 @@ namespace LibraTalk.Windows.Client.ViewModels
         private CancellationTokenSource cts;
         private bool isDataLoading;
         private string message;
+        private string userName;
 
         public ObservableCollection<string> Messages
         {
@@ -53,6 +55,23 @@ namespace LibraTalk.Windows.Client.ViewModels
                 SetProperty(ref isDataLoading, value);
             }
         }
+
+        public string UserName
+        {
+            get
+            {
+                return userName;
+            }
+            set
+            {
+                SetProperty(ref userName, value);
+            }
+        }
+
+        public AsynchronousCommand<string> ChangeUserName
+        {
+            get;
+        } 
         
         public AsynchronousCommand<string> Send
         {
@@ -70,8 +89,9 @@ namespace LibraTalk.Windows.Client.ViewModels
                 .Ignore(TalkActions.Send)
                 .Permit(TalkActions.Complete, TalkStates.EnteringText);
             Messages = new ObservableCollection<string>();
-            Send = new AsynchronousCommand<string>(DoSendMessage, text => machine.CanFire(TalkActions.Send));
-            messageSender.MessageReceived += OnMessageReceived;
+//            Send = new AsynchronousCommand<string>(DoSendMessage, text => machine.CanFire(TalkActions.Send));
+            ChangeUserName=new AsynchronousCommand<string>(DoChangeUserName);
+//            messageSender.MessageReceived += OnMessageReceived;
         }
 
         static MainPageViewModel()
@@ -85,14 +105,16 @@ namespace LibraTalk.Windows.Client.ViewModels
             });*/
         }
 
-        Task ISetupRequired.SetupAsync()
+        async Task ISetupRequired.SetupAsync()
         {
             using (new DeferUpdate(this))
             {
-                messageSender.Receive();
-            }
+                var id = GetUserId();
 
-            return Task.CompletedTask;
+//                UserName = await messageSender.GetUserName(id);
+
+//                messageSender.Receive();
+            }
         }
 
         Task ICleanupRequired.CleanupAsync()
@@ -111,6 +133,37 @@ namespace LibraTalk.Windows.Client.ViewModels
             IsDataLoading = false;
         }
 
+        private async Task DoChangeUserName(string arg)
+        {
+            var id = GetUserId();
+
+            await messageSender.SetUserName(id, arg);
+
+            UserName = arg;
+        }
+
+        private static Guid GetUserId()
+        {
+            const string key = "Chat.UserName";
+
+            Guid id;
+
+            var value = ApplicationData.Current.LocalSettings.Values[key];
+
+            if (null == value)
+            {
+                id = Guid.NewGuid();
+                ApplicationData.Current.LocalSettings.Values[key] = id;
+            }
+            else
+            {
+                id = (Guid) value;
+            }
+
+            return id;
+        }
+
+/*
         private async Task DoSendMessage(string text)
         {
             var message = new Dictionary<string, string>
@@ -124,10 +177,12 @@ namespace LibraTalk.Windows.Client.ViewModels
 
             machine.Fire(TalkActions.Complete);
         }
+*/
 
+/*
         private void OnMessageReceived(IMessageSender sender, ReceivingMessageEventArgs args)
         {
-            messageSender.Receive();
         }
+*/
     }
 }
