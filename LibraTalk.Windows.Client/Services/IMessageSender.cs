@@ -22,7 +22,7 @@ namespace LibraTalk.Windows.Client.Services
     {
 //        event TypedEventHandler<IMessageSender, ReceivingMessageEventArgs> MessageReceived;
 
-        Task<string> GetUserName(Guid id);
+        Task<string> GetUserNameAsync(Guid id);
 
         Task SetUserName(Guid id, string name);
 

@@ -37,7 +37,7 @@ namespace LibraTalk.Windows.Client.Services
 //            messageReceived = new WeakEvent<TypedEventHandler<IMessageSender, ReceivingMessageEventArgs>>();
         }
 
-        public async Task<string> GetUserName(Guid id)
+        public async Task<string> GetUserNameAsync(Guid id)
         {
             var builder = new UriBuilder(baseUri);
 
@@ -94,8 +94,12 @@ namespace LibraTalk.Windows.Client.Services
 
                 using (var writer = new StreamWriter(stream))
                 {
+#if POST_FIX
+                    writer.Write('\"' + name + '\"');
+#else
                     var serializer = new JsonSerializer();
                     serializer.Serialize(writer, new {userName = name});
+#endif
                 }
 
                 var response = (await request.GetResponseAsync()) as HttpWebResponse;
@@ -105,7 +109,7 @@ namespace LibraTalk.Windows.Client.Services
                     throw new Exception();
                 }
 
-                if (HttpStatusCode.OK != response.StatusCode)
+                if (HttpStatusCode.NoContent != response.StatusCode)
                 {
                     throw new Exception();
                 }

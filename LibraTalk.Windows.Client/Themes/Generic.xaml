@@ -4,6 +4,9 @@
     xmlns:local="using:LibraTalk.Windows.Client.Controls">
     <!-- -->
     <Style TargetType="local:TextCommandWindow">
+        <Setter Property="InformationTextForeground" Value="{ThemeResource ApplicationForegroundThemeBrush}" />
+        <Setter Property="ErrorTextForeground" Value="Red" />
+        <Setter Property="WarningTextForeground" Value="Yellow" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="local:TextCommandWindow">
@@ -11,7 +14,8 @@
                         Background="{TemplateBinding Background}"
                         BorderBrush="{TemplateBinding BorderBrush}"
                         BorderThickness="{TemplateBinding BorderThickness}">
-                        <Grid>
+                        <Grid
+                            Margin="{TemplateBinding Padding}">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="*" />
                                 <RowDefinition Height="Auto" />
@@ -19,10 +23,23 @@
                             <TextBlock
                                 x:Name="PART_HistoryTextBlock"
                                 Grid.Row="0"
+                                FontFamily="{TemplateBinding FontFamily}"
+                                FontSize="{TemplateBinding FontSize}"
+                                FontStretch="{TemplateBinding FontStretch}"
+                                FontWeight="{TemplateBinding FontWeight}"
+                                FontStyle="{TemplateBinding FontStyle}"
+                                VerticalAlignment="Bottom"
+                                Padding="10,0"
                             />
                             <TextBox
                                 x:Name="PART_InputTextBox"
                                 Grid.Row="1"
+                                FontFamily="{TemplateBinding FontFamily}"
+                                FontSize="{TemplateBinding FontSize}"
+                                FontStretch="{TemplateBinding FontStretch}"
+                                FontWeight="{TemplateBinding FontWeight}"
+                                FontStyle="{TemplateBinding FontStyle}"
+                                Foreground="{TemplateBinding Foreground}"
                             />
                         </Grid>
                     </Border>

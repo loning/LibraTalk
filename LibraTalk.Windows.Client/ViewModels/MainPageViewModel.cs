@@ -111,7 +111,7 @@ namespace LibraTalk.Windows.Client.ViewModels
             {
                 var id = GetUserId();
 
-//                UserName = await messageSender.GetUserName(id);
+//                UserName = await messageSender.GetUserNameAsync(id);
 
 //                messageSender.Receive();
             }
