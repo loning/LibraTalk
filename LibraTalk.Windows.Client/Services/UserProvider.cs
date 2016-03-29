@@ -4,22 +4,24 @@ using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using Windows.Devices.Sensors;
 using Windows.Foundation;
 using LibraProgramming.Windows.UI.Xaml.Commands;
+using LibraTalk.Windows.Client.Models;
 using LibraTalk.Windows.Client.Properties;
 using Newtonsoft.Json;
 
 namespace LibraTalk.Windows.Client.Services
 {
     [PublicAPI]
-    public sealed class MessageSender : IMessageSender
+    public sealed class UserProvider : IUserProvider
     {
         private readonly Uri baseUri;
-//        private readonly WeakEvent<TypedEventHandler<IMessageSender, ReceivingMessageEventArgs>> messageReceived;
+//        private readonly WeakEvent<TypedEventHandler<IUserProvider, ReceivingMessageEventArgs>> messageReceived;
 
-        /*public event TypedEventHandler<IMessageSender, ReceivingMessageEventArgs> MessageReceived
+        /*public event TypedEventHandler<IUserProvider, ReceivingMessageEventArgs> MessageReceived
         {
             add
             {
@@ -31,17 +33,17 @@ namespace LibraTalk.Windows.Client.Services
             }
         }*/
 
-        public MessageSender([NotNull] Uri baseUri)
+        public UserProvider([NotNull] Uri baseUri)
         {
             this.baseUri = baseUri;
-//            messageReceived = new WeakEvent<TypedEventHandler<IMessageSender, ReceivingMessageEventArgs>>();
+//            messageReceived = new WeakEvent<TypedEventHandler<IUserProvider, ReceivingMessageEventArgs>>();
         }
 
-        public async Task<string> GetUserNameAsync(Guid id)
+        public async Task<User> GetUserAsync(Guid id)
         {
             var builder = new UriBuilder(baseUri);
 
-            builder.Path += "me/" + id.ToString("D");
+            builder.Path += "user/" + id.ToString("D");
 
             var request = WebRequest.Create(builder.Uri);
 
@@ -55,20 +57,21 @@ namespace LibraTalk.Windows.Client.Services
 
                 if (null == response)
                 {
-                    return null;
+                    throw new Exception();
                 }
 
                 if (HttpStatusCode.OK != response.StatusCode)
                 {
-                    return null;
+                    throw new Exception();
                 }
 
                 var stream = response.GetResponseStream();
 
                 using (var reader = new StreamReader(stream))
                 {
+//                    var text = reader.ReadToEnd();
                     var serializer = new JsonSerializer();
-                    return serializer.Deserialize<string>(new JsonTextReader(reader));
+                    return serializer.Deserialize<User>(new JsonTextReader(reader));
                 }
             }
             catch (Exception exception)
@@ -77,11 +80,11 @@ namespace LibraTalk.Windows.Client.Services
             }
         }
 
-        public async Task SetUserName(Guid id, string name)
+        public async Task SetUserAsync(Guid id, User user)
         {
             var builder = new UriBuilder(baseUri);
 
-            builder.Path += "me/" + id.ToString("D");
+            builder.Path += "user/" + id.ToString("D");
 
             var request = WebRequest.Create(builder.Uri);
 
@@ -97,8 +100,12 @@ namespace LibraTalk.Windows.Client.Services
 #if POST_FIX
                     writer.Write('\"' + name + '\"');
 #else
-                    var serializer = new JsonSerializer();
-                    serializer.Serialize(writer, new {userName = name});
+                    var b = new StringBuilder();
+                    using (var temp = new StringWriter(b))
+                    {
+                        var serializer = new JsonSerializer();
+                        serializer.Serialize(temp, user);
+                    }
 #endif
                 }
 
@@ -109,7 +116,7 @@ namespace LibraTalk.Windows.Client.Services
                     throw new Exception();
                 }
 
-                if (HttpStatusCode.NoContent != response.StatusCode)
+                if (HttpStatusCode.OK != response.StatusCode)
                 {
                     throw new Exception();
                 }

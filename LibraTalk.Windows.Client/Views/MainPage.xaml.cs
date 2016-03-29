@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.UI.Xaml;
 using LibraProgramming.Windows.Locator;
 using LibraTalk.Windows.Client.Controls;
+using LibraTalk.Windows.Client.Models;
 using LibraTalk.Windows.Client.Services;
 using LibraTalk.Windows.Client.ViewModels;
 
@@ -15,11 +17,12 @@ namespace LibraTalk.Windows.Client.Views
     /// </summary>
     public sealed partial class MainPage
     {
-        private readonly IMessageSender messagesender;
+        private readonly IUserProvider userProvider;
+        private Profile profile;
 
         public MainPage()
         {
-            messagesender = ServiceLocator.Current.GetInstance<IMessageSender>();
+            userProvider = ServiceLocator.Current.GetInstance<IUserProvider>();
             InitializeComponent();
         }
 
@@ -67,25 +70,6 @@ namespace LibraTalk.Windows.Client.Views
             })*/;
         }
 
-        private async Task GetUserName(string arg, object state)
-        {
-            var id = GetUserId();
-            var console = (IConsoleOutput) state;
-            var username = await messagesender.GetUserNameAsync(id);
-
-            console.WriteLine(String.Format("User: \"{0}\"", username), LogLevel.Information);
-        }
-
-        private async Task SetUserName(string arg, object state)
-        {
-            var id = GetUserId();
-            var console = (IConsoleOutput)state;
-
-            await messagesender.SetUserName(id, arg);
-
-            console.WriteLine("Ok", LogLevel.Information);
-        }
-
         private static Guid GetUserId()
         {
             const string key = "Chat.UserName";
@@ -107,11 +91,74 @@ namespace LibraTalk.Windows.Client.Views
             return id;
         }
 
-        private async void OnExecuteCommand(ConsoleCommand sender, ExecuteConsoleCommandEventArgs args)
+        private async void OnGetUserProfile(ConsoleCommand sender, ExecuteConsoleCommandEventArgs args)
         {
             var deferral = args.GetDeferral();
 
-            await Task.Delay(TimeSpan.FromSeconds(3.0d));
+            if (null == profile || args.Options.Any(option => "force" == option.Item1))
+            {
+                var id = GetUserId();
+
+                var user = await userProvider.GetUserAsync(id);
+
+                profile = new Profile
+                {
+                    Id = user.Profile.Id,
+                    Name = user.Profile.Name
+                };
+
+                args.Console.WriteLine("Profile retrieved", LogLevel.Information);
+
+            }
+            else
+            {
+                args.Console.WriteLine("Profile cached", LogLevel.Information);
+            }
+
+            args.Console.WriteLine(String.Format("Name: \"{0}\"", profile.Name), LogLevel.Information);
+            args.Console.WriteLine(String.Format("Id: \"{0}\"", profile.Id), LogLevel.Information);
+
+            deferral.Complete();
+        }
+
+        private async void OnWriteUserProfile(ConsoleCommand sender, ExecuteConsoleCommandEventArgs args)
+        {
+            var deferral = args.GetDeferral();
+            var id = GetUserId();
+
+            await userProvider.SetUserAsync(id,new User
+            {
+                Profile = profile
+            });
+
+            args.Console.WriteLine("Write-Profile: Ok");
+
+            deferral.Complete();
+        }
+
+        private void OnSetUserProfile(ConsoleCommand sender, ExecuteConsoleCommandEventArgs args)
+        {
+            var deferral = args.GetDeferral();
+
+            if (null == profile)
+            {
+                args.Console.WriteLine("Error: Get-Profile sould be executed first.", LogLevel.Error);
+            }
+            else
+            {
+                var arg = args.Arguments.First();
+
+                if (args.Options.Any(option => "name" == option.Item1))
+                {
+                    profile.Name = arg;
+                    args.Console.WriteLine("Set-Profile: Name updated");
+                }
+                else if (args.Options.Any(option => "id" == option.Item1))
+                {
+                    profile.Id = Guid.Parse(arg);
+                    args.Console.WriteLine("Set-Profile: Id updated");
+                }
+            }
 
             deferral.Complete();
         }

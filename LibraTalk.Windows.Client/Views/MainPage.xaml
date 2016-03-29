@@ -22,15 +22,22 @@
             FontSize="16">
             <controls:SimpleConsoleCommandProcessor>
                 <controls:ConsoleCommand
-                    CommandName="get-name"
-                    ExecuteCommand="OnExecuteCommand"
+                    CommandName="get-profile"
+                    ExecuteCommand="OnGetUserProfile">
+                    <controls:ConsoleCommandOption OptionName="force" />
+                </controls:ConsoleCommand>
+                <controls:ConsoleCommand
+                    CommandName="write-profile"
+                    ExecuteCommand="OnWriteUserProfile"
                 />
                 <controls:ConsoleCommand
-                    CommandName="set-name"
+                    CommandName="set-profile"
                     MaxArgumentsCount="1"
                     MinArgumentsCount="1"
-                    ExecuteCommand="OnExecuteCommand"
-                />
+                    ExecuteCommand="OnSetUserProfile">
+                    <controls:ConsoleCommandOption OptionName="name" />
+                    <controls:ConsoleCommandOption OptionName="id" />
+                </controls:ConsoleCommand>
             </controls:SimpleConsoleCommandProcessor>
         </controls:TextCommandWindow>
         <VisualStateManager.VisualStateGroups>

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using Windows.Foundation;
+using LibraTalk.Windows.Client.Models;
 
 namespace LibraTalk.Windows.Client.Services
 {
@@ -18,13 +19,13 @@ namespace LibraTalk.Windows.Client.Services
         }
     }
 
-    public interface IMessageSender
+    public interface IUserProvider
     {
-//        event TypedEventHandler<IMessageSender, ReceivingMessageEventArgs> MessageReceived;
+        //        event TypedEventHandler<IUserProvider, ReceivingMessageEventArgs> MessageReceived;
 
-        Task<string> GetUserNameAsync(Guid id);
+        Task<User> GetUserAsync(Guid id);
 
-        Task SetUserName(Guid id, string name);
+        Task SetUserAsync(Guid id, User user);
 
 //        Task SendMessageAsync(IDictionary<string, string> message);
 

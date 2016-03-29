@@ -110,7 +110,7 @@
   <ItemGroup>
     <Compile Include="App_Start\MonitorsBootstrap.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
-    <Compile Include="Controllers\MeController.cs" />
+    <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Controllers\ChatController.cs" />
     <Compile Include="Controllers\PollController.cs" />
     <Compile Include="Global.asax.cs">
@@ -122,6 +122,8 @@
     <Compile Include="Infrastructure\ChatPollTask.cs" />
     <Compile Include="Infrastructure\Monitors\ChatMonitor.cs" />
     <Compile Include="Infrastructure\Monitors\IChatMonitor.cs" />
+    <Compile Include="Models\ChatUser.cs" />
+    <Compile Include="Models\ChatUserProfile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -133,9 +135,7 @@
       <DependentUpon>Web.config</DependentUpon>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Models\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\LibraProgramming.Grains.Interfaces\LibraProgramming.Grains.Interfaces.csproj">
       <Project>{9c390baa-348b-4665-8503-a3f1dcca4c64}</Project>

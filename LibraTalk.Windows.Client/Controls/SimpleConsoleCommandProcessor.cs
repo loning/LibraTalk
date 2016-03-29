@@ -18,13 +18,29 @@ namespace LibraTalk.Windows.Client.Controls
     /// </summary>
     public class ExecuteConsoleCommandEventArgs : EventArgs, IDeferrable
     {
-        private readonly IConsoleOutput console;
         private readonly ICollection<Task> promises;
 
-        public ExecuteConsoleCommandEventArgs(IConsoleOutput console, ICollection<Task> promises)
+        public IConsoleOutput Console
         {
-            this.console = console;
+            get;
+        }
+
+        public ICollection<Tuple<string, string>> Options
+        {
+            get;
+        }
+
+        public ICollection<string> Arguments
+        {
+            get;
+        }
+
+        public ExecuteConsoleCommandEventArgs(IConsoleOutput console, ICollection<Task> promises, ICollection<Tuple<string, string>> options, ICollection<string> arguments)
+        {
             this.promises = promises;
+            Console = console;
+            Options = options;
+            Arguments = arguments;
         }
 
         public IDeferral GetDeferral()
@@ -174,10 +190,10 @@ namespace LibraTalk.Windows.Client.Controls
                 );
         }
 
-        public async Task<bool> ExecuteAsync(IConsoleOutput output)
+        public async Task<bool> ExecuteAsync(IConsoleOutput output, ICollection<Tuple<string, string>> options, ICollection<string> arguments)
         {
             var promises = new Collection<Task>();
-            var args = new ExecuteConsoleCommandEventArgs(output, promises);
+            var args = new ExecuteConsoleCommandEventArgs(output, promises, options, arguments);
 
             executeCommand.Invoke(this, args);
 
@@ -237,7 +253,7 @@ namespace LibraTalk.Windows.Client.Controls
 
                     if (ValidateCommand(command, options, arguments))
                     {
-                        return command.ExecuteAsync(output);
+                        return command.ExecuteAsync(output, options, arguments);
                     }
                 }
 
@@ -470,6 +486,79 @@ namespace LibraTalk.Windows.Client.Controls
 
                                 continue;
                             }
+
+                            case ParsingState.CommandOptionNameBegin:
+                            {
+                                var current = reader.Read();
+
+                                if (-1 == current)
+                                {
+                                    ok = false;
+                                    continue;
+                                }
+
+                                if (Char.IsLetter((char) current))
+                                {
+                                    parsingstate = ParsingState.CommandOptionNameContinues;
+                                    command.Append((char) current);
+
+                                    continue;
+                                }
+
+                                throw new Exception();
+                            }
+
+                            case ParsingState.CommandOptionNameContinues:
+                            {
+                                var current = reader.Read();
+
+                                if (-1 == current)
+                                {
+                                    ok = false;
+                                    options.Add(new Tuple<string, string>(command.ToString(), String.Empty));
+
+                                    continue;
+                                }
+
+                                if (Char.IsLetterOrDigit((char) current) || '_' == current)
+                                {
+                                    parsingstate = ParsingState.CommandOptionNameContinues;
+                                    command.Append((char) current);
+
+                                    continue;
+                                }
+
+                                parsingstate = ParsingState.CommandOptions;
+                                options.Add(new Tuple<string, string>(command.ToString(), String.Empty));
+
+                                continue;
+                            }
+
+                            case ParsingState.CommandOptions:
+                            {
+                                var current = reader.Read();
+
+                                if (-1 == current)
+                                {
+                                    ok = false;
+                                    continue;
+                                }
+
+                                if (Char.IsWhiteSpace((char) current))
+                                {
+                                    continue;
+                                }
+
+                                if ('-' == current || '/' == current)
+                                {
+                                    parsingstate = ParsingState.CommandNameBegin;
+                                    command.Clear();
+
+                                    continue;
+                                }
+
+                                throw new Exception();
+                            }
                         }
                     }
                 }
@@ -490,6 +579,8 @@ namespace LibraTalk.Windows.Client.Controls
                 CommandArgumentQuoted,
                 CommandArgumentSingleWord,
                 CommandArgumentQuotedPossibleEnd,
+                CommandOptionNameContinues,
+                CommandOptions
             }
         }
     }

@@ -28,7 +28,7 @@ namespace LibraTalk.Windows.Client.ViewModels
 
     public class MainPageViewModel : ObservableViewModel, ISetupRequired, ICleanupRequired, IUpdateIndicator
     {
-        private readonly IMessageSender messageSender;
+        private readonly IUserProvider userProvider;
 //        private static readonly IDependencyTracker<MainPageViewModel> tracker;
 
 //        private readonly IDisposable subscription;
@@ -78,9 +78,9 @@ namespace LibraTalk.Windows.Client.ViewModels
             get;
         }
 
-        public MainPageViewModel(IMessageSender messageSender)
+        public MainPageViewModel(IUserProvider userProvider)
         {
-            this.messageSender = messageSender;
+            this.userProvider = userProvider;
 //            subscription = tracker.Subscribe(this);
             machine = new StateMachine<TalkStates, TalkActions>(TalkStates.EnteringText);
             machine.Configure(TalkStates.EnteringText)
@@ -89,9 +89,6 @@ namespace LibraTalk.Windows.Client.ViewModels
                 .Ignore(TalkActions.Send)
                 .Permit(TalkActions.Complete, TalkStates.EnteringText);
             Messages = new ObservableCollection<string>();
-//            Send = new AsynchronousCommand<string>(DoSendMessage, text => machine.CanFire(TalkActions.Send));
-            ChangeUserName=new AsynchronousCommand<string>(DoChangeUserName);
-//            messageSender.MessageReceived += OnMessageReceived;
         }
 
         static MainPageViewModel()
@@ -111,9 +108,9 @@ namespace LibraTalk.Windows.Client.ViewModels
             {
                 var id = GetUserId();
 
-//                UserName = await messageSender.GetUserNameAsync(id);
+//                UserName = await UserProvider.GetUserNameAsync(id);
 
-//                messageSender.Receive();
+//                UserProvider.Receive();
             }
         }
 
@@ -131,15 +128,6 @@ namespace LibraTalk.Windows.Client.ViewModels
         void IUpdateIndicator.EndUpdate()
         {
             IsDataLoading = false;
-        }
-
-        private async Task DoChangeUserName(string arg)
-        {
-            var id = GetUserId();
-
-            await messageSender.SetUserName(id, arg);
-
-            UserName = arg;
         }
 
         private static Guid GetUserId()
@@ -173,14 +161,14 @@ namespace LibraTalk.Windows.Client.ViewModels
                 }
             };
 
-            await messageSender.SendMessageAsync(message);
+            await UserProvider.SendMessageAsync(message);
 
             machine.Fire(TalkActions.Complete);
         }
 */
 
 /*
-        private void OnMessageReceived(IMessageSender sender, ReceivingMessageEventArgs args)
+        private void OnMessageReceived(IUserProvider sender, ReceivingMessageEventArgs args)
         {
         }
 */
