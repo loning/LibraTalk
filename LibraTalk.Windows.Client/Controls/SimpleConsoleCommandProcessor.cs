@@ -251,8 +251,20 @@ namespace LibraTalk.Windows.Client.Controls
 
         private bool ValidateCommand(ConsoleCommand command, ICollection<Tuple<string, string>> options, ICollection<string> arguments)
         {
+            bool isArgumentsOk;
+            var argumentsCount = arguments.Count;
 
-            return true;
+            if (0 < argumentsCount)
+            {
+                isArgumentsOk = command.MaxArgumentsCount >= argumentsCount &&
+                                argumentsCount >= command.MinArgumentsCount;
+            }
+            else
+            {
+                isArgumentsOk = 0 == command.MaxArgumentsCount && 0 == command.MinArgumentsCount;
+            }
+
+            return isArgumentsOk && options.All(candidate => command.Options.Any(option => option.OptionName == candidate.Item1));
         }
 
         /// <summary>
