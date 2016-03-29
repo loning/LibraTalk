@@ -9,6 +9,7 @@ using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Documents;
+using Windows.UI.Xaml.Markup;
 using Windows.UI.Xaml.Media;
 using LibraProgramming.Windows.UI.Xaml.Commands;
 using LibraProgramming.Windows.UI.Xaml.Primitives;
@@ -38,9 +39,49 @@ namespace LibraTalk.Windows.Client.Controls
     {
         IDeferral GetDeferral();
     }
-    
+
+    public class ConsoleCommand : DependencyObject
+    {
+        public static readonly DependencyProperty NameProperty;
+
+        public string Name
+        {
+            get
+            {
+                return (string) GetValue(NameProperty);
+            }
+            set
+            {
+                SetValue(NameProperty, value);
+            }
+        }
+
+        /// <summary>
+        /// Provides base class initialization behavior for DependencyObject derived classes.
+        /// </summary>
+        static ConsoleCommand()
+        {
+            NameProperty = DependencyProperty
+                .Register(
+                    "Name",
+                    typeof (string),
+                    typeof (ConsoleCommand),
+                    new PropertyMetadata(null, OnNamePropertyChanged)
+                );
+        }
+
+        private static void OnNamePropertyChanged(DependencyObject source, DependencyPropertyChangedEventArgs e)
+        {
+        }
+    }
+
+    public sealed class ConsoleCommandCollection : ObservableCollection<ConsoleCommand>
+    {
+    }
+
     [TemplatePart(Type = typeof(TextBlock), Name = HistoryTextBlockPartName)]
     [TemplatePart(Type = typeof(TextBox), Name = InputTextBoxPartName)]
+    [ContentProperty(Name = "ConsoleCommands")]
     public sealed class TextCommandWindow : ControlPrimitive
     {
         private const string HistoryTextBlockPartName = "PART_HistoryTextBlock";
@@ -53,6 +94,11 @@ namespace LibraTalk.Windows.Client.Controls
         private readonly WeakEvent<EventHandler<ProcessCommandTextEventArgs>> processCommandText;
         private TextBlock history;
         private TextBox input;
+
+        public ConsoleCommandCollection ConsoleCommands
+        {
+            get;
+        }
 
         public Brush InformationTextForeground
         {
@@ -106,6 +152,7 @@ namespace LibraTalk.Windows.Client.Controls
         {
             DefaultStyleKey = typeof (TextCommandWindow);
             processCommandText = new WeakEvent<EventHandler<ProcessCommandTextEventArgs>>();
+            ConsoleCommands = new ConsoleCommandCollection();
         }
 
         static TextCommandWindow()

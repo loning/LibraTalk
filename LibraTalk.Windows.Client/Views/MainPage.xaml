@@ -20,8 +20,11 @@
         <controls:TextCommandWindow
             FontFamily="Courier New"
             FontSize="16"
-            ProcessCommandText="OnTextCommandWindowProcessCommandText"
-        />
+            ProcessCommandText="OnTextCommandWindowProcessCommandText">
+            <controls:ConsoleCommand
+                Name="get-name"
+            />
+        </controls:TextCommandWindow>
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup>
                 <VisualState>
