@@ -17,6 +17,12 @@ namespace LibraProgramming.Grains.Interfaces
             set;
         }
 
+        public DateTime Date
+        {
+            get;
+            set;
+        }
+
         public string Text
         {
             get;

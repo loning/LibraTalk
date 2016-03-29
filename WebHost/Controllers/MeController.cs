@@ -14,10 +14,13 @@ namespace WebHost.Controllers
             return user.GetName();
         }
 
-        public Task Post(Guid id, [FromBody] string userName)
+        public async Task<IHttpActionResult> Post(Guid id, [FromBody] string userName)
         {
             var user = GrainClient.GrainFactory.GetGrain<IChatUser>(id);
-            return user.SetName(userName);
+
+            await user.SetName(userName);
+
+            return Ok();
         }
     }
 }

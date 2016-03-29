@@ -20,5 +20,7 @@ namespace LibraProgramming.Grains.Interfaces
         /// <param name="name"></param>
         /// <returns></returns>
         Task SetName(string name);
+
+        Task PublishMessage(PublishMessage message);
     }
 }

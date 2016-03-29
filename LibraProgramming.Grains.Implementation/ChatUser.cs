@@ -34,9 +34,15 @@ namespace LibraProgramming.Grains.Implementation
         {
             State.Name = name;
 
-            logger.Info($"Changing name: [id : {this.GetPrimaryKey()}; {State.Name}]");
+            logger.Info($"LibraProgramming.Grains.Implementation.ChatUser.SetName | Changing for user: {this.GetPrimaryKey()} to: {State.Name}");
 
             return WriteStateAsync();
+        }
+
+        public Task PublishMessage(PublishMessage message)
+        {
+            var room = GrainFactory.GetGrain<IChatRoom>("default");
+            return room.PublishMessage(this.GetPrimaryKey(), message.Text);
         }
 
         public override Task OnActivateAsync()
@@ -48,7 +54,7 @@ namespace LibraProgramming.Grains.Implementation
 
             logger = GetLogger("ChatUser");
 
-            logger.Info($"Initializing state: [id : {this.GetPrimaryKey()}; {State.Name}]");
+            logger.Info($"LibraProgramming.Grains.Implementation.ChatUser.OnActivateAsync | Initializing state for user: {this.GetPrimaryKey()}");
 
             return base.OnActivateAsync();
         }

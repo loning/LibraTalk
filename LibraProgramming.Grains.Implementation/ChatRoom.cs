@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using LibraProgramming.Grains.Interfaces;
 using Orleans;
@@ -24,21 +25,44 @@ namespace LibraProgramming.Grains.Implementation
         }
     }
 
-    /*[Reentrant]
+    [Reentrant]
     [StorageProvider(ProviderName = "MemoryStore")]
     public class ChatRoom : Grain<CharRoomState>, IChatRoom
     {
         private List<Guid> users;
         private Logger logger;
          
-        public Task<IList<ChatMessage>> GetMessages(string name)
+        public Task<IList<ChatMessage>> GetMessages()
         {
-            throw new NotImplementedException();
+            var messages = State.Messages.ToList();
+            return Task.FromResult<IList<ChatMessage>>(messages);
         }
 
         public Task AddUser(Guid userId)
         {
-            throw new NotImplementedException();
+            users.Add(userId);
+            logger.Info($"LibraProgramming.Grains.Implementation.ChatRoom.AddUser | Room: {State.Id} user: {userId}");
+            return TaskDone.Done;
+        }
+
+        public Task PublishMessage(Guid userId, string text)
+        {
+            if (!users.Contains(userId))
+            {
+                return TaskDone.Done;
+            }
+
+            var message = new ChatMessage
+            {
+                Id = State.Messages.Count,
+                PublisherId = userId,
+                Date = DateTime.UtcNow,
+                Text = text
+            };
+
+            State.Messages.Enqueue(message);
+
+            return WriteStateAsync();
         }
 
         /// <summary>
@@ -60,5 +84,5 @@ namespace LibraProgramming.Grains.Implementation
 
             return base.OnActivateAsync();
         }
-    }*/
+    }
 }

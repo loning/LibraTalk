@@ -5,12 +5,12 @@ using Orleans;
 
 namespace LibraProgramming.Grains.Interfaces
 {
-    /*public interface IChatRoom : IGrainWithStringKey
+    public interface IChatRoom : IGrainWithStringKey
     {
-        Task<IList<ChatMessage>> GetMessages(string name);
+        Task<IList<ChatMessage>> GetMessages();
 
         Task AddUser(Guid userId);
 
-
-    }*/
+        Task PublishMessage(Guid userId, string text);
+    }
 }
