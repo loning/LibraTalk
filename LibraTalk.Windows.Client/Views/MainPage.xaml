@@ -19,11 +19,19 @@
         Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <controls:TextCommandWindow
             FontFamily="Courier New"
-            FontSize="16"
-            ProcessCommandText="OnTextCommandWindowProcessCommandText">
-            <controls:ConsoleCommand
-                Name="get-name"
-            />
+            FontSize="16">
+            <controls:SimpleConsoleCommandProcessor>
+                <controls:ConsoleCommand
+                    CommandName="get-name"
+                    ExecuteCommand="OnExecuteCommand"
+                />
+                <controls:ConsoleCommand
+                    CommandName="set-name"
+                    MaxArgumentsCount="1"
+                    MinArgumentsCount="1"
+                    ExecuteCommand="OnExecuteCommand"
+                />
+            </controls:SimpleConsoleCommandProcessor>
         </controls:TextCommandWindow>
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup>

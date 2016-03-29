@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Windows.Foundation;
 using Windows.System;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
@@ -13,6 +14,7 @@ using Windows.UI.Xaml.Markup;
 using Windows.UI.Xaml.Media;
 using LibraProgramming.Windows.UI.Xaml.Commands;
 using LibraProgramming.Windows.UI.Xaml.Primitives;
+using LibraTalk.Windows.Client.Controls;
 
 namespace LibraTalk.Windows.Client.Controls
 {
@@ -23,7 +25,7 @@ namespace LibraTalk.Windows.Client.Controls
         Error
     }
 
-    public interface IConsole
+    public interface IConsoleOutput
     {
         void WriteLine(string text);
 
@@ -40,64 +42,32 @@ namespace LibraTalk.Windows.Client.Controls
         IDeferral GetDeferral();
     }
 
-    public class ConsoleCommand : DependencyObject
-    {
-        public static readonly DependencyProperty NameProperty;
-
-        public string Name
-        {
-            get
-            {
-                return (string) GetValue(NameProperty);
-            }
-            set
-            {
-                SetValue(NameProperty, value);
-            }
-        }
-
-        /// <summary>
-        /// Provides base class initialization behavior for DependencyObject derived classes.
-        /// </summary>
-        static ConsoleCommand()
-        {
-            NameProperty = DependencyProperty
-                .Register(
-                    "Name",
-                    typeof (string),
-                    typeof (ConsoleCommand),
-                    new PropertyMetadata(null, OnNamePropertyChanged)
-                );
-        }
-
-        private static void OnNamePropertyChanged(DependencyObject source, DependencyPropertyChangedEventArgs e)
-        {
-        }
-    }
-
-    public sealed class ConsoleCommandCollection : ObservableCollection<ConsoleCommand>
-    {
-    }
-
-    [TemplatePart(Type = typeof(TextBlock), Name = HistoryTextBlockPartName)]
-    [TemplatePart(Type = typeof(TextBox), Name = InputTextBoxPartName)]
-    [ContentProperty(Name = "ConsoleCommands")]
+    [TemplatePart(Type = typeof (TextBlock), Name = HistoryTextBlockPartName)]
+    [TemplatePart(Type = typeof (TextBox), Name = InputTextBoxPartName)]
+    [ContentProperty(Name = "CommandProcessor")]
     public sealed class TextCommandWindow : ControlPrimitive
     {
         private const string HistoryTextBlockPartName = "PART_HistoryTextBlock";
         private const string InputTextBoxPartName = "PART_InputTextBox";
 
+        public static readonly DependencyProperty CommandProcessorProperty;
         public static readonly DependencyProperty InformationTextForegroundProperty;
         public static readonly DependencyProperty ErrorTextForegroundProperty;
         public static readonly DependencyProperty WarningTextForegroundProperty;
 
-        private readonly WeakEvent<EventHandler<ProcessCommandTextEventArgs>> processCommandText;
         private TextBlock history;
         private TextBox input;
 
-        public ConsoleCommandCollection ConsoleCommands
+        public ConsoleCommandProcessor CommandProcessor
         {
-            get;
+            get
+            {
+                return (ConsoleCommandProcessor) GetValue(CommandProcessorProperty);
+            }
+            set
+            {
+                SetValue(CommandProcessorProperty, value);
+            }
         }
 
         public Brush InformationTextForeground
@@ -136,27 +106,20 @@ namespace LibraTalk.Windows.Client.Controls
             }
         }
 
-        public event EventHandler<ProcessCommandTextEventArgs> ProcessCommandText
-        {
-            add
-            {
-                processCommandText.AddHandler(value);
-            }
-            remove
-            {
-                processCommandText.RemoveHandler(value);
-            }
-        }
-
         public TextCommandWindow()
         {
             DefaultStyleKey = typeof (TextCommandWindow);
-            processCommandText = new WeakEvent<EventHandler<ProcessCommandTextEventArgs>>();
-            ConsoleCommands = new ConsoleCommandCollection();
         }
 
         static TextCommandWindow()
         {
+            CommandProcessorProperty = DependencyProperty
+                .Register(
+                    "CommandProcessor",
+                    typeof (ConsoleCommandProcessor),
+                    typeof (TextCommandWindow),
+                    new PropertyMetadata(DependencyProperty.UnsetValue, OnCommandProcessorPropertyChanged)
+                );
             InformationTextForegroundProperty = DependencyProperty
                 .Register(
                     "InformationTextForeground",
@@ -184,17 +147,17 @@ namespace LibraTalk.Windows.Client.Controls
         {
             if (null != history)
             {
-                
+
             }
 
             if (null != input)
             {
-                
+
             }
 
             history = GetTemplatePart<TextBlock>(HistoryTextBlockPartName);
             input = GetTemplatePart<TextBox>(InputTextBoxPartName);
-            
+
             base.OnApplyTemplate();
         }
 
@@ -245,27 +208,51 @@ namespace LibraTalk.Windows.Client.Controls
             if (VirtualKey.Enter == args.VirtualKey && IsFocused)
             {
                 var text = input.Text;
-                var promises = new Collection<Task>();
 
-                if (!String.IsNullOrEmpty(text))
+                if (String.IsNullOrEmpty(text))
                 {
-                    var console = new CachedConsoleProxy();
-                    var arg = new ProcessCommandTextEventArgs(console, promises, text);
+                    return;
+                }
 
-                    processCommandText.Invoke(this, arg);
+                var processor = CommandProcessor;
 
-                    await Task.WhenAll(promises.ToArray());
+                if (null == processor)
+                {
+                    return;
+                }
 
-                    await PerformConsoleWrite(console);
+                var console = new CachedConsoleOutputProxy();
+
+                try
+                {
+                    var result = await processor.TryExecuteAsync(text, console);
+
+                    if (result)
+                    {
+                        
+                    }
+                    else
+                    {
+                        throw new Exception();
+                    }
 
                     ClearInput();
                 }
+                catch (Exception exception)
+                {
+                    var output = (IConsoleOutput)console;
+
+                    output.WriteLine("Error: " + text, LogLevel.Error);
+                    input.SelectAll();
+                }
+
+                await PerformConsoleWrite(console);
 
                 args.Handled = true;
             }
         }
 
-        private Task PerformConsoleWrite(CachedConsoleProxy console)
+        private Task PerformConsoleWrite(CachedConsoleOutputProxy console)
         {
             if (Dispatcher.HasThreadAccess)
             {
@@ -276,67 +263,25 @@ namespace LibraTalk.Windows.Client.Controls
             return Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => console.WriteLines(this)).AsTask();
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        private class Promise : IDeferral
+        private static void OnCommandProcessorPropertyChanged(DependencyObject source, DependencyPropertyChangedEventArgs e)
         {
-            private readonly ManualResetEventSlim evt;
-
-            public Promise(ManualResetEventSlim evt)
-            {
-                this.evt = evt;
-            }
-
-            public void Complete()
-            {
-                evt.Set();
-            }
         }
 
         /// <summary>
         /// 
         /// </summary>
-        public class ProcessCommandTextEventArgs : EventArgs, IDeferrable
-        {
-            private readonly ICollection<Task> promises;
-
-            public IConsole Console
-            {
-                get;
-            }
-
-            public string Text
-            {
-                get;
-            }
-
-            internal ProcessCommandTextEventArgs(IConsole console, ICollection<Task> promises, string text)
-            {
-                this.promises = promises;
-                Console = console;
-                Text = text;
-            }
-
-            public IDeferral GetDeferral()
-            {
-                var promise = new ManualResetEventSlim();
-
-                promises.Add(Task.Run(() => promise.Wait()));
-
-                return new Promise(promise);
-            }
-        }
-
         private class LinesCollection : Collection<Tuple<LogLevel, string>>
         {
         }
 
-        private class CachedConsoleProxy : IConsole
+        /// <summary>
+        /// 
+        /// </summary>
+        private class CachedConsoleOutputProxy : IConsoleOutput
         {
             private readonly LinesCollection lines;
 
-            public CachedConsoleProxy()
+            public CachedConsoleOutputProxy()
             {
                 lines = new LinesCollection();
             }
@@ -349,12 +294,12 @@ namespace LibraTalk.Windows.Client.Controls
                 }
             }
 
-            void IConsole.WriteLine(string text)
+            void IConsoleOutput.WriteLine(string text)
             {
                 lines.Add(new Tuple<LogLevel, string>(LogLevel.Information, text));
             }
 
-            void IConsole.WriteLine(string text, LogLevel level)
+            void IConsoleOutput.WriteLine(string text, LogLevel level)
             {
                 lines.Add(new Tuple<LogLevel, string>(level, text));
             }

@@ -15,16 +15,15 @@ namespace LibraTalk.Windows.Client.Views
     /// </summary>
     public sealed partial class MainPage
     {
-        private readonly CommandProcessor processor;
         private readonly IMessageSender messagesender;
 
         public MainPage()
         {
             messagesender = ServiceLocator.Current.GetInstance<IMessageSender>();
-            processor = new CommandProcessor();
             InitializeComponent();
         }
 
+/*
         private async void OnTextCommandWindowProcessCommandText(object sender, TextCommandWindow.ProcessCommandTextEventArgs e)
         {
             var deferral = e.GetDeferral();
@@ -49,10 +48,11 @@ namespace LibraTalk.Windows.Client.Views
                 deferral.Complete();
             }
         }
+*/
 
         private void OnPageLoaded(object sender, RoutedEventArgs e)
         {
-            processor.Configure(new List<CommandDescription>
+            /*processor.Configure(new List<CommandDescription>
             {
                 new CommandDescription
                 {
@@ -64,13 +64,13 @@ namespace LibraTalk.Windows.Client.Views
                     Name = "set-name",
                     Action = SetUserName
                 }
-            });
+            })*/;
         }
 
         private async Task GetUserName(string arg, object state)
         {
             var id = GetUserId();
-            var console = (IConsole) state;
+            var console = (IConsoleOutput) state;
             var username = await messagesender.GetUserNameAsync(id);
 
             console.WriteLine(String.Format("User: \"{0}\"", username), LogLevel.Information);
@@ -79,7 +79,7 @@ namespace LibraTalk.Windows.Client.Views
         private async Task SetUserName(string arg, object state)
         {
             var id = GetUserId();
-            var console = (IConsole)state;
+            var console = (IConsoleOutput)state;
 
             await messagesender.SetUserName(id, arg);
 
@@ -105,6 +105,15 @@ namespace LibraTalk.Windows.Client.Views
             }
 
             return id;
+        }
+
+        private async void OnExecuteCommand(ConsoleCommand sender, ExecuteConsoleCommandEventArgs args)
+        {
+            var deferral = args.GetDeferral();
+
+            await Task.Delay(TimeSpan.FromSeconds(3.0d));
+
+            deferral.Complete();
         }
     }
 }

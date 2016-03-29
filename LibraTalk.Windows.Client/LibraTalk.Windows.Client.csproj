@@ -97,6 +97,10 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Bootstraps\ServiceBootstrap.cs" />
+    <Compile Include="Controls\ConsoleCommandProcessor.cs" />
+    <Compile Include="Controls\EchoConsoleCommandProcessor.cs" />
+    <Compile Include="Controls\Promise.cs" />
+    <Compile Include="Controls\SimpleConsoleCommandProcessor.cs" />
     <Compile Include="Controls\TextCommandWindow.cs" />
     <Compile Include="Localization\ApplicationLocalizationManager.cs" />
     <Compile Include="Localization\IApplicationLocalization.cs" />

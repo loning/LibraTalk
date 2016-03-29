@@ -7,6 +7,11 @@
         <Setter Property="InformationTextForeground" Value="{ThemeResource ApplicationForegroundThemeBrush}" />
         <Setter Property="ErrorTextForeground" Value="Red" />
         <Setter Property="WarningTextForeground" Value="Yellow" />
+        <Setter Property="CommandProcessor">
+            <Setter.Value>
+                <local:EchoConsoleCommandProcessor />
+            </Setter.Value>
+        </Setter>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="local:TextCommandWindow">
