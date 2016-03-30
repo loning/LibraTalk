@@ -123,7 +123,7 @@
     <Compile Include="Infrastructure\Monitors\ChatMonitor.cs" />
     <Compile Include="Infrastructure\Monitors\IChatMonitor.cs" />
     <Compile Include="Models\ChatUser.cs" />
-    <Compile Include="Models\ChatUserProfile.cs" />
+    <Compile Include="Models\Profile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

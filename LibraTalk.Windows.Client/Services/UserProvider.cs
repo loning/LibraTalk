@@ -1,17 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Net;
-using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
-using Windows.Devices.Sensors;
 using Windows.Foundation;
-using LibraProgramming.Windows.UI.Xaml.Commands;
+using Windows.Web.Http;
+using Windows.Web.Http.Headers;
 using LibraTalk.Windows.Client.Models;
 using LibraTalk.Windows.Client.Properties;
-using Newtonsoft.Json;
 
 namespace LibraTalk.Windows.Client.Services
 {
@@ -39,91 +33,54 @@ namespace LibraTalk.Windows.Client.Services
 //            messageReceived = new WeakEvent<TypedEventHandler<IUserProvider, ReceivingMessageEventArgs>>();
         }
 
-        public async Task<User> GetUserAsync(Guid id)
+        public async Task<Profile> GetProfileAsync(Guid id)
         {
-            var builder = new UriBuilder(baseUri);
-
-            builder.Path += "user/" + id.ToString("D");
-
-            var request = WebRequest.Create(builder.Uri);
-
-            request.ContentType = "application/json";
-            request.Method = HttpMethod.Get.ToString();
-            request.Headers[HttpRequestHeader.CacheControl] = "no-cache";
-
-            try
+            using (var client = new HttpClient())
             {
-                var response = (await request.GetResponseAsync()) as HttpWebResponse;
-
-                if (null == response)
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept
+                    .Add(HttpMediaTypeWithQualityHeaderValue.Parse("application/x-www-form-urlencoded"));
+                
+                try
                 {
-                    throw new Exception();
-                }
+                    var response = await client
+                        .GetAsync(
+                            new Uri(baseUri + "user/" + id.ToString("D")),
+                            HttpCompletionOption.ResponseHeadersRead
+                        );
 
-                if (HttpStatusCode.OK != response.StatusCode)
+                    var message = response.EnsureSuccessStatusCode();
+                    var content = await message.Content.ReadAsStringAsync();
+                    var decoder = new WwwFormUrlDecoder(content);
+
+                    return new Profile
+                    {
+                        Id = Guid.Parse(decoder.GetFirstValueByName("id")),
+                        Name = decoder.GetFirstValueByName("name")
+                    };
+                }
+                catch (Exception exception)
                 {
-                    throw new Exception();
+                    throw new AggregateException(exception);
                 }
-
-                var stream = response.GetResponseStream();
-
-                using (var reader = new StreamReader(stream))
-                {
-//                    var text = reader.ReadToEnd();
-                    var serializer = new JsonSerializer();
-                    return serializer.Deserialize<User>(new JsonTextReader(reader));
-                }
-            }
-            catch (Exception exception)
-            {
-                throw new AggregateException(exception);
             }
         }
 
-        public async Task SetUserAsync(Guid id, User user)
+        public async Task SetProfileAsync(Guid id, Profile profile)
         {
-            var builder = new UriBuilder(baseUri);
-
-            builder.Path += "user/" + id.ToString("D");
-
-            var request = WebRequest.Create(builder.Uri);
-
-            request.ContentType = "application/json";
-            request.Method = HttpMethod.Post.ToString();
-
-            try
+            using (var client = new HttpClient())
             {
-                var stream = await request.GetRequestStreamAsync();
-
-                using (var writer = new StreamWriter(stream))
-                {
-#if POST_FIX
-                    writer.Write('\"' + name + '\"');
-#else
-                    var b = new StringBuilder();
-                    using (var temp = new StringWriter(b))
-                    {
-                        var serializer = new JsonSerializer();
-                        serializer.Serialize(temp, user);
-                    }
-#endif
-                }
-
-                var response = (await request.GetResponseAsync()) as HttpWebResponse;
-
-                if (null == response)
-                {
-                    throw new Exception();
-                }
-
-                if (HttpStatusCode.OK != response.StatusCode)
-                {
-                    throw new Exception();
-                }
-            }
-            catch (Exception exception)
-            {
-                throw new AggregateException(exception);
+                var response = await client
+                    .PutAsync(
+                        new Uri(baseUri + "user/" + id.ToString("D")),
+                        new HttpFormUrlEncodedContent(
+                            new Dictionary<string, string>
+                            {
+                                {"id", id.ToString("D")},
+                                {"name", profile.Name}
+                            })
+                    );
+                response.EnsureSuccessStatusCode();
             }
         }
 

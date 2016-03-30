@@ -5,7 +5,7 @@ namespace WebHost.Models
     [Serializable]
     public class ChatUser
     {
-        public ChatUserProfile Profile
+        public Profile Profile
         {
             get;
             set;

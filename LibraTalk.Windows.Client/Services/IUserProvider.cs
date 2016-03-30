@@ -23,9 +23,9 @@ namespace LibraTalk.Windows.Client.Services
     {
         //        event TypedEventHandler<IUserProvider, ReceivingMessageEventArgs> MessageReceived;
 
-        Task<User> GetUserAsync(Guid id);
+        Task<Profile> GetProfileAsync(Guid id);
 
-        Task SetUserAsync(Guid id, User user);
+        Task SetProfileAsync(Guid id, Profile profile);
 
 //        Task SendMessageAsync(IDictionary<string, string> message);
 

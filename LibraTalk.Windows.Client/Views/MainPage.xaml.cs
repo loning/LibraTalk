@@ -97,18 +97,8 @@ namespace LibraTalk.Windows.Client.Views
 
             if (null == profile || args.Options.Any(option => "force" == option.Item1))
             {
-                var id = GetUserId();
-
-                var user = await userProvider.GetUserAsync(id);
-
-                profile = new Profile
-                {
-                    Id = user.Profile.Id,
-                    Name = user.Profile.Name
-                };
-
+                profile = await userProvider.GetProfileAsync(GetUserId());
                 args.Console.WriteLine("Profile retrieved", LogLevel.Information);
-
             }
             else
             {
@@ -124,13 +114,8 @@ namespace LibraTalk.Windows.Client.Views
         private async void OnWriteUserProfile(ConsoleCommand sender, ExecuteConsoleCommandEventArgs args)
         {
             var deferral = args.GetDeferral();
-            var id = GetUserId();
 
-            await userProvider.SetUserAsync(id,new User
-            {
-                Profile = profile
-            });
-
+            await userProvider.SetProfileAsync(GetUserId(), profile);
             args.Console.WriteLine("Write-Profile: Ok");
 
             deferral.Complete();

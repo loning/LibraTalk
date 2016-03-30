@@ -2,7 +2,7 @@
 
 namespace WebHost.Models
 {
-    public class ChatUserProfile
+    public class Profile
     {
         public Guid Id
         {

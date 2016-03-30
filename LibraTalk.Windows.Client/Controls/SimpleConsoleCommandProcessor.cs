@@ -551,13 +551,24 @@ namespace LibraTalk.Windows.Client.Controls
 
                                 if ('-' == current || '/' == current)
                                 {
-                                    parsingstate = ParsingState.CommandNameBegin;
+                                    parsingstate = ParsingState.CommandOptionNameBegin;
                                     command.Clear();
 
                                     continue;
                                 }
 
-                                throw new Exception();
+                                command.Clear();
+
+                                if ('\"' == current)
+                                {
+                                    parsingstate = ParsingState.CommandArgumentQuoted;
+                                    continue;
+                                }
+
+                                parsingstate = ParsingState.CommandArgumentSingleWord;
+                                command.Append((char) current);
+
+                                continue;
                             }
                         }
                     }
