@@ -2,8 +2,7 @@
 
 namespace LibraProgramming.Grains.Interfaces
 {
-    [Serializable]
-    public class ChatMessage
+    public class RoomMessage
     {
          public long Id
          {

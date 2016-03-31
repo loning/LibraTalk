@@ -5,6 +5,8 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Web.Http;
+using LibraProgramming.Grains.Interfaces;
+using Orleans;
 using WebHost.Models;
 
 namespace WebHost.Controllers
@@ -13,18 +15,19 @@ namespace WebHost.Controllers
     {
         public async Task<HttpResponseMessage> Get(Guid id)
         {
-//            var user = GrainClient.GrainFactory.GetGrain<IChatUser>(id);
-//            return user.GetName();
-
+            var grain = GrainClient.GrainFactory.GetGrain<IChatUser>(id);
+            var profile = await grain.GetUserProfileAsync();
             var response = Request.CreateResponse(HttpStatusCode.OK);
-
-            await Task.Delay(TimeSpan.FromSeconds(1.0d));
 
             response.Content = new FormUrlEncodedContent(
                 new Dictionary<string, string>
                 {
-                    {"id", Guid.NewGuid().ToString("D")},
-                    {"name", "John Dow"}
+                    {
+                        "id", profile.Id.ToString("D")
+                    },
+                    {
+                        "name", profile.Name
+                    }
                 });
 
             response.Headers.CacheControl = new CacheControlHeaderValue
@@ -35,16 +38,24 @@ namespace WebHost.Controllers
             return response;
         }
 
-        public async Task<HttpResponseMessage> Put(Guid id, [FromBody] Profile user)
+        public async Task<HttpResponseMessage> Put(Guid id, [FromBody] Profile profile)
         {
-//            var user = GrainClient.GrainFactory.GetGrain<IChatUser>(id);
+            var grain = GrainClient.GrainFactory.GetGrain<IChatUser>(id);
 
-//            await user.SetName(userName);
-            var response = Request.CreateResponse(HttpStatusCode.OK);
+            try
+            {
+                await grain.SetProfileAsync(new UserProfile
+                {
+                    Id = profile.Id,
+                    Name = profile.Name
+                });
 
-            await Task.Delay(TimeSpan.FromSeconds(1.0d));
-
-            return response;
+                return Request.CreateResponse(HttpStatusCode.OK);
+            }
+            catch (Exception exception)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, exception);
+            }
         }
     }
 }

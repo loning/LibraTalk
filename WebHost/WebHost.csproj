@@ -111,7 +111,7 @@
     <Compile Include="App_Start\MonitorsBootstrap.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\UserController.cs" />
-    <Compile Include="Controllers\ChatController.cs" />
+    <Compile Include="Controllers\MessagesController.cs" />
     <Compile Include="Controllers\PollController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -122,7 +122,7 @@
     <Compile Include="Infrastructure\ChatPollTask.cs" />
     <Compile Include="Infrastructure\Monitors\ChatMonitor.cs" />
     <Compile Include="Infrastructure\Monitors\IChatMonitor.cs" />
-    <Compile Include="Models\ChatUser.cs" />
+    <Compile Include="Models\PublishMessage.cs" />
     <Compile Include="Models\Profile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

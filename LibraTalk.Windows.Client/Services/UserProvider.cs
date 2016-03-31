@@ -1,21 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Web.Http;
 using Windows.Web.Http.Headers;
+using LibraProgramming.Windows.UI.Xaml.Commands;
 using LibraTalk.Windows.Client.Models;
 using LibraTalk.Windows.Client.Properties;
 
 namespace LibraTalk.Windows.Client.Services
 {
+    public class ReceivingMessageEventArgs : CancelEventArgs
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="T:System.ComponentModel.CancelEventArgs"/> class with the <see cref="P:System.ComponentModel.CancelEventArgs.Cancel"/> property set to the given value.
+        /// </summary>
+        /// <param name="cancel">true to cancel the event; otherwise, false. </param>
+        public ReceivingMessageEventArgs(bool cancel)
+            : base(cancel)
+        {
+        }
+    }
+
     [PublicAPI]
-    public sealed class UserProvider : IUserProvider
+    public sealed class UserProvider
     {
         private readonly Uri baseUri;
-//        private readonly WeakEvent<TypedEventHandler<IUserProvider, ReceivingMessageEventArgs>> messageReceived;
+        private readonly Guid userId;
+        private readonly WeakEvent<TypedEventHandler<UserProvider, ReceivingMessageEventArgs>> messageReceived;
 
-        /*public event TypedEventHandler<IUserProvider, ReceivingMessageEventArgs> MessageReceived
+        public event TypedEventHandler<UserProvider, ReceivingMessageEventArgs> MessageReceived
         {
             add
             {
@@ -25,15 +41,16 @@ namespace LibraTalk.Windows.Client.Services
             {
                 messageReceived.RemoveHandler(value);
             }
-        }*/
-
-        public UserProvider([NotNull] Uri baseUri)
-        {
-            this.baseUri = baseUri;
-//            messageReceived = new WeakEvent<TypedEventHandler<IUserProvider, ReceivingMessageEventArgs>>();
         }
 
-        public async Task<Profile> GetProfileAsync(Guid id)
+        public UserProvider([NotNull] Uri baseUri, [NotNull]Guid userId)
+        {
+            this.baseUri = baseUri;
+            this.userId = userId;
+            messageReceived = new WeakEvent<TypedEventHandler<UserProvider, ReceivingMessageEventArgs>>();
+        }
+
+        public async Task<Profile> GetProfileAsync()
         {
             using (var client = new HttpClient())
             {
@@ -45,7 +62,7 @@ namespace LibraTalk.Windows.Client.Services
                 {
                     var response = await client
                         .GetAsync(
-                            new Uri(baseUri + "user/" + id.ToString("D")),
+                            new Uri(baseUri + "user/" + userId.ToString("D")),
                             HttpCompletionOption.ResponseHeadersRead
                         );
 
@@ -66,21 +83,83 @@ namespace LibraTalk.Windows.Client.Services
             }
         }
 
-        public async Task SetProfileAsync(Guid id, Profile profile)
+        public async Task SetProfileAsync(Profile profile)
         {
             using (var client = new HttpClient())
             {
                 var response = await client
                     .PutAsync(
-                        new Uri(baseUri + "user/" + id.ToString("D")),
+                        new Uri(baseUri + "user/" + userId.ToString("D")),
                         new HttpFormUrlEncodedContent(
                             new Dictionary<string, string>
                             {
-                                {"id", id.ToString("D")},
-                                {"name", profile.Name}
+                                {
+                                    "id", userId.ToString("D")
+                                },
+                                {
+                                    "name", profile.Name
+                                }
                             })
                     );
                 response.EnsureSuccessStatusCode();
+            }
+        }
+
+        public async Task PublishMessageAsync(string message)
+        {
+            using (var client = new HttpClient())
+            {
+                var response = await client
+                    .PutAsync(
+                        new Uri(baseUri + "messages"),
+                        new HttpFormUrlEncodedContent(
+                            new Dictionary<string, string>
+                            {
+                                {
+                                    "user", userId.ToString("D")
+                                },
+                                {
+                                    "text", message
+                                }
+                            })
+                    );
+                response.EnsureSuccessStatusCode();
+            }
+        }
+
+        public async Task<IEnumerable<string>> GetMessagesAsync(int from)
+        {
+            using (var client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept
+                    .Add(HttpMediaTypeWithQualityHeaderValue.Parse("application/x-www-form-urlencoded"));
+
+
+                try
+                {
+                    var response = await client
+                        .GetAsync(
+                            new Uri(baseUri + String.Format("messages?ticket={0}", from)),
+                            HttpCompletionOption.ResponseHeadersRead
+                        );
+
+                    var message = response.EnsureSuccessStatusCode();
+
+                    if (HttpStatusCode.NoContent == message.StatusCode)
+                    {
+                        return Enumerable.Empty<string>();
+                    }
+
+                    var content = await message.Content.ReadAsStringAsync();
+                    var decoder = new WwwFormUrlDecoder(content);
+
+                    return decoder.Select(entry => entry.Value);
+                }
+                catch (Exception exception)
+                {
+                    throw new AggregateException(exception);
+                }
             }
         }
 

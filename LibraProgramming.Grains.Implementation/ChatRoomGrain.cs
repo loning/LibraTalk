@@ -18,7 +18,7 @@ namespace LibraProgramming.Grains.Implementation
             set;
         }
 
-        public Queue<ChatMessage> Messages
+        public Queue<RoomMessage> Messages
         {
             get;
             set;
@@ -27,15 +27,17 @@ namespace LibraProgramming.Grains.Implementation
 
     [Reentrant]
     [StorageProvider(ProviderName = "MemoryStore")]
-    public class ChatRoom : Grain<CharRoomState>, IChatRoom
+    public class ChatRoomGrain : Grain<CharRoomState>, IChatRoomGrain
     {
         private List<Guid> users;
         private Logger logger;
          
-        public Task<IList<ChatMessage>> GetMessages()
+        Task<IList<RoomMessage>> IChatRoomGrain.GetMessagesAsync(int startFromId)
         {
-            var messages = State.Messages.ToList();
-            return Task.FromResult<IList<ChatMessage>>(messages);
+            var messages = State.Messages
+                .Where(message => startFromId <= message.Id)
+                .ToList();
+            return Task.FromResult<IList<RoomMessage>>(messages);
         }
 
         public Task AddUser(Guid userId)
@@ -45,24 +47,26 @@ namespace LibraProgramming.Grains.Implementation
             return TaskDone.Done;
         }
 
-        public Task PublishMessage(Guid userId, string text)
+        async Task<bool> IChatRoomGrain.PublishMessageAsync(Guid userId, PublishMessage message)
         {
             if (!users.Contains(userId))
             {
-                return TaskDone.Done;
+                return false;
             }
 
-            var message = new ChatMessage
+            State.Messages.Enqueue(new RoomMessage
             {
                 Id = State.Messages.Count,
                 PublisherId = userId,
                 Date = DateTime.UtcNow,
-                Text = text
-            };
+                Text = message.Text
+            });
 
-            State.Messages.Enqueue(message);
+            logger.Info($"LibraProgramming.Grains.Implementation.ChatRoomGrain.PublishMessageAsync | Message {userId}={message.Text}");
 
-            return WriteStateAsync();
+            await WriteStateAsync();
+
+            return true;
         }
 
         /// <summary>
@@ -76,11 +80,11 @@ namespace LibraProgramming.Grains.Implementation
 
             if (null == State.Messages)
             {
-                State.Messages = new Queue<ChatMessage>();
+                State.Messages = new Queue<RoomMessage>();
             }
 
             users = new List<Guid>();
-            logger = GetLogger(nameof(ChatRoom));
+            logger = GetLogger(nameof(ChatRoomGrain));
 
             return base.OnActivateAsync();
         }

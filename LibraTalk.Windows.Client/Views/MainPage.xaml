@@ -11,10 +11,7 @@
 
     DataContext="{Binding Path=MainPageViewModel, Source={StaticResource ViewModelLocator}}"
     
-    mc:Ignorable="d"
-    
-    Loaded="OnPageLoaded">
-
+    mc:Ignorable="d">
     <Grid
         Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <controls:TextCommandWindow
@@ -37,6 +34,13 @@
                     ExecuteCommand="OnSetUserProfile">
                     <controls:ConsoleCommandOption OptionName="name" />
                     <controls:ConsoleCommandOption OptionName="id" />
+                </controls:ConsoleCommand>
+                <controls:ConsoleCommand
+                    CommandName="publish-message"
+                    MinArgumentsCount="1"
+                    MaxArgumentsCount="1"
+                    ExecuteCommand="On">
+                    
                 </controls:ConsoleCommand>
             </controls:SimpleConsoleCommandProcessor>
         </controls:TextCommandWindow>

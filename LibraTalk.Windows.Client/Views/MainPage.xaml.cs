@@ -17,57 +17,13 @@ namespace LibraTalk.Windows.Client.Views
     /// </summary>
     public sealed partial class MainPage
     {
-        private readonly IUserProvider userProvider;
+        private readonly UserProvider userProvider;
         private Profile profile;
 
         public MainPage()
         {
-            userProvider = ServiceLocator.Current.GetInstance<IUserProvider>();
+            userProvider = new UserProvider(new Uri("http://localhost:26779/api/"), GetUserId());
             InitializeComponent();
-        }
-
-/*
-        private async void OnTextCommandWindowProcessCommandText(object sender, TextCommandWindow.ProcessCommandTextEventArgs e)
-        {
-            var deferral = e.GetDeferral();
-            var model = DataContext as MainPageViewModel;
-
-            try
-            {
-                if (null == model)
-                {
-                    return;
-                }
-
-                var success = await processor.Execute(e.Text, e.Console);
-
-                if (!success)
-                {
-                    e.Console.WriteLine("Error", LogLevel.Error);
-                }
-            }
-            finally
-            {
-                deferral.Complete();
-            }
-        }
-*/
-
-        private void OnPageLoaded(object sender, RoutedEventArgs e)
-        {
-            /*processor.Configure(new List<CommandDescription>
-            {
-                new CommandDescription
-                {
-                    Name = "get-name",
-                    Action = GetUserName
-                },
-                new CommandDescription
-                {
-                    Name = "set-name",
-                    Action = SetUserName
-                }
-            })*/;
         }
 
         private static Guid GetUserId()
@@ -97,7 +53,7 @@ namespace LibraTalk.Windows.Client.Views
 
             if (null == profile || args.Options.Any(option => "force" == option.Item1))
             {
-                profile = await userProvider.GetProfileAsync(GetUserId());
+                profile = await userProvider.GetProfileAsync();
                 args.Console.WriteLine("Profile retrieved", LogLevel.Information);
             }
             else
@@ -115,7 +71,7 @@ namespace LibraTalk.Windows.Client.Views
         {
             var deferral = args.GetDeferral();
 
-            await userProvider.SetProfileAsync(GetUserId(), profile);
+            await userProvider.SetProfileAsync(profile);
             args.Console.WriteLine("Write-Profile: Ok");
 
             deferral.Complete();
