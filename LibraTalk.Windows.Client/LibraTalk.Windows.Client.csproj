@@ -117,7 +117,6 @@
     <Compile Include="ViewModels\Interfaces\ICleanupRequired.cs" />
     <Compile Include="ViewModels\Interfaces\ISetupRequired.cs" />
     <Compile Include="ViewModels\Interfaces\IUpdateIndicator.cs" />
-    <Compile Include="ViewModels\MainPageViewModel.cs" />
     <Compile Include="ViewModels\ObservableViewModel.cs" />
     <Compile Include="ViewModels\OptionsPageViewModel.cs" />
     <Compile Include="ViewModels\ViewModelLocator.cs" />

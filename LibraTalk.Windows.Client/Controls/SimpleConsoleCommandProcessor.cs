@@ -389,7 +389,16 @@ namespace LibraTalk.Windows.Client.Controls
                                     continue;
                                 }
 
-                                parsingstate = ParsingState.CommandArguments;
+                                command.Clear();
+
+                                if ('\"' == current)
+                                {
+                                    parsingstate = ParsingState.CommandArgumentQuoted;
+                                    continue;
+                                }
+
+                                parsingstate = ParsingState.CommandArgumentSingleWord;
+                                command.Append((char) current);
 
                                 continue;
                             }

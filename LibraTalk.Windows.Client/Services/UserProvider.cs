@@ -163,91 +163,110 @@ namespace LibraTalk.Windows.Client.Services
             }
         }
 
-/*
-        public async Task SendMessageAsync([NotNull] IDictionary<string, string> message)
+        public async Task JoinRoomAsync(string room)
         {
-            if (null == message)
+            using (var client = new HttpClient())
             {
-                return;
+                var response = await client
+                    .PutAsync(
+                        new Uri(baseUri + String.Format("room/{0}", room)),
+                        new HttpFormUrlEncodedContent(
+                            new Dictionary<string, string>
+                            {
+                                {
+                                    "id", userId.ToString("D")
+                                }
+                            })
+                    );
+                response.EnsureSuccessStatusCode();
             }
-
-            var path = new UriBuilder(baseUri)
-            {
-                Query = "message"
-            };
-
-            var request = WebRequest.Create(path.Uri);
-
-            request.ContentType = "application/x-www-form-urlencoded";
-            request.Method = HttpMethod.Post.ToString();
-
-            using (var stream = await request.GetRequestStreamAsync())
-            {
-                var content = new FormUrlEncodedContent(message);
-                await content.CopyToAsync(stream);
-            }
-
-            var response = await request.GetResponseAsync();
         }
-*/
 
-/*
-        public void Receive()
-        {
-            Task.Factory
-                .StartNew(DoReceiveInternalAsync)
-                .ConfigureAwait(false);
-        }
-*/
-
-/*
-        private async Task DoReceiveInternalAsync()
-        {
-            var ok = true;
-
-            while (ok)
-            {
-                var builder = new UriBuilder(baseUri);
-
-                builder.Path += "poll/12345";
-                builder.Query = "token=test";
-
-                var request = WebRequest.Create(builder.Uri);
-
-                request.ContentType = "application/xml";
-                request.Method = HttpMethod.Get.ToString();
-                request.Headers[HttpRequestHeader.CacheControl] = "no-cache";
-
-                try
+        /*
+                public async Task SendMessageAsync([NotNull] IDictionary<string, string> message)
                 {
-                    var response = (await request.GetResponseAsync()) as HttpWebResponse;
-
-                    if (null == response)
+                    if (null == message)
                     {
                         return;
                     }
 
-                    if (HttpStatusCode.OK == response.StatusCode)
+                    var path = new UriBuilder(baseUri)
                     {
-                        using (var reader = new StreamReader(response.GetResponseStream()))
+                        Query = "message"
+                    };
+
+                    var request = WebRequest.Create(path.Uri);
+
+                    request.ContentType = "application/x-www-form-urlencoded";
+                    request.Method = HttpMethod.Post.ToString();
+
+                    using (var stream = await request.GetRequestStreamAsync())
+                    {
+                        var content = new FormUrlEncodedContent(message);
+                        await content.CopyToAsync(stream);
+                    }
+
+                    var response = await request.GetResponseAsync();
+                }
+        */
+
+        /*
+                public void Receive()
+                {
+                    Task.Factory
+                        .StartNew(DoReceiveInternalAsync)
+                        .ConfigureAwait(false);
+                }
+        */
+
+        /*
+                private async Task DoReceiveInternalAsync()
+                {
+                    var ok = true;
+
+                    while (ok)
+                    {
+                        var builder = new UriBuilder(baseUri);
+
+                        builder.Path += "poll/12345";
+                        builder.Query = "token=test";
+
+                        var request = WebRequest.Create(builder.Uri);
+
+                        request.ContentType = "application/xml";
+                        request.Method = HttpMethod.Get.ToString();
+                        request.Headers[HttpRequestHeader.CacheControl] = "no-cache";
+
+                        try
                         {
-                            var content = reader.ReadToEnd();
-                            Debug.WriteLine(content);
+                            var response = (await request.GetResponseAsync()) as HttpWebResponse;
+
+                            if (null == response)
+                            {
+                                return;
+                            }
+
+                            if (HttpStatusCode.OK == response.StatusCode)
+                            {
+                                using (var reader = new StreamReader(response.GetResponseStream()))
+                                {
+                                    var content = reader.ReadToEnd();
+                                    Debug.WriteLine(content);
+                                }
+
+                                var args = new ReceivingMessageEventArgs(false);
+
+                                messageReceived.Invoke(this, args);
+
+                                ok = false == args.Cancel;
+                            }
                         }
-
-                        var args = new ReceivingMessageEventArgs(false);
-
-                        messageReceived.Invoke(this, args);
-
-                        ok = false == args.Cancel;
+                        catch (Exception exception)
+                        {
+                            Debugger.Break();
+                        }
                     }
                 }
-                catch (Exception exception)
-                {
-                    Debugger.Break();
-                }
-            }
-        }
-*/
+        */
     }
 }

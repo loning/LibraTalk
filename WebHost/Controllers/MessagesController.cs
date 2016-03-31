@@ -50,7 +50,7 @@ namespace WebHost.Controllers
 
             HttpResponseMessage response;
 
-            if(success)
+            if (success)
             {
                 response = Request.CreateResponse(HttpStatusCode.Created);
                 response.Headers.Location = new Uri("http://localhost:27444/api/room/");

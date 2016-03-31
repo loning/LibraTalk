@@ -103,5 +103,39 @@ namespace LibraTalk.Windows.Client.Views
 
             deferral.Complete();
         }
+
+        private async void OnPublishMessage(ConsoleCommand sender, ExecuteConsoleCommandEventArgs args)
+        {
+            var deferral = args.GetDeferral();
+
+            if (0 <= args.Arguments.Count)
+            {
+                await userProvider.PublishMessageAsync(args.Arguments.First());
+                args.Console.WriteLine("Ok");
+            }
+            else
+            {
+                args.Console.WriteLine("Publish-Message: Unknown error.", LogLevel.Error);
+            }
+
+            deferral.Complete();
+        }
+
+        private async void OnJoinRoomMessage(ConsoleCommand sender, ExecuteConsoleCommandEventArgs args)
+        {
+            var deferral = args.GetDeferral();
+
+            if (0 <= args.Arguments.Count)
+            {
+                await userProvider.JoinRoomAsync(args.Arguments.First());
+                args.Console.WriteLine("Ok");
+            }
+            else
+            {
+                args.Console.WriteLine("Join-Room: Unknown error.", LogLevel.Error);
+            }
+
+            deferral.Complete();
+        }
     }
 }

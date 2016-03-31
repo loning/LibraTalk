@@ -39,9 +39,14 @@
                     CommandName="publish-message"
                     MinArgumentsCount="1"
                     MaxArgumentsCount="1"
-                    ExecuteCommand="On">
-                    
-                </controls:ConsoleCommand>
+                    ExecuteCommand="OnPublishMessage"
+                />
+                <controls:ConsoleCommand
+                    CommandName="join-room"
+                    MinArgumentsCount="1"
+                    MaxArgumentsCount="1"
+                    ExecuteCommand="OnJoinRoomMessage"
+                />
             </controls:SimpleConsoleCommandProcessor>
         </controls:TextCommandWindow>
         <VisualStateManager.VisualStateGroups>

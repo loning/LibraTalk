@@ -40,7 +40,7 @@ namespace LibraProgramming.Grains.Implementation
             return Task.FromResult<IList<RoomMessage>>(messages);
         }
 
-        public Task AddUser(Guid userId)
+        public Task AddUserAsync(Guid userId)
         {
             users.Add(userId);
             logger.Info($"LibraProgramming.Grains.Implementation.ChatRoom.AddUser | Room: {State.Id} user: {userId}");

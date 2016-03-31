@@ -13,7 +13,6 @@ namespace LibraTalk.Windows.Client.Bootstraps
             services.Register<IApplicationLocalization, ApplicationLocalizationManager>(lifetime: InstanceLifetime.Singleton);
             services.Register<IApplicationOptionsProvider>(() => new ApplicationOptionsProvider(StorageLocation.Local), lifetime: InstanceLifetime.Singleton);
             services.Register<OptionsPageViewModel>(lifetime: InstanceLifetime.CreateNew);
-            services.Register<MainPageViewModel>(lifetime: InstanceLifetime.CreateNew);
             services.Register<HostPageViewModel>(lifetime: InstanceLifetime.CreateNew);
         }
     }

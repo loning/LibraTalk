@@ -110,6 +110,7 @@
   <ItemGroup>
     <Compile Include="App_Start\MonitorsBootstrap.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Controllers\RoomController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Controllers\MessagesController.cs" />
     <Compile Include="Controllers\PollController.cs" />
@@ -124,6 +125,7 @@
     <Compile Include="Infrastructure\Monitors\IChatMonitor.cs" />
     <Compile Include="Models\PublishMessage.cs" />
     <Compile Include="Models\Profile.cs" />
+    <Compile Include="Models\User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -9,7 +9,7 @@ namespace LibraProgramming.Grains.Interfaces
     {
         Task<IList<RoomMessage>> GetMessagesAsync(int startFromId);
 
-        Task AddUser(Guid userId);
+        Task AddUserAsync(Guid userId);
 
         Task<bool> PublishMessageAsync(Guid userId, PublishMessage message);
     }
