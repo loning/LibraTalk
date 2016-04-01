@@ -8,17 +8,17 @@ using Orleans.Streams;
 using WebHost.Infrastructure.Actions;
 namespace WebHost.Infrastructure.Monitors
 {
-    public class ChatMonitor : IChatMonitor
+    public class MessagesMonitor : IMessagesMonitor
     {
         private StreamSubscriptionHandle<RoomMessage> handle;
         private readonly IList<IObserver<IChatMessageAction>> observers;
 
-        public ChatMonitor()
+        public MessagesMonitor()
         {
             observers = new List<IObserver<IChatMessageAction>>();
         }
 
-        async Task IChatMonitor.StartTracking()
+        async Task IMessagesMonitor.StartTracking()
         {
             var provider = GrainClient.GetStreamProvider("SMSProvider");
             var room = provider.GetStream<RoomMessage>(Streams.Id, "default");
@@ -26,7 +26,7 @@ namespace WebHost.Infrastructure.Monitors
             handle = await room.SubscribeAsync(this);
         }
 
-        Task IChatMonitor.Shutdown()
+        Task IMessagesMonitor.Shutdown()
         {
             lock (((ICollection)observers).SyncRoot)
             {
@@ -72,7 +72,7 @@ namespace WebHost.Infrastructure.Monitors
 
         Task IAsyncObserver<RoomMessage>.OnCompletedAsync()
         {
-            return ((IChatMonitor) this).Shutdown();
+            return ((IMessagesMonitor) this).Shutdown();
         }
 
         private void Unsubscribe(IObserver<IChatMessageAction> observer)
@@ -106,10 +106,10 @@ namespace WebHost.Infrastructure.Monitors
 
         private class SubscriptionToken : IDisposable
         {
-            private readonly ChatMonitor monitor;
+            private readonly MessagesMonitor monitor;
             private readonly IObserver<IChatMessageAction> observer;
 
-            public SubscriptionToken(ChatMonitor monitor, IObserver<IChatMessageAction> observer)
+            public SubscriptionToken(MessagesMonitor monitor, IObserver<IChatMessageAction> observer)
             {
                 this.monitor = monitor;
                 this.observer = observer;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
@@ -12,29 +13,38 @@ using WebHost.Infrastructure.Actions;
 
 namespace WebHost.Controllers
 {
+    [Switch("WebHost.Controllers", typeof (SourceSwitch))]
     public class PollController : ApiController
     {
+        private static readonly TraceSource trace = new TraceSource("WebHost.Controllers");
+
         // GET api/poll/<id>
         public async Task<HttpResponseMessage> Get(string id)
         {
             var poller = new MessagePoller();
 
-            using (poller.SubscribeTo(ActionMonitors.Chat))
+            using (poller.SubscribeTo(ActionMonitors.Messages))
             {
                 if (false == await poller.Wait(TimeSpan.FromSeconds(20.0d)))
                 {
                     return Request.CreateResponse(HttpStatusCode.NoContent);
                 }
 
-//                var room = GrainClient.GrainFactory.GetGrain<IChatRoomGrain>(id);
-//                var messages = await room.GetMessagesAsync(0);
-
                 var response = Request.CreateResponse(HttpStatusCode.OK);
                 var dict = new Dictionary<string, string>();
 
-                foreach (var message in poller.Messages)
+                var messages = poller.GetMessages();
+
+                dict.Add("count", messages.Length.ToString());
+
+                for (var index = 0; index < messages.Length; index++)
                 {
-                    dict.Add("[" + message.Id + "]", message.Text);
+                    var message = messages[index];
+
+                    dict.Add("[" + index + "_mid]", message.Id.ToString());
+                    dict.Add("[" + index + "_pid]", message.PublisherId.ToString());
+                    dict.Add("[" + index + "_nick]", message.PublisherNick);
+                    dict.Add("[" + index + "_text]", message.Text);
                 }
 
                 response.Content = new FormUrlEncodedContent(dict);
@@ -43,46 +53,17 @@ namespace WebHost.Controllers
             }
         }
 
-        // GET api/<controller>/5
-        public string Get(int id)
-        {
-            return "value";
-        }
-
-        // POST api/<controller>
-        /*public async Task<string> Post([FromBody]string value)
-        {
-            var player = GrainClient.GrainFactory.GetGrain<IChatUser>(Guid.NewGuid());
-            var result = await player.Echo(value);
-
-            return result;
-        }*/
-
-        // PUT api/<controller>/5
-        public void Put(int id, [FromBody]string value)
-        {
-        }
-
-        // DELETE api/<controller>/5
-        public void Delete(int id)
-        {
-        }
-
         private class MessagePoller : IObserver<IChatMessageAction>, IDisposable
         {
             private IDisposable token;
             private ManualResetEventSlim flag;
             private bool disposed;
-
-            public ConcurrentQueue<RoomMessage> Messages
-            {
-                get;
-            }
+            private ConcurrentQueue<RoomMessage> messages;
 
             public MessagePoller()
             {
                 flag = new ManualResetEventSlim();
-                Messages = new ConcurrentQueue<RoomMessage>();
+                messages = new ConcurrentQueue<RoomMessage>();
             }
 
             public Task<bool> Wait(TimeSpan timeout)
@@ -107,11 +88,18 @@ namespace WebHost.Controllers
                 return this;
             }
 
+            public RoomMessage[] GetMessages()
+            {
+                var temp = messages.ToArray();
+                messages = new ConcurrentQueue<RoomMessage>();
+                return temp;
+            }
+
             void IObserver<IChatMessageAction>.OnNext(IChatMessageAction value)
             {
                 var received = (MessageReceivedChatAction) value;
 
-                Messages.Enqueue(received.Message);
+                messages.Enqueue(received.Message);
 
                 flag.Set();
             }

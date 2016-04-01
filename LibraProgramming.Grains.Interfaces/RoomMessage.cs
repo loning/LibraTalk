@@ -16,6 +16,12 @@ namespace LibraProgramming.Grains.Interfaces
             set;
         }
 
+        public string PublisherNick
+        {
+            get;
+            set;
+        }
+
         public DateTime Date
         {
             get;

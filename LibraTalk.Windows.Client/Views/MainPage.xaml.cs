@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using System.Threading;
 using Windows.Storage;
-using Windows.UI.Xaml;
-using LibraProgramming.Windows.Locator;
+using Windows.UI.Core;
 using LibraTalk.Windows.Client.Controls;
 using LibraTalk.Windows.Client.Models;
 using LibraTalk.Windows.Client.Services;
-using LibraTalk.Windows.Client.ViewModels;
 
 namespace LibraTalk.Windows.Client.Views
 {
@@ -17,6 +14,7 @@ namespace LibraTalk.Windows.Client.Views
     /// </summary>
     public sealed partial class MainPage
     {
+        private CancellationTokenSource cts;
         private readonly UserProvider userProvider;
         private Profile profile;
 
@@ -24,6 +22,8 @@ namespace LibraTalk.Windows.Client.Views
         {
             userProvider = new UserProvider(new Uri("http://localhost:26779/api/"), GetUserId());
             InitializeComponent();
+            userProvider.MessageReceived += OnMessageReceived;
+            userProvider.PollingCancelled += OnPollingCancelled;
         }
 
         private static Guid GetUserId()
@@ -54,15 +54,15 @@ namespace LibraTalk.Windows.Client.Views
             if (null == profile || args.Options.Any(option => "force" == option.Item1))
             {
                 profile = await userProvider.GetProfileAsync();
-                args.Console.WriteLine("Profile retrieved", LogLevel.Information);
+                args.Console.WriteLine("Get-Profile: Profile retrieved", LogLevel.Information);
             }
             else
             {
-                args.Console.WriteLine("Profile cached", LogLevel.Information);
+                args.Console.WriteLine("Get-Profile: Profile cached", LogLevel.Information);
             }
 
-            args.Console.WriteLine(String.Format("Name: \"{0}\"", profile.Name), LogLevel.Information);
-            args.Console.WriteLine(String.Format("Id: \"{0}\"", profile.Id), LogLevel.Information);
+            args.Console.WriteLine(String.Format("Get-Profile: Name: \"{0}\"", profile.Name), LogLevel.Information);
+            args.Console.WriteLine(String.Format("Get-Profile: Id: \"{0}\"", profile.Id), LogLevel.Information);
 
             deferral.Complete();
         }
@@ -72,7 +72,7 @@ namespace LibraTalk.Windows.Client.Views
             var deferral = args.GetDeferral();
 
             await userProvider.SetProfileAsync(profile);
-            args.Console.WriteLine("Write-Profile: Ok");
+            args.Console.WriteLine("Write-Profile: Ok", LogLevel.Success);
 
             deferral.Complete();
         }
@@ -83,7 +83,7 @@ namespace LibraTalk.Windows.Client.Views
 
             if (null == profile)
             {
-                args.Console.WriteLine("Error: Get-Profile sould be executed first.", LogLevel.Error);
+                args.Console.WriteLine("Set-Profile: Get-Profile command sould be executed first.", LogLevel.Error);
             }
             else
             {
@@ -92,12 +92,12 @@ namespace LibraTalk.Windows.Client.Views
                 if (args.Options.Any(option => "name" == option.Item1))
                 {
                     profile.Name = arg;
-                    args.Console.WriteLine("Set-Profile: Name updated");
+                    args.Console.WriteLine("Set-Profile: Name updated", LogLevel.Success);
                 }
                 else if (args.Options.Any(option => "id" == option.Item1))
                 {
                     profile.Id = Guid.Parse(arg);
-                    args.Console.WriteLine("Set-Profile: Id updated");
+                    args.Console.WriteLine("Set-Profile: Id updated", LogLevel.Success);
                 }
             }
 
@@ -111,7 +111,7 @@ namespace LibraTalk.Windows.Client.Views
             if (0 <= args.Arguments.Count)
             {
                 await userProvider.PublishMessageAsync(args.Arguments.First());
-                args.Console.WriteLine("Ok");
+                args.Console.WriteLine("Publish-Message: Ok", LogLevel.Success);
             }
             else
             {
@@ -128,7 +128,7 @@ namespace LibraTalk.Windows.Client.Views
             if (0 <= args.Arguments.Count)
             {
                 await userProvider.JoinRoomAsync(args.Arguments.First());
-                args.Console.WriteLine("Ok");
+                args.Console.WriteLine("Join-Room: Ok", LogLevel.Success);
             }
             else
             {
@@ -136,6 +136,70 @@ namespace LibraTalk.Windows.Client.Views
             }
 
             deferral.Complete();
+        }
+
+        private void OnPollRoomMessage(ConsoleCommand sender, ExecuteConsoleCommandEventArgs args)
+        {
+            var deferral = args.GetDeferral();
+
+            if (args.Options.Any(option => "disable" == option.Item1))
+            {
+                if (null == cts)
+                {
+                    args.Console.WriteLine("Poll-Room: Polling not started.", LogLevel.Error);
+                }
+                else
+                {
+                    cts.Cancel();
+                    args.Console.WriteLine("Poll-Room: Cancel requested.", LogLevel.Information);
+                }
+            }
+            else if (args.Options.Any(option => "enable" == option.Item1))
+            {
+                cts = new CancellationTokenSource();
+                userProvider.Poll(cts.Token);
+                args.Console.WriteLine("Poll-Room: Polling started.", LogLevel.Success);
+            }
+
+            deferral.Complete();
+        }
+
+        private void OnMessageReceived(UserProvider sender, ReceivingMessageEventArgs args)
+        {
+            var print = new DispatchedHandler(() =>
+            {
+                foreach (var message in args.Messages)
+                {
+                    CommandWindow.WriteLine(message.PublisherNick + " say:", LogLevel.Information);
+                    CommandWindow.WriteLine(message.Text, LogLevel.Information);
+                }
+            });
+
+            if (Dispatcher.HasThreadAccess)
+            {
+                print.Invoke();
+            }
+            else
+            {
+                Dispatcher.RunAsync(CoreDispatcherPriority.Normal, print);
+            }
+        }
+
+        private void OnPollingCancelled(UserProvider sender, PollingCancelledEventArgs args)
+        {
+            var print = new DispatchedHandler(() =>
+            {
+                    CommandWindow.WriteLine("Poll-Room: Room polling stopped", LogLevel.Information);
+            });
+
+            if (Dispatcher.HasThreadAccess)
+            {
+                print.Invoke();
+            }
+            else
+            {
+                Dispatcher.RunAsync(CoreDispatcherPriority.Normal, print);
+            }
         }
     }
 }

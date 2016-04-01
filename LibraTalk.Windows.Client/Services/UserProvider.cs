@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
+using System.Collections.ObjectModel;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Web.Http;
@@ -9,19 +11,61 @@ using Windows.Web.Http.Headers;
 using LibraProgramming.Windows.UI.Xaml.Commands;
 using LibraTalk.Windows.Client.Models;
 using LibraTalk.Windows.Client.Properties;
+using HttpStatusCode = Windows.Web.Http.HttpStatusCode;
 
 namespace LibraTalk.Windows.Client.Services
 {
-    public class ReceivingMessageEventArgs : CancelEventArgs
+    public class RoomMessage
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="T:System.ComponentModel.CancelEventArgs"/> class with the <see cref="P:System.ComponentModel.CancelEventArgs.Cancel"/> property set to the given value.
-        /// </summary>
-        /// <param name="cancel">true to cancel the event; otherwise, false. </param>
-        public ReceivingMessageEventArgs(bool cancel)
-            : base(cancel)
+        public long Id
         {
+            get;
+            set;
         }
+
+        public Guid PublisherId
+        {
+            get;
+            set;
+        }
+
+        public string PublisherNick
+        {
+            get;
+            set;
+        }
+
+        /*public DateTime Date
+        {
+            get;
+            set;
+        }*/
+
+        public string Text
+        {
+            get;
+            set;
+        }
+    }
+
+    public class ReceivingMessageEventArgs : EventArgs
+    {
+        public IEnumerable<RoomMessage> Messages
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Инициализирует новый экземпляр класса <see cref="T:System.EventArgs"/>.
+        /// </summary>
+        public ReceivingMessageEventArgs(IEnumerable<RoomMessage> messages)
+        {
+            Messages = messages;
+        }
+    }
+
+    public class PollingCancelledEventArgs : EventArgs
+    {
     }
 
     [PublicAPI]
@@ -30,6 +74,7 @@ namespace LibraTalk.Windows.Client.Services
         private readonly Uri baseUri;
         private readonly Guid userId;
         private readonly WeakEvent<TypedEventHandler<UserProvider, ReceivingMessageEventArgs>> messageReceived;
+        private readonly WeakEvent<TypedEventHandler<UserProvider, PollingCancelledEventArgs>> pollingCancelled;
 
         public event TypedEventHandler<UserProvider, ReceivingMessageEventArgs> MessageReceived
         {
@@ -43,11 +88,24 @@ namespace LibraTalk.Windows.Client.Services
             }
         }
 
-        public UserProvider([NotNull] Uri baseUri, [NotNull]Guid userId)
+        public event TypedEventHandler<UserProvider, PollingCancelledEventArgs> PollingCancelled
+        {
+            add
+            {
+                pollingCancelled.AddHandler(value);
+            }
+            remove
+            {
+                pollingCancelled.RemoveHandler(value);
+            }
+        } 
+
+        public UserProvider([NotNull] Uri baseUri, [NotNull] Guid userId)
         {
             this.baseUri = baseUri;
             this.userId = userId;
             messageReceived = new WeakEvent<TypedEventHandler<UserProvider, ReceivingMessageEventArgs>>();
+            pollingCancelled = new WeakEvent<TypedEventHandler<UserProvider, PollingCancelledEventArgs>>();
         }
 
         public async Task<Profile> GetProfileAsync()
@@ -57,7 +115,7 @@ namespace LibraTalk.Windows.Client.Services
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept
                     .Add(HttpMediaTypeWithQualityHeaderValue.Parse("application/x-www-form-urlencoded"));
-                
+
                 try
                 {
                     var response = await client
@@ -182,91 +240,87 @@ namespace LibraTalk.Windows.Client.Services
             }
         }
 
-        /*
-                public async Task SendMessageAsync([NotNull] IDictionary<string, string> message)
+        public void Poll(CancellationToken token)
+        {
+            Task.Run(() => DoPollInternalAsync(token)).ConfigureAwait(false);
+        }
+
+        private async Task DoPollInternalAsync(CancellationToken token)
+        {
+            try
+            {
+                while (true)
                 {
-                    if (null == message)
+                    token.ThrowIfCancellationRequested();
+
+                    using (var client = new HttpClient())
                     {
-                        return;
-                    }
+                        client.DefaultRequestHeaders.CacheControl.Clear();
+                        client.DefaultRequestHeaders.CacheControl.Add(new HttpNameValueHeaderValue("no-cache"));
+                        client.DefaultRequestHeaders.Accept.Clear();
+                        client.DefaultRequestHeaders.Accept
+                            .Add(HttpMediaTypeWithQualityHeaderValue.Parse("application/x-www-form-urlencoded"));
 
-                    var path = new UriBuilder(baseUri)
-                    {
-                        Query = "message"
-                    };
-
-                    var request = WebRequest.Create(path.Uri);
-
-                    request.ContentType = "application/x-www-form-urlencoded";
-                    request.Method = HttpMethod.Post.ToString();
-
-                    using (var stream = await request.GetRequestStreamAsync())
-                    {
-                        var content = new FormUrlEncodedContent(message);
-                        await content.CopyToAsync(stream);
-                    }
-
-                    var response = await request.GetResponseAsync();
-                }
-        */
-
-        /*
-                public void Receive()
-                {
-                    Task.Factory
-                        .StartNew(DoReceiveInternalAsync)
-                        .ConfigureAwait(false);
-                }
-        */
-
-        /*
-                private async Task DoReceiveInternalAsync()
-                {
-                    var ok = true;
-
-                    while (ok)
-                    {
-                        var builder = new UriBuilder(baseUri);
-
-                        builder.Path += "poll/12345";
-                        builder.Query = "token=test";
-
-                        var request = WebRequest.Create(builder.Uri);
-
-                        request.ContentType = "application/xml";
-                        request.Method = HttpMethod.Get.ToString();
-                        request.Headers[HttpRequestHeader.CacheControl] = "no-cache";
+                        token.ThrowIfCancellationRequested();
 
                         try
                         {
-                            var response = (await request.GetResponseAsync()) as HttpWebResponse;
+                            var response = await client
+                                .GetAsync(
+                                    new Uri(baseUri + "poll/default"),
+                                    HttpCompletionOption.ResponseHeadersRead
+                                )
+                                .AsTask(
+                                    token
+                                );
 
-                            if (null == response)
+                            if (!response.IsSuccessStatusCode)
                             {
-                                return;
+                                break;
                             }
 
-                            if (HttpStatusCode.OK == response.StatusCode)
+                            if (HttpStatusCode.NoContent == response.StatusCode)
                             {
-                                using (var reader = new StreamReader(response.GetResponseStream()))
+                                continue;
+                            }
+
+                            token.ThrowIfCancellationRequested();
+
+                            var content = await response.Content.ReadAsStringAsync();
+                            var decoder = new WwwFormUrlDecoder(content);
+
+                            var messages = new Collection<RoomMessage>();
+                            var count = int.Parse(decoder.GetFirstValueByName("count"));
+
+                            for (var index = 0; index < count; index++)
+                            {
+                                var mid = Convert.ToInt64(decoder.GetFirstValueByName("[" + index + "_mid]"));
+                                var pid = Guid.Parse(decoder.GetFirstValueByName("[" + index + "_pid]"));
+                                var nick = decoder.GetFirstValueByName("[" + index + "_nick]");
+                                var text = decoder.GetFirstValueByName("[" + index + "_text]");
+
+                                messages.Add(new RoomMessage
                                 {
-                                    var content = reader.ReadToEnd();
-                                    Debug.WriteLine(content);
-                                }
-
-                                var args = new ReceivingMessageEventArgs(false);
-
-                                messageReceived.Invoke(this, args);
-
-                                ok = false == args.Cancel;
+                                    Id = mid,
+                                    PublisherId = pid,
+                                    PublisherNick = nick,
+                                    Text = text
+                                });
                             }
+
+                            messageReceived.Invoke(this, new ReceivingMessageEventArgs(messages));
                         }
-                        catch (Exception exception)
+                        catch (COMException exception)
                         {
-                            Debugger.Break();
+                            throw new AggregateException(exception);
                         }
                     }
                 }
-        */
+            }
+            catch (OperationCanceledException)
+            {
+                pollingCancelled.Invoke(this, new PollingCancelledEventArgs());
+            }
+        }
     }
 }

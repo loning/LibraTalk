@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using Windows.Foundation;
 using Windows.System;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
@@ -12,9 +8,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Markup;
 using Windows.UI.Xaml.Media;
-using LibraProgramming.Windows.UI.Xaml.Commands;
 using LibraProgramming.Windows.UI.Xaml.Primitives;
-using LibraTalk.Windows.Client.Controls;
 
 namespace LibraTalk.Windows.Client.Controls
 {
@@ -22,7 +16,8 @@ namespace LibraTalk.Windows.Client.Controls
     {
         Information,
         Warning,
-        Error
+        Error,
+        Success
     }
 
     public interface IConsoleOutput
@@ -54,6 +49,7 @@ namespace LibraTalk.Windows.Client.Controls
         public static readonly DependencyProperty InformationTextForegroundProperty;
         public static readonly DependencyProperty ErrorTextForegroundProperty;
         public static readonly DependencyProperty WarningTextForegroundProperty;
+        public static readonly DependencyProperty SuccessTextForegroundProperty;
 
         private TextBlock history;
         private TextBox input;
@@ -106,6 +102,18 @@ namespace LibraTalk.Windows.Client.Controls
             }
         }
 
+        public Brush SuccessTextForeground
+        {
+            get
+            {
+                return (Brush) GetValue(SuccessTextForegroundProperty);
+            }
+            set
+            {
+                SetValue(SuccessTextForegroundProperty, value);
+            }
+        }
+
         public TextCommandWindow()
         {
             DefaultStyleKey = typeof (TextCommandWindow);
@@ -137,6 +145,13 @@ namespace LibraTalk.Windows.Client.Controls
             WarningTextForegroundProperty = DependencyProperty
                 .Register(
                     "WarningTextForeground",
+                    typeof (Brush),
+                    typeof (TextCommandWindow),
+                    new PropertyMetadata(DependencyProperty.UnsetValue)
+                );
+            SuccessTextForegroundProperty = DependencyProperty
+                .Register(
+                    "SuccessTextForeground",
                     typeof (Brush),
                     typeof (TextCommandWindow),
                     new PropertyMetadata(DependencyProperty.UnsetValue)
@@ -175,13 +190,14 @@ namespace LibraTalk.Windows.Client.Controls
             base.OnUnloaded(sender, e);
         }
 
-        private void AddLineToConsole(string text, LogLevel level)
+        public void WriteLine(string text, LogLevel level)
         {
             var brushes = new[]
             {
                 InformationTextForeground,
                 WarningTextForeground,
-                ErrorTextForeground
+                ErrorTextForeground,
+                SuccessTextForeground
             };
 
             var line = new Span
@@ -290,7 +306,7 @@ namespace LibraTalk.Windows.Client.Controls
             {
                 foreach (var tuple in lines)
                 {
-                    window.AddLineToConsole(tuple.Item2, tuple.Item1);
+                    window.WriteLine(tuple.Item2, tuple.Item1);
                 }
             }
 

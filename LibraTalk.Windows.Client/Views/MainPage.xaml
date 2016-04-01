@@ -15,6 +15,7 @@
     <Grid
         Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <controls:TextCommandWindow
+            x:Name="CommandWindow"
             FontFamily="Courier New"
             FontSize="16">
             <controls:SimpleConsoleCommandProcessor>
@@ -47,6 +48,12 @@
                     MaxArgumentsCount="1"
                     ExecuteCommand="OnJoinRoomMessage"
                 />
+                <controls:ConsoleCommand
+                    CommandName="poll-room"
+                    ExecuteCommand="OnPollRoomMessage">
+                    <controls:ConsoleCommandOption OptionName="enable" />
+                    <controls:ConsoleCommandOption OptionName="disable" />
+                </controls:ConsoleCommand>
             </controls:SimpleConsoleCommandProcessor>
         </controls:TextCommandWindow>
         <VisualStateManager.VisualStateGroups>

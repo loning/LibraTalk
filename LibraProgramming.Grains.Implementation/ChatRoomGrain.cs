@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,7 +12,7 @@ using Orleans.Streams;
 
 namespace LibraProgramming.Grains.Implementation
 {
-    public class CharRoomState : GrainState
+    public class ChatRoomState : GrainState
     {
         public string Id
         {
@@ -26,12 +27,12 @@ namespace LibraProgramming.Grains.Implementation
         }
     }
 
-    [Reentrant]
+//    [Reentrant]
     [StorageProvider(ProviderName = "MemoryStore")]
-    public class ChatRoomGrain : Grain<CharRoomState>, IChatRoomGrain
+    public class ChatRoomGrain : Grain<ChatRoomState>, IChatRoomGrain
     {
         private IAsyncStream<RoomMessage> stream;
-        private List<Guid> users;
+        private ConcurrentDictionary<Guid, string> users;
         private Logger logger;
          
         Task<IList<RoomMessage>> IChatRoomGrain.GetMessagesAsync(int startFromId)
@@ -42,33 +43,39 @@ namespace LibraProgramming.Grains.Implementation
             return Task.FromResult<IList<RoomMessage>>(messages);
         }
 
-        public Task AddUserAsync(Guid userId)
+        public async Task AddUserAsync(Guid userId)
         {
-            users.Add(userId);
+            var user = GrainFactory.GetGrain<IChatUser>(userId);
+            var profile = await user.GetUserProfileAsync();
+
+            users.TryAdd(profile.Id, profile.Name);
+
             logger.Info($"LibraProgramming.Grains.Implementation.ChatRoom.AddUser | Room: {State.Id} user: {userId}");
-            return TaskDone.Done;
         }
 
-        Task IChatRoomGrain.PublishMessageAsync(Guid userId, PublishMessage message)
+        async Task IChatRoomGrain.PublishMessageAsync(Guid userId, PublishMessage message)
         {
-            if (!users.Contains(userId))
+            string nick;
+
+            if (false == users.TryGetValue(userId, out nick))
             {
-                return TaskDone.Done;
+                return;
             }
 
             var roomMessage = new RoomMessage
             {
                 Id = State.Messages.Count,
                 PublisherId = userId,
+                PublisherNick = nick,
                 Date = DateTime.UtcNow,
                 Text = message.Text
             };
 
             State.Messages.Enqueue(roomMessage);
 
-            logger.Info($"LibraProgramming.Grains.Implementation.ChatRoomGrain.PublishMessageAsync | New message published");
+            logger.Info(1, "ChatRoomGrain New message published");
 
-            return Task.WhenAll(WriteStateAsync(), stream.OnNextAsync(roomMessage));
+            await Task.WhenAll(WriteStateAsync(), stream.OnNextAsync(roomMessage));
         }
 
         /// <summary>
@@ -85,7 +92,7 @@ namespace LibraProgramming.Grains.Implementation
                 State.Messages = new Queue<RoomMessage>();
             }
 
-            users = new List<Guid>();
+            users = new ConcurrentDictionary<Guid, string>();
             logger = GetLogger(nameof(ChatRoomGrain));
 
             var provider = GetStreamProvider("SMSProvider");

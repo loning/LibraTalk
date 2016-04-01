@@ -6,7 +6,7 @@ using WebHost.Infrastructure.Actions;
 
 namespace WebHost.Infrastructure.Monitors
 {
-    public interface IChatMonitor : IObservable<IChatMessageAction>, IAsyncObserver<RoomMessage>
+    public interface IMessagesMonitor : IObservable<IChatMessageAction>, IAsyncObserver<RoomMessage>
     {
         Task StartTracking();
 
