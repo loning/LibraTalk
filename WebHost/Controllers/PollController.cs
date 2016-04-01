@@ -1,12 +1,12 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.IO;
+using System.Net;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web.Hosting;
 using System.Web.Http;
 using LibraProgramming.Grains.Interfaces;
-using Orleans;
 using WebHost.Infrastructure;
 using WebHost.Infrastructure.Actions;
 
@@ -15,19 +15,31 @@ namespace WebHost.Controllers
     public class PollController : ApiController
     {
         // GET api/poll/<id>
-        public async Task<string> Get(string id, [FromUri(Name = "token")]string token)
+        public async Task<HttpResponseMessage> Get(string id)
         {
-//            ActionMonitors.Chat.TrackAction(new MessageReceivedChatAction());
-            var poll = new ChatPoll();
+            var poller = new MessagePoller();
 
-            using (poll.SubscribeTo(ActionMonitors.Chat))
+            using (poller.SubscribeTo(ActionMonitors.Chat))
             {
-                if (await poll.Wait(TimeSpan.FromSeconds(20.0d)))
+                if (false == await poller.Wait(TimeSpan.FromSeconds(20.0d)))
                 {
-                    return "available";
+                    return Request.CreateResponse(HttpStatusCode.NoContent);
                 }
 
-                return "empty";
+//                var room = GrainClient.GrainFactory.GetGrain<IChatRoomGrain>(id);
+//                var messages = await room.GetMessagesAsync(0);
+
+                var response = Request.CreateResponse(HttpStatusCode.OK);
+                var dict = new Dictionary<string, string>();
+
+                foreach (var message in poller.Messages)
+                {
+                    dict.Add("[" + message.Id + "]", message.Text);
+                }
+
+                response.Content = new FormUrlEncodedContent(dict);
+
+                return response;
             }
         }
 
@@ -56,28 +68,31 @@ namespace WebHost.Controllers
         {
         }
 
-        private class ChatPoll : IObserver<IChatMessageAction>, IDisposable
+        private class MessagePoller : IObserver<IChatMessageAction>, IDisposable
         {
             private IDisposable token;
             private ManualResetEventSlim flag;
             private bool disposed;
 
-            public ChatPoll()
+            public ConcurrentQueue<RoomMessage> Messages
+            {
+                get;
+            }
+
+            public MessagePoller()
             {
                 flag = new ManualResetEventSlim();
+                Messages = new ConcurrentQueue<RoomMessage>();
             }
 
             public Task<bool> Wait(TimeSpan timeout)
             {
-                return Task.Run(() =>
+                if (disposed)
                 {
-                    if (disposed)
-                    {
-                        return false;
-                    }
+                    return Task.FromResult(false);
+                }
 
-                    return flag.Wait(timeout);
-                });
+                return Task.Run(() => flag.Wait(timeout));
             }
 
             public IDisposable SubscribeTo(IObservable<IChatMessageAction> provider)
@@ -94,6 +109,10 @@ namespace WebHost.Controllers
 
             void IObserver<IChatMessageAction>.OnNext(IChatMessageAction value)
             {
+                var received = (MessageReceivedChatAction) value;
+
+                Messages.Enqueue(received.Message);
+
                 flag.Set();
             }
 

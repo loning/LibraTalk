@@ -120,7 +120,6 @@
     <Compile Include="Infrastructure\ActionMonitors.cs" />
     <Compile Include="Infrastructure\Actions\IChatMessageAction.cs" />
     <Compile Include="Infrastructure\Actions\MessageReceivedChatAction.cs" />
-    <Compile Include="Infrastructure\ChatPollTask.cs" />
     <Compile Include="Infrastructure\Monitors\ChatMonitor.cs" />
     <Compile Include="Infrastructure\Monitors\IChatMonitor.cs" />
     <Compile Include="Models\PublishMessage.cs" />

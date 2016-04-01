@@ -6,7 +6,8 @@ namespace WebHost
     {
         public static void Register()
         {
-            new ChatPollTask().SubscribeTo(ActionMonitors.Chat);
+//            new ChatPollTask().SubscribeTo(ActionMonitors.Chat);
+            ActionMonitors.Chat.StartTracking().Wait();
         }
     }
 }

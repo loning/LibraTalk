@@ -43,14 +43,17 @@ namespace WebHost.Controllers
         public async Task<HttpResponseMessage> Put([FromBody] Models.PublishMessage message)
         {
             var grain = GrainClient.GrainFactory.GetGrain<IChatUser>(message.User);
-            var success = await grain.PublishMessageAsync(new PublishMessage
+
+            await grain.PublishMessageAsync(new PublishMessage
             {
                 Text = message.Text
             });
 
-            HttpResponseMessage response;
+            var response = Request.CreateResponse(HttpStatusCode.Created);
 
-            if (success)
+            response.Headers.Location = new Uri("http://localhost:27444/api/room/");
+
+            /*if (success)
             {
                 response = Request.CreateResponse(HttpStatusCode.Created);
                 response.Headers.Location = new Uri("http://localhost:27444/api/room/");
@@ -58,7 +61,7 @@ namespace WebHost.Controllers
             else
             {
                 response = Request.CreateErrorResponse(HttpStatusCode.Forbidden, "Unable to create");
-            }
+            }*/
 
             return response;
         }

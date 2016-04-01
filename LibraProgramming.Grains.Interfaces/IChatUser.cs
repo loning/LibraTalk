@@ -21,6 +21,6 @@ namespace LibraProgramming.Grains.Interfaces
         /// <returns></returns>
         Task SetProfileAsync(UserProfile profile);
 
-        Task<bool> PublishMessageAsync(PublishMessage message);
+        Task PublishMessageAsync(PublishMessage message);
     }
 }

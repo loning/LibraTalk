@@ -1,12 +1,15 @@
 ﻿using System;
+using System.Threading.Tasks;
+using LibraProgramming.Grains.Interfaces;
+using Orleans.Streams;
 using WebHost.Infrastructure.Actions;
 
 namespace WebHost.Infrastructure.Monitors
 {
-    public interface IChatMonitor : IObservable<IChatMessageAction>
+    public interface IChatMonitor : IObservable<IChatMessageAction>, IAsyncObserver<RoomMessage>
     {
-        void TrackAction(IChatMessageAction action);
+        Task StartTracking();
 
-        void Shutdown();
+        Task Shutdown();
     }
 }

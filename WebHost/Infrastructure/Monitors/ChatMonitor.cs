@@ -1,11 +1,16 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using LibraProgramming.Grains.Interfaces;
+using Orleans;
+using Orleans.Streams;
 using WebHost.Infrastructure.Actions;
 namespace WebHost.Infrastructure.Monitors
 {
     public class ChatMonitor : IChatMonitor
     {
+        private StreamSubscriptionHandle<RoomMessage> handle;
         private readonly IList<IObserver<IChatMessageAction>> observers;
 
         public ChatMonitor()
@@ -13,18 +18,15 @@ namespace WebHost.Infrastructure.Monitors
             observers = new List<IObserver<IChatMessageAction>>();
         }
 
-        public void TrackAction(IChatMessageAction action)
+        async Task IChatMonitor.StartTracking()
         {
-            lock (((ICollection)observers).SyncRoot)
-            {
-                foreach (var observer in observers)
-                {
-                    observer.OnNext(action);
-                }
-            }
+            var provider = GrainClient.GetStreamProvider("SMSProvider");
+            var room = provider.GetStream<RoomMessage>(Streams.Id, "default");
+
+            handle = await room.SubscribeAsync(this);
         }
 
-        public void Shutdown()
+        Task IChatMonitor.Shutdown()
         {
             lock (((ICollection)observers).SyncRoot)
             {
@@ -33,9 +35,11 @@ namespace WebHost.Infrastructure.Monitors
                     observer.OnCompleted();
                 }
             }
+
+            return handle.UnsubscribeAsync();
         }
 
-        public IDisposable Subscribe(IObserver<IChatMessageAction> observer)
+        IDisposable IObservable<IChatMessageAction>.Subscribe(IObserver<IChatMessageAction> observer)
         {
             if (null == observer)
             {
@@ -55,7 +59,23 @@ namespace WebHost.Infrastructure.Monitors
             return new SubscriptionToken(this, observer);
         }
 
-        public void Unsubscribe(IObserver<IChatMessageAction> observer)
+        Task IAsyncObserver<RoomMessage>.OnNextAsync(RoomMessage item, StreamSequenceToken token)
+        {
+            TrackAction(new MessageReceivedChatAction(item));
+            return TaskDone.Done;
+        }
+
+        Task IAsyncObserver<RoomMessage>.OnErrorAsync(Exception ex)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task IAsyncObserver<RoomMessage>.OnCompletedAsync()
+        {
+            return ((IChatMonitor) this).Shutdown();
+        }
+
+        private void Unsubscribe(IObserver<IChatMessageAction> observer)
         {
             if (null == observer)
             {
@@ -70,6 +90,17 @@ namespace WebHost.Infrastructure.Monitors
                 }
 
                 observers.Remove(observer);
+            }
+        }
+
+        private void TrackAction(IChatMessageAction action)
+        {
+            lock (((ICollection)observers).SyncRoot)
+            {
+                foreach (var observer in observers)
+                {
+                    observer.OnNext(action);
+                }
             }
         }
 

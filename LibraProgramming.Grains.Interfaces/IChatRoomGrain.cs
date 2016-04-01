@@ -11,6 +11,6 @@ namespace LibraProgramming.Grains.Interfaces
 
         Task AddUserAsync(Guid userId);
 
-        Task<bool> PublishMessageAsync(Guid userId, PublishMessage message);
+        Task PublishMessageAsync(Guid userId, PublishMessage message);
     }
 }

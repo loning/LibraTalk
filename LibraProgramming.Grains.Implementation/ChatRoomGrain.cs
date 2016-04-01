@@ -7,6 +7,7 @@ using Orleans;
 using Orleans.Concurrency;
 using Orleans.Providers;
 using Orleans.Runtime;
+using Orleans.Streams;
 
 namespace LibraProgramming.Grains.Implementation
 {
@@ -29,6 +30,7 @@ namespace LibraProgramming.Grains.Implementation
     [StorageProvider(ProviderName = "MemoryStore")]
     public class ChatRoomGrain : Grain<CharRoomState>, IChatRoomGrain
     {
+        private IAsyncStream<RoomMessage> stream;
         private List<Guid> users;
         private Logger logger;
          
@@ -47,26 +49,26 @@ namespace LibraProgramming.Grains.Implementation
             return TaskDone.Done;
         }
 
-        async Task<bool> IChatRoomGrain.PublishMessageAsync(Guid userId, PublishMessage message)
+        Task IChatRoomGrain.PublishMessageAsync(Guid userId, PublishMessage message)
         {
             if (!users.Contains(userId))
             {
-                return false;
+                return TaskDone.Done;
             }
 
-            State.Messages.Enqueue(new RoomMessage
+            var roomMessage = new RoomMessage
             {
                 Id = State.Messages.Count,
                 PublisherId = userId,
                 Date = DateTime.UtcNow,
                 Text = message.Text
-            });
+            };
 
-            logger.Info($"LibraProgramming.Grains.Implementation.ChatRoomGrain.PublishMessageAsync | Message {userId}={message.Text}");
+            State.Messages.Enqueue(roomMessage);
 
-            await WriteStateAsync();
+            logger.Info($"LibraProgramming.Grains.Implementation.ChatRoomGrain.PublishMessageAsync | New message published");
 
-            return true;
+            return Task.WhenAll(WriteStateAsync(), stream.OnNextAsync(roomMessage));
         }
 
         /// <summary>
@@ -86,6 +88,10 @@ namespace LibraProgramming.Grains.Implementation
             users = new List<Guid>();
             logger = GetLogger(nameof(ChatRoomGrain));
 
+            var provider = GetStreamProvider("SMSProvider");
+
+            stream = provider.GetStream<RoomMessage>(Streams.Id, this.GetPrimaryKeyString());
+            
             return base.OnActivateAsync();
         }
     }

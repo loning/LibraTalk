@@ -53,7 +53,7 @@ namespace LibraProgramming.Grains.Implementation
             return WriteStateAsync();
         }
 
-        Task<bool> IChatUser.PublishMessageAsync(PublishMessage message)
+        Task IChatUser.PublishMessageAsync(PublishMessage message)
         {
             var room = GrainFactory.GetGrain<IChatRoomGrain>("default");
 
