@@ -100,6 +100,7 @@ namespace LibraTalk.Windows.Client.Controls
         public static readonly DependencyProperty CommandNameProperty;
         public static readonly DependencyProperty MaxArgumentsCountProperty;
         public static readonly DependencyProperty MinArgumentsCountProperty;
+        public static readonly DependencyProperty IsDefaultProperty;
 
         private readonly WeakEvent<TypedEventHandler<ConsoleCommand, ExecuteConsoleCommandEventArgs>> executeCommand;
 
@@ -112,6 +113,18 @@ namespace LibraTalk.Windows.Client.Controls
             set
             {
                 SetValue(CommandNameProperty, value);
+            }
+        }
+
+        public bool IsDefault
+        {
+            get
+            {
+                return (bool) GetValue(IsDefaultProperty);
+            }
+            set
+            {
+                SetValue(IsDefaultProperty, value);
             }
         }
 
@@ -174,6 +187,13 @@ namespace LibraTalk.Windows.Client.Controls
                     typeof(ConsoleCommand),
                     new PropertyMetadata(null)
                 );
+            IsDefaultProperty = DependencyProperty
+                .Register(
+                    "IsDefault",
+                    typeof (bool),
+                    typeof (ConsoleCommand),
+                    new PropertyMetadata(false)
+                );
             MaxArgumentsCountProperty = DependencyProperty
                 .Register(
                     "MaxArgumentsCount",
@@ -233,36 +253,51 @@ namespace LibraTalk.Windows.Client.Controls
         {
             var parser = new CommandTextParser();
 
-            try
-            {
-                string name;
-                var options = new Collection<Tuple<string, string>>();
-                var arguments = new Collection<string>();
+            text = Preprocess(text);
 
-                if (!parser.Parse(text, out name, options, arguments))
+            string name;
+            var options = new Collection<Tuple<string, string>>();
+            var arguments = new Collection<string>();
+
+            if (!parser.Parse(text, out name, options, arguments))
+            {
+                throw new Exception();
+            }
+
+            foreach (var command in Commands)
+            {
+                if (!comparer.Equals(command.CommandName, name))
                 {
-                    throw new Exception();
+                    continue;
                 }
 
-                foreach (var command in Commands)
+                if (ValidateCommand(command, options, arguments))
                 {
-                    if (!comparer.Equals(command.CommandName, name))
-                    {
-                        continue;
-                    }
-
-                    if (ValidateCommand(command, options, arguments))
-                    {
-                        return command.ExecuteAsync(output, options, arguments);
-                    }
+                    return command.ExecuteAsync(output, options, arguments);
                 }
+            }
 
-                return Task.FromResult(false);
-            }
-            catch (Exception)
+            return Task.FromResult(false);
+        }
+
+        private string Preprocess(string text)
+        {
+            if (String.IsNullOrEmpty(text))
             {
-                return Task.FromResult(false);
+                return text;
             }
+
+            if ('\\' == text[0])
+            {
+                var defaultCommand = Commands.FirstOrDefault(command => command.IsDefault);
+
+                if (null != defaultCommand)
+                {
+                    return defaultCommand.CommandName + ' ' + '\"' + text.Substring(1) + '\"';
+                }
+            }
+
+            return text;
         }
 
         private bool ValidateCommand(ConsoleCommand command, ICollection<Tuple<string, string>> options, ICollection<string> arguments)

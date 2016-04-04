@@ -22,6 +22,8 @@ namespace LibraTalk.Windows.Client.Controls
 
     public interface IConsoleOutput
     {
+        void Clear();
+
         void WriteLine(string text);
 
         void WriteLine(string text, LogLevel level);
@@ -214,6 +216,11 @@ namespace LibraTalk.Windows.Client.Controls
             history.Inlines.Add(line);
         }
 
+        public void ClearConsole()
+        {
+            history.Inlines.Clear();
+        }
+
         private void ClearInput()
         {
             input.ClearValue(TextBox.TextProperty);
@@ -258,7 +265,7 @@ namespace LibraTalk.Windows.Client.Controls
                 {
                     var output = (IConsoleOutput)console;
 
-                    output.WriteLine("Error: " + text, LogLevel.Error);
+                    output.WriteLine("Error: " + exception.Message, LogLevel.Error);
                     input.SelectAll();
                 }
 
@@ -302,11 +309,23 @@ namespace LibraTalk.Windows.Client.Controls
                 lines = new LinesCollection();
             }
 
+            public void Clear()
+            {
+                lines.Add(new Tuple<LogLevel, string>(LogLevel.Error, "*clear"));
+            }
+
             public void WriteLines(TextCommandWindow window)
             {
                 foreach (var tuple in lines)
                 {
-                    window.WriteLine(tuple.Item2, tuple.Item1);
+                    if (LogLevel.Error == tuple.Item1 && "*clear" == tuple.Item2)
+                    {
+                        window.ClearConsole();
+                    }
+                    else
+                    {
+                        window.WriteLine(tuple.Item2, tuple.Item1);
+                    }
                 }
             }
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -165,23 +166,30 @@ namespace LibraTalk.Windows.Client.Services
 
         public async Task PublishMessageAsync(string message)
         {
-            using (var client = new HttpClient())
+            try
             {
-                var response = await client
-                    .PutAsync(
-                        new Uri(baseUri + "messages"),
-                        new HttpFormUrlEncodedContent(
-                            new Dictionary<string, string>
-                            {
+                using (var client = new HttpClient())
+                {
+                    var response = await client
+                        .PutAsync(
+                            new Uri(baseUri + "messages"),
+                            new HttpFormUrlEncodedContent(
+                                new Dictionary<string, string>
+                                {
                                 {
                                     "user", userId.ToString("D")
                                 },
                                 {
                                     "text", message
                                 }
-                            })
-                    );
-                response.EnsureSuccessStatusCode();
+                                })
+                        );
+                    response.EnsureSuccessStatusCode();
+                }
+            }
+            catch (Exception exception)
+            {
+                Debugger.Break();
             }
         }
 

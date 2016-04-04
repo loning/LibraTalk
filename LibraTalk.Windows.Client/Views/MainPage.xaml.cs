@@ -20,7 +20,8 @@ namespace LibraTalk.Windows.Client.Views
 
         public MainPage()
         {
-            userProvider = new UserProvider(new Uri("http://localhost:26779/api/"), GetUserId());
+//            userProvider = new UserProvider(new Uri("http://localhost:26779/api/"), GetUserId());
+            userProvider = new UserProvider(new Uri("http://kr-143/libratalk/api/"), GetUserId());
             InitializeComponent();
             userProvider.MessageReceived += OnMessageReceived;
             userProvider.PollingCancelled += OnPollingCancelled;
@@ -164,7 +165,7 @@ namespace LibraTalk.Windows.Client.Views
             deferral.Complete();
         }
 
-        private void OnMessageReceived(UserProvider sender, ReceivingMessageEventArgs args)
+        private async void OnMessageReceived(UserProvider sender, ReceivingMessageEventArgs args)
         {
             var print = new DispatchedHandler(() =>
             {
@@ -181,11 +182,11 @@ namespace LibraTalk.Windows.Client.Views
             }
             else
             {
-                Dispatcher.RunAsync(CoreDispatcherPriority.Normal, print);
+                await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, print);
             }
         }
 
-        private void OnPollingCancelled(UserProvider sender, PollingCancelledEventArgs args)
+        private async void OnPollingCancelled(UserProvider sender, PollingCancelledEventArgs args)
         {
             var print = new DispatchedHandler(() =>
             {
@@ -198,8 +199,17 @@ namespace LibraTalk.Windows.Client.Views
             }
             else
             {
-                Dispatcher.RunAsync(CoreDispatcherPriority.Normal, print);
+                await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, print);
             }
+        }
+
+        private void OnClearMessage(ConsoleCommand sender, ExecuteConsoleCommandEventArgs args)
+        {
+            var deferral = args.GetDeferral();
+
+            args.Console.Clear();
+
+            deferral.Complete();
         }
     }
 }
