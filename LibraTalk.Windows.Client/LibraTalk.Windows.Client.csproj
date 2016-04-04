@@ -95,7 +95,6 @@
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
     <PRIResource Include="Localization\Neutral\Resources.resw" />
-    <None Include="InternalApps.pfx" />
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
