@@ -6,8 +6,8 @@ namespace LibraProgramming.Grains.Interfaces
 {
     public interface IChatRoomGrain : IGrainWithStringKey
     {
-        Task AddUserAsync(Guid userId);
+//        Task AddUserAsync(Guid userId);
 
-        Task PublishMessageAsync(Guid userId, PublishMessage message);
+//        Task PublishMessageAsync(Guid userId, PublishMessage message);
     }
 }

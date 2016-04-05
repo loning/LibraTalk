@@ -22,11 +22,12 @@ namespace LibraProgramming.Grains.Implementation
     [StorageProvider(ProviderName = "MemoryStore")]
     public class ChatRoomGrain : Grain<ChatRoomState>, IChatRoomGrain
     {
-        private IAsyncStream<RoomMessage> stream;
-        private ConcurrentDictionary<Guid, string> users;
-        private long messageCount;
-        private Logger logger;
+//        private IAsyncStream<RoomMessage> stream;
+//        private ConcurrentDictionary<Guid, string> users;
+//        private long messageCount;
+//        private Logger logger;
          
+/*
         public async Task AddUserAsync(Guid userId)
         {
             var user = GrainFactory.GetGrain<IChatUser>(userId);
@@ -37,7 +38,9 @@ namespace LibraProgramming.Grains.Implementation
 
             }
         }
+*/
 
+/*
         async Task IChatRoomGrain.PublishMessageAsync(Guid userId, PublishMessage message)
         {
             string nick;
@@ -61,6 +64,7 @@ namespace LibraProgramming.Grains.Implementation
 
             await Task.WhenAll(WriteStateAsync(), stream.OnNextAsync(roomMessage));
         }
+*/
 
         /// <summary>
         /// This method is called at the end of the process of activating a grain.
@@ -69,7 +73,7 @@ namespace LibraProgramming.Grains.Implementation
         /// </summary>
         public override Task OnActivateAsync()
         {
-            if (null == State.Users)
+            /*if (null == State.Users)
             {
                 State.Users = new List<Guid>();
             }
@@ -81,10 +85,12 @@ namespace LibraProgramming.Grains.Implementation
 
             stream = provider.GetStream<RoomMessage>(Streams.Id, this.GetPrimaryKeyString());
 
-            return Task.WhenAll(UpdateConnctedUsers(), base.OnActivateAsync());
+            return Task.WhenAll(UpdateConnctedUsers(), base.OnActivateAsync());*/
+
+            return base.OnActivateAsync();
         }
 
-        private async Task UpdateConnctedUsers()
+        /*private async Task UpdateConnctedUsers()
         {
             foreach (var id in State.Users)
             {
@@ -93,6 +99,6 @@ namespace LibraProgramming.Grains.Implementation
 
                 users[user.GetPrimaryKey()] = profile.Name;
             }
-        }
+        }*/
     }
 }

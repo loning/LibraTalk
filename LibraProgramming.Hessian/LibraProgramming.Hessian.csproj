@@ -5,11 +5,11 @@
     <MinimumVisualStudioVersion>11.0</MinimumVisualStudioVersion>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{C423B122-D7E8-423E-B293-0C5ECA98E0FD}</ProjectGuid>
+    <ProjectGuid>{1F1A0080-FB43-41A8-B334-01762A0F0CC5}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>LibraProgramming.Communication.Protocol</RootNamespace>
-    <AssemblyName>LibraProgramming.Communication.Protocol</AssemblyName>
+    <RootNamespace>LibraProgramming.Hessian</RootNamespace>
+    <AssemblyName>LibraProgramming.Hessian</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -37,9 +37,37 @@
     <!-- A reference to the entire .NET Framework is automatically included -->
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Packets\EstablishConnectionPacket.cs" />
-    <Compile Include="Packets\PacketFrame.cs" />
+    <Compile Include="DataContractHessianSerializer.cs" />
+    <Compile Include="DisposableStreamHandler.cs" />
+    <Compile Include="Extension\DateTimeExtension.cs" />
+    <Compile Include="Extension\Maybe.cs" />
+    <Compile Include="HessianInputReader.cs" />
+    <Compile Include="HessianObjectSerializerFactory.cs" />
+    <Compile Include="HessianObjectWriterFactory.ObjectWriters.cs" />
+    <Compile Include="HessianOutputWriter.cs" />
+    <Compile Include="HessianSerializationContext.cs" />
+    <Compile Include="HessianSerializationScheme.cs" />
+    <Compile Include="HessianSerializerException.cs" />
+    <Compile Include="HessianSerializerSettings.cs" />
+    <Compile Include="IObjectSerializer.cs" />
+    <Compile Include="IObjectSerializerFactory.cs" />
+    <Compile Include="ISerializationElement.cs" />
+    <Compile Include="LeadingByte.cs" />
+    <Compile Include="Marker.cs" />
+    <Compile Include="ObjectElement.cs" />
+    <Compile Include="ObjectPreamble.cs" />
+    <Compile Include="ObjectPropertyComparer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PropertyElement.cs" />
+    <Compile Include="Specification\AndSpecification.cs" />
+    <Compile Include="Specification\BinarySpecification.cs" />
+    <Compile Include="Specification\ISpecification.cs" />
+    <Compile Include="Specification\NotSpecification.cs" />
+    <Compile Include="Specification\OrSpecification.cs" />
+    <Compile Include="Specification\Specification.cs" />
+    <Compile Include="Specification\SpecificationExtension.cs" />
+    <Compile Include="Throw.cs" />
+    <Compile Include="ValueElement.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

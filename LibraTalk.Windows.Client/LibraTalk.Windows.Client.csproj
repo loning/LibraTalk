@@ -207,6 +207,10 @@
       <Project>{c423b122-d7e8-423e-b293-0c5eca98e0fd}</Project>
       <Name>LibraProgramming.Communication.Protocol</Name>
     </ProjectReference>
+    <ProjectReference Include="..\LibraProgramming.Hessian\LibraProgramming.Hessian.csproj">
+      <Project>{1f1a0080-fb43-41a8-b334-01762a0f0cc5}</Project>
+      <Name>LibraProgramming.Hessian</Name>
+    </ProjectReference>
     <ProjectReference Include="..\LibraProgramming.Windows.Locator\LibraProgramming.Windows.Locator.csproj">
       <Project>{f5d1f73f-3de8-430d-ba05-63dcd5979f3a}</Project>
       <Name>LibraProgramming.Windows.Locator</Name>

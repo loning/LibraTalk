@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Threading;
-using Windows.Networking.Sockets;
 using Windows.Storage;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
@@ -11,19 +10,17 @@ using LibraTalk.Windows.Client.Services;
 
 namespace LibraTalk.Windows.Client.Views
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
+    /// <summary>An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
     public sealed partial class MainPage
     {
         private CancellationTokenSource cts;
-        private SocketCommunicationService service;
+        private readonly SocketCommunicationService service;
         private Profile profile;
 
         public MainPage()
         {
-//            userProvider = new UserProvider(new Uri("http://kr-143/libratalk/api/"), GetUserId());
-            service = new SocketCommunicationService(new Uri("http://localhost:1209/api/nexus"));
+            service = new SocketCommunicationService(new Uri("ws://localhost:1607/api/nexus"));
             InitializeComponent();
         }
 
@@ -54,7 +51,7 @@ namespace LibraTalk.Windows.Client.Views
 
             if (null == profile || args.Options.Any(option => "force" == option.Item1))
             {
-                profile = await userProvider.GetProfileAsync();
+//                profile = await userProvider.GetProfileAsync();
                 args.Console.WriteLine("Get-Profile: Profile retrieved", LogLevel.Information);
             }
             else
@@ -72,7 +69,7 @@ namespace LibraTalk.Windows.Client.Views
         {
             var deferral = args.GetDeferral();
 
-            await userProvider.SetProfileAsync(profile);
+//            await userProvider.SetProfileAsync(profile);
             args.Console.WriteLine("Write-Profile: Ok", LogLevel.Success);
 
             deferral.Complete();
@@ -111,7 +108,7 @@ namespace LibraTalk.Windows.Client.Views
 
             if (0 <= args.Arguments.Count)
             {
-                await userProvider.PublishMessageAsync(args.Arguments.First());
+//                await userProvider.PublishMessageAsync(args.Arguments.First());
                 args.Console.WriteLine("Publish-Message: Ok", LogLevel.Success);
             }
             else
@@ -128,7 +125,7 @@ namespace LibraTalk.Windows.Client.Views
 
             if (0 <= args.Arguments.Count)
             {
-                await userProvider.JoinRoomAsync(args.Arguments.First());
+//                await userProvider.JoinRoomAsync(args.Arguments.First());
                 args.Console.WriteLine("Join-Room: Ok", LogLevel.Success);
             }
             else
@@ -157,8 +154,8 @@ namespace LibraTalk.Windows.Client.Views
             }
             else if (args.Options.Any(option => "enable" == option.Item1))
             {
-                cts = new CancellationTokenSource();
-                userProvider.Poll(cts.Token);
+//                cts = new CancellationTokenSource();
+//                userProvider.Poll(cts.Token);
                 args.Console.WriteLine("Poll-Room: Polling started.", LogLevel.Success);
             }
 
@@ -214,6 +211,7 @@ namespace LibraTalk.Windows.Client.Views
 
         private async void OnContentPageLoaded(object sender, RoutedEventArgs e)
         {
+//            var temp = SocketActivityInformation.AllSockets;
             await service.ConnectAsync();
         }
     }

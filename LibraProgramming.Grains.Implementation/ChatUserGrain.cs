@@ -23,8 +23,9 @@ namespace LibraProgramming.Grains.Implementation
     [StorageProvider(ProviderName = "MemoryStore")]
     public class ChatUserGrain : Grain<ChatUserState>, IChatUser
     {
-        private Logger logger;
+//        private Logger logger;
 
+/*
         Task<UserProfile> IChatUser.GetUserProfileAsync()
         {
             return Task.FromResult(new UserProfile
@@ -33,7 +34,9 @@ namespace LibraProgramming.Grains.Implementation
                 Name = State.Name
             });
         }
+*/
 
+/*
         Task IChatUser.SetProfileAsync(UserProfile profile)
         {
             if (null == profile)
@@ -52,7 +55,9 @@ namespace LibraProgramming.Grains.Implementation
 
             return WriteStateAsync();
         }
+*/
 
+/*
         Task IChatUser.PublishMessageAsync(PublishMessage message)
         {
             var room = GrainFactory.GetGrain<IChatRoomGrain>("default");
@@ -60,18 +65,20 @@ namespace LibraProgramming.Grains.Implementation
             logger.Info($"LibraProgramming.Grains.Implementation.ChatUser.PublishMessageAsync | Publishing message from user: {this.GetPrimaryKey()}");
 
             return room.PublishMessageAsync(this.GetPrimaryKey(), message);
+            return TaskDone.Done;
         }
+*/
 
         public override Task OnActivateAsync()
         {
-            if (null == State.Name)
+            /*if (null == State.Name)
             {
                 State.Name = "John Doe";
             }
 
             logger = GetLogger("ChatUserGrain");
 
-            logger.Info($"LibraProgramming.Grains.Implementation.ChatUser.OnActivateAsync | Initializing state for user: {this.GetPrimaryKey()}");
+            logger.Info($"LibraProgramming.Grains.Implementation.ChatUser.OnActivateAsync | Initializing state for user: {this.GetPrimaryKey()}");*/
 
             return base.OnActivateAsync();
         }

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Net.WebSockets;
@@ -7,6 +9,8 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using System.Web.WebSockets;
+using LibraProgramming.Communication.Protocol.Packets;
+using LibraProgramming.Communication.Server.Core;
 
 namespace LibraProgramming.Communication.Server.Controllers
 {
@@ -30,12 +34,25 @@ namespace LibraProgramming.Communication.Server.Controllers
 
             new Task(async () =>
             {
-                var input = new ArraySegment<byte>(new byte[1024]);
+                var input = new ArraySegment<byte>(new byte[8]);
 
                 while (true)
                 {
                     var result = await ws.ReceiveAsync(input, CancellationToken.None);
 
+                    if (WebSocketMessageType.Binary == result.MessageType && !result.EndOfMessage)
+                    {
+                        using (var stream = new MemoryStream(input.Array, input.Offset, input.Count))
+                        {
+                            var signature = stream.ReadUInt16();
+
+                            if (PacketFrame.Signature != signature)
+                            {
+                                throw new Exception();
+                            }
+                        }
+
+                    }
                     if (WebSocketState.Open != ws.State)
                     {
                         break;

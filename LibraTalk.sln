@@ -24,6 +24,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibraProgramming.Communicat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibraProgramming.Communication.Protocol", "LibraProgramming.Communication.Protocol\LibraProgramming.Communication.Protocol.csproj", "{C423B122-D7E8-423E-B293-0C5ECA98E0FD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibraProgramming.Hessian", "LibraProgramming.Hessian\LibraProgramming.Hessian.csproj", "{1F1A0080-FB43-41A8-B334-01762A0F0CC5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -168,6 +170,22 @@ Global
 		{C423B122-D7E8-423E-B293-0C5ECA98E0FD}.Release|x64.Build.0 = Release|Any CPU
 		{C423B122-D7E8-423E-B293-0C5ECA98E0FD}.Release|x86.ActiveCfg = Release|Any CPU
 		{C423B122-D7E8-423E-B293-0C5ECA98E0FD}.Release|x86.Build.0 = Release|Any CPU
+		{1F1A0080-FB43-41A8-B334-01762A0F0CC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F1A0080-FB43-41A8-B334-01762A0F0CC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F1A0080-FB43-41A8-B334-01762A0F0CC5}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{1F1A0080-FB43-41A8-B334-01762A0F0CC5}.Debug|ARM.Build.0 = Debug|Any CPU
+		{1F1A0080-FB43-41A8-B334-01762A0F0CC5}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{1F1A0080-FB43-41A8-B334-01762A0F0CC5}.Debug|x64.Build.0 = Debug|Any CPU
+		{1F1A0080-FB43-41A8-B334-01762A0F0CC5}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1F1A0080-FB43-41A8-B334-01762A0F0CC5}.Debug|x86.Build.0 = Debug|Any CPU
+		{1F1A0080-FB43-41A8-B334-01762A0F0CC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F1A0080-FB43-41A8-B334-01762A0F0CC5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1F1A0080-FB43-41A8-B334-01762A0F0CC5}.Release|ARM.ActiveCfg = Release|Any CPU
+		{1F1A0080-FB43-41A8-B334-01762A0F0CC5}.Release|ARM.Build.0 = Release|Any CPU
+		{1F1A0080-FB43-41A8-B334-01762A0F0CC5}.Release|x64.ActiveCfg = Release|Any CPU
+		{1F1A0080-FB43-41A8-B334-01762A0F0CC5}.Release|x64.Build.0 = Release|Any CPU
+		{1F1A0080-FB43-41A8-B334-01762A0F0CC5}.Release|x86.ActiveCfg = Release|Any CPU
+		{1F1A0080-FB43-41A8-B334-01762A0F0CC5}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
