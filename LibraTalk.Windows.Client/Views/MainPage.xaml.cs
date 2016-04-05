@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Linq;
 using System.Threading;
+using Windows.Networking.Sockets;
 using Windows.Storage;
 using Windows.UI.Core;
+using Windows.UI.Xaml;
 using LibraTalk.Windows.Client.Controls;
 using LibraTalk.Windows.Client.Models;
 using LibraTalk.Windows.Client.Services;
@@ -15,16 +17,14 @@ namespace LibraTalk.Windows.Client.Views
     public sealed partial class MainPage
     {
         private CancellationTokenSource cts;
-        private readonly UserProvider userProvider;
+        private SocketCommunicationService service;
         private Profile profile;
 
         public MainPage()
         {
-//            userProvider = new UserProvider(new Uri("http://localhost:26779/api/"), GetUserId());
-            userProvider = new UserProvider(new Uri("http://kr-143/libratalk/api/"), GetUserId());
+//            userProvider = new UserProvider(new Uri("http://kr-143/libratalk/api/"), GetUserId());
+            service = new SocketCommunicationService(new Uri("http://localhost:1209/api/nexus"));
             InitializeComponent();
-            userProvider.MessageReceived += OnMessageReceived;
-            userProvider.PollingCancelled += OnPollingCancelled;
         }
 
         private static Guid GetUserId()
@@ -210,6 +210,11 @@ namespace LibraTalk.Windows.Client.Views
             args.Console.Clear();
 
             deferral.Complete();
+        }
+
+        private async void OnContentPageLoaded(object sender, RoutedEventArgs e)
+        {
+            await service.ConnectAsync();
         }
     }
 }

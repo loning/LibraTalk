@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using LibraProgramming.Grains.Interfaces;
 using Orleans;
@@ -11,7 +12,7 @@ namespace LibraProgramming.Grains.Implementation
 {
     public class ChatRoomState : GrainState
     {
-        public string Id
+        public List<Guid> Users
         {
             get;
             set;
@@ -33,7 +34,7 @@ namespace LibraProgramming.Grains.Implementation
 
             if (users.TryAdd(profile.Id, profile.Name))
             {
-                logger.Info(1, $"[ChatRoom.AddUser] Room: {State.Id} user: {userId}");
+
             }
         }
 
@@ -68,7 +69,10 @@ namespace LibraProgramming.Grains.Implementation
         /// </summary>
         public override Task OnActivateAsync()
         {
-            State.Id = this.GetPrimaryKeyString();
+            if (null == State.Users)
+            {
+                State.Users = new List<Guid>();
+            }
 
             users = new ConcurrentDictionary<Guid, string>();
             logger = GetLogger(nameof(ChatRoomGrain));
@@ -76,8 +80,19 @@ namespace LibraProgramming.Grains.Implementation
             var provider = GetStreamProvider("SMSProvider");
 
             stream = provider.GetStream<RoomMessage>(Streams.Id, this.GetPrimaryKeyString());
-            
-            return base.OnActivateAsync();
+
+            return Task.WhenAll(UpdateConnctedUsers(), base.OnActivateAsync());
+        }
+
+        private async Task UpdateConnctedUsers()
+        {
+            foreach (var id in State.Users)
+            {
+                var user = GrainFactory.GetGrain<IChatUser>(id);
+                var profile = await user.GetUserProfileAsync();
+
+                users[user.GetPrimaryKey()] = profile.Name;
+            }
         }
     }
 }

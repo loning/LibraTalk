@@ -116,6 +116,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\ApplicationOptionsProvider.cs" />
     <Compile Include="Services\IApplicationOptionsProvider.cs" />
+    <Compile Include="Services\SocketCommunicationService.cs" />
     <Compile Include="Services\UserProvider.cs" />
     <Compile Include="ViewModels\DeferUpdate.cs" />
     <Compile Include="ViewModels\HostPageViewModel.cs" />
@@ -202,6 +203,10 @@
     </SDKReference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\LibraProgramming.Communication.Protocol\LibraProgramming.Communication.Protocol.csproj">
+      <Project>{c423b122-d7e8-423e-b293-0c5eca98e0fd}</Project>
+      <Name>LibraProgramming.Communication.Protocol</Name>
+    </ProjectReference>
     <ProjectReference Include="..\LibraProgramming.Windows.Locator\LibraProgramming.Windows.Locator.csproj">
       <Project>{f5d1f73f-3de8-430d-ba05-63dcd5979f3a}</Project>
       <Name>LibraProgramming.Windows.Locator</Name>
