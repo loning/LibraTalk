@@ -23,9 +23,8 @@ namespace LibraProgramming.Grains.Implementation
     [StorageProvider(ProviderName = "MemoryStore")]
     public class ChatUserGrain : Grain<ChatUserState>, IChatUser
     {
-//        private Logger logger;
+        private Logger logger;
 
-/*
         Task<UserProfile> IChatUser.GetUserProfileAsync()
         {
             return Task.FromResult(new UserProfile
@@ -34,7 +33,6 @@ namespace LibraProgramming.Grains.Implementation
                 Name = State.Name
             });
         }
-*/
 
 /*
         Task IChatUser.SetProfileAsync(UserProfile profile)
@@ -71,14 +69,14 @@ namespace LibraProgramming.Grains.Implementation
 
         public override Task OnActivateAsync()
         {
-            /*if (null == State.Name)
+            if (null == State.Name)
             {
                 State.Name = "John Doe";
             }
 
             logger = GetLogger("ChatUserGrain");
 
-            logger.Info($"LibraProgramming.Grains.Implementation.ChatUser.OnActivateAsync | Initializing state for user: {this.GetPrimaryKey()}");*/
+            logger.Info($"LibraProgramming.Grains.Implementation.ChatUser.OnActivateAsync | Initializing state for user: {this.GetPrimaryKey()}");
 
             return base.OnActivateAsync();
         }

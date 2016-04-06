@@ -4,6 +4,7 @@ using System.Threading;
 using Windows.Storage;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
+using LibraProgramming.Communication.Protocol.Packets;
 using LibraTalk.Windows.Client.Controls;
 using LibraTalk.Windows.Client.Models;
 using LibraTalk.Windows.Client.Services;
@@ -16,11 +17,11 @@ namespace LibraTalk.Windows.Client.Views
     {
         private CancellationTokenSource cts;
         private readonly SocketCommunicationService service;
-        private Profile profile;
 
         public MainPage()
         {
             service = new SocketCommunicationService(new Uri("ws://localhost:1607/api/nexus"));
+            service.PacketReceived += OnCommunicationServicePacketReceived;
             InitializeComponent();
         }
 
@@ -47,24 +48,11 @@ namespace LibraTalk.Windows.Client.Views
 
         private void OnGetUserProfile(ConsoleCommand sender, ExecuteConsoleCommandEventArgs args)
         {
-            var deferral = args.GetDeferral();
+//            var deferral = args.GetDeferral();
 
-            service.WhoAmI();
+            service.WhoAmI(GetUserId());
 
-            /*if (null == profile || args.Options.Any(option => "force" == option.Item1))
-            {
-//                profile = await userProvider.GetProfileAsync();
-                args.Console.WriteLine("Get-Profile: Profile retrieved", LogLevel.Information);
-            }
-            else
-            {
-                args.Console.WriteLine("Get-Profile: Profile cached", LogLevel.Information);
-            }
-
-            args.Console.WriteLine(String.Format("Get-Profile: Name: \"{0}\"", profile.Name), LogLevel.Information);
-            args.Console.WriteLine(String.Format("Get-Profile: Id: \"{0}\"", profile.Id), LogLevel.Information);*/
-
-            deferral.Complete();
+//            deferral.Complete();
         }
 
         private async void OnWriteUserProfile(ConsoleCommand sender, ExecuteConsoleCommandEventArgs args)
@@ -79,7 +67,7 @@ namespace LibraTalk.Windows.Client.Views
 
         private void OnSetUserProfile(ConsoleCommand sender, ExecuteConsoleCommandEventArgs args)
         {
-            var deferral = args.GetDeferral();
+            /*var deferral = args.GetDeferral();
 
             if (null == profile)
             {
@@ -101,7 +89,7 @@ namespace LibraTalk.Windows.Client.Views
                 }
             }
 
-            deferral.Complete();
+            deferral.Complete();*/
         }
 
         private async void OnPublishMessage(ConsoleCommand sender, ExecuteConsoleCommandEventArgs args)
@@ -209,6 +197,34 @@ namespace LibraTalk.Windows.Client.Views
             args.Console.Clear();
 
             deferral.Complete();
+        }
+
+        private async void OnCommunicationServicePacketReceived(SocketCommunicationService sender, PacketReceivedEventArgs args)
+        {
+            var packet = args.Packet;
+
+            if (PacketType.Profile == packet.PacketType)
+            {
+                var profile = (ProfileResponsePacket) args.Packet;
+
+                var print = new DispatchedHandler(() =>
+                {
+                    CommandWindow
+                        .WriteLine(
+                            String.Format("Who-am-i: ({0:D})\"{1}\"", profile.UserId, profile.UserName),
+                            LogLevel.Information
+                        );
+                });
+
+                if (Dispatcher.HasThreadAccess)
+                {
+                    print.Invoke();
+                }
+                else
+                {
+                    await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, print);
+                }
+            }
         }
 
         private async void OnContentPageLoaded(object sender, RoutedEventArgs e)

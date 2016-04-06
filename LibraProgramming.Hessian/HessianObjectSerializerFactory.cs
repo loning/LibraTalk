@@ -33,7 +33,8 @@ namespace LibraProgramming.Hessian
                 new TypedEvidence(typeof (long), new Int64Serializer()),
                 new TypedEvidence(typeof (double), new DoubleSerializer()),
                 new TypedEvidence(typeof (string), new StringSerializer()),
-                new TypedEvidence(typeof (DateTime), new DateTimeSerializer())
+                new TypedEvidence(typeof (DateTime), new DateTimeSerializer()),
+                new TypedEvidence(typeof (Guid), new GuidSerializer())
                 //[new FixedTypedListEvidence()] = new FixedTypedListSerializer()
             };
             

@@ -108,12 +108,9 @@ namespace LibraProgramming.Hessian
                 return true;
             }
 
-            if (typeof (String) == typeinfo.AsType())
-            {
-                return true;
-            }
+            var type = typeinfo.AsType();
 
-            return false;
+            return typeof (Guid) == type || typeof (string) == type;
         }
     }
 }

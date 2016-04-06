@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
@@ -11,7 +10,6 @@ using System.Web;
 using System.Web.Http;
 using System.Web.WebSockets;
 using LibraProgramming.Communication.Protocol.Packets;
-using LibraProgramming.Communication.Server.Core;
 using LibraProgramming.Grains.Interfaces;
 using LibraProgramming.Hessian;
 using Orleans;
@@ -26,83 +24,63 @@ namespace LibraProgramming.Communication.Server.Controllers
 
             if (context.IsWebSocketRequest || context.IsWebSocketRequestUpgrading)
             {
-                context.AcceptWebSocketRequest(ProcessWebSocketRequestAsync);
+                context.AcceptWebSocketRequest(ProcessWebSocketRequest);
             }
 
             return Request.CreateResponse(HttpStatusCode.SwitchingProtocols);
         }
 
-        private static async Task ProcessWebSocketRequestAsync(AspNetWebSocketContext context)
+        private static Task ProcessWebSocketRequest(AspNetWebSocketContext context)
         {
             var ws = context.WebSocket;
 
-            new Task(async () =>
+            return Task.Run(async () =>
             {
-                var handshake = await ReadPacketAsync<EstablishConnectionPacket>(ws);
+                var token = CancellationToken.None;
+
+                var description = await ReadPacketDescriptionAsync(ws, token);
+
+                if (PacketType.Hello != description.PacketType)
+                {
+                    throw new Exception();
+                }
+
+                var hello = await ReadPacketAsync<HelloPacket>(ws, description, token);
 
                 Debug.WriteLine("[NexusController.ProcessWebSocketRequestAsync]");
 
                 while (true)
                 {
-                    var header = await ReadPacketHeaderAsync(ws);
+                    description = await ReadPacketDescriptionAsync(ws, token);
 
-                    switch (header.Command)
+                    switch (description.PacketType)
                     {
-                        case LibraTalkCommand.RequestProfile:
+                        case PacketType.Profile:
                         {
-                            var request = await ReadPacketFrameAsync<ProfileRequestPacket>(ws, header.FrameLength);
+                            var request = await ReadPacketAsync<ProfileRequestPacket>(ws, description, token);
                             var user = GrainClient.GrainFactory.GetGrain<IChatUser>(request.UserId);
-                            var profile = await user.GetUserProfileAsync();
 
-                            await SendPacketAsync(ws, new ProfileResponsePacket
+                            var profile = await user.GetUserProfileAsync();
+                            var packet = new ProfileResponsePacket
                             {
+                                UserId = request.UserId,
                                 UserName = profile.Name
-                            });
+                            };
+
+                            await SendPacketAsync(ws, packet, token);
 
                             break;
                         }
                     }
 
-                    /*var result = await ws.ReceiveAsync(header, CancellationToken.None);
-
-                    if (WebSocketMessageType.Binary == result.MessageType && !result.EndOfMessage)
-                    {
-                        var stream = new MemoryStream(header.Array, header.Offset, header.Count);
-
-                        using (var reader = new BinaryReader(stream))
-                        {
-                            var signature = reader.ReadUInt16();
-
-                            if (PacketFrame.Signature != signature)
-                            {
-                                throw new Exception();
-                            }
-
-                            var command = reader.ReadUInt16();
-                            var length = reader.ReadUInt64();
-
-                            switch (command)
-                            {
-                                case PacketFrame.EstablishCommand:
-                                {
-                                    var packet = new ArraySegment<byte>(new byte[length]);
-
-                                    await ws.ReceiveAsync(packet, CancellationToken.None);
-
-
-                                    break;
-                                }
-                            }
-                        }
-                    }*/
                     if (WebSocketState.Open != ws.State)
                     {
                         break;
                     }
                 }
-            }).Start();
+            });
 
-            while (true)
+            /*while (true)
             {
                 if (WebSocketState.Open != ws.State)
                 {
@@ -111,66 +89,70 @@ namespace LibraProgramming.Communication.Server.Controllers
 
                 var buffer = new ArraySegment<byte>(new byte[1024]);
 
-                await ws.SendAsync(buffer, WebSocketMessageType.Binary, true, CancellationToken.None);
-            }
+                await ws.SendAsync(buffer, WebSocketMessageType.Binary, false, CancellationToken.None);
+            }*/
         }
 
-        private static async Task<PacketFrameHeader> ReadPacketHeaderAsync(WebSocket socket)
+        private static async Task<PacketDescription> ReadPacketDescriptionAsync(WebSocket socket, CancellationToken token)
         {
-            const int headerLength = 8;
-            var header = new ArraySegment<byte>(new byte[headerLength]);
-            var result = await socket.ReceiveAsync(header, CancellationToken.None);
+            var content = new ArraySegment<byte>(new byte[PacketDescription.Length]);
+            var result = await socket.ReceiveAsync(content, token);
 
-            if (headerLength != result.Count)
+            if (PacketDescription.Length != result.Count)
             {
                 throw new Exception();
             }
 
-            var stream = new MemoryStream(header.Array, header.Offset, header.Count);
+            var stream = new MemoryStream(content.Array, content.Offset, content.Count);
 
             using (var reader = new BinaryReader(stream))
             {
                 var signature = reader.ReadUInt16();
 
-                if (PacketFrame.Signature != signature)
+                if (PacketDescription.Signature != signature)
                 {
                     throw new Exception();
                 }
 
-                var command = reader.ReadUInt16();
+                var packetType = reader.ReadUInt16();
                 var length = reader.ReadInt32();
 
-                return new PacketFrameHeader((LibraTalkCommand) command, length);
+                return new PacketDescription((PacketType) packetType, length);
             }
         }
 
-        private static async Task<TPacket> ReadPacketFrameAsync<TPacket>(WebSocket socket, int contentLength)
-            where TPacket : Packet
+        private static async Task<TPacket> ReadPacketAsync<TPacket>(WebSocket socket, PacketDescription description, CancellationToken token)
+            where TPacket : IIncomingPacket
         {
-            var frame = new ArraySegment<byte>(new byte[contentLength]);
-            var result = await socket.ReceiveAsync(frame, CancellationToken.None);
+            var content = new ArraySegment<byte>(new byte[description.ContentLength]);
+            var result = await socket.ReceiveAsync(content, token);
 
-            if (contentLength != result.Count)
+            if (WebSocketMessageType.Binary != result.MessageType)
             {
                 throw new Exception();
             }
 
-            using (var stream = new MemoryStream(frame.Array, frame.Offset, frame.Count))
+            if (description.ContentLength != result.Count)
             {
-                var serializer = new DataContractHessianSerializer(typeof (TPacket));
-                return (TPacket) serializer.ReadObject(stream);
+                throw new Exception();
+            }
+
+            using (var stream = new MemoryStream(content.Array, content.Offset, content.Count))
+            {
+                var serializer = new DataContractHessianSerializer(typeof(TPacket));
+                var packet = (TPacket) serializer.ReadObject(stream);
+
+                if (description.PacketType != packet.PacketType)
+                {
+                    throw new Exception();
+                }
+
+                return packet;
             }
         }
 
-        private static async Task<TPacket> ReadPacketAsync<TPacket>(WebSocket socket)
-            where TPacket : Packet
-        {
-            var header = await ReadPacketHeaderAsync(socket);
-            return await ReadPacketFrameAsync<TPacket>(socket, header.FrameLength);
-        }
-
-        private static async Task SendPacketAsync<TPacket>(WebSocket socket, TPacket packet)
-            where TPacket : Packet
+        private static async Task SendPacketAsync<TPacket>(WebSocket socket, TPacket packet, CancellationToken token)
+            where TPacket : IOutgoingPacket
         {
             if (null == packet)
             {
@@ -192,15 +174,15 @@ namespace LibraProgramming.Communication.Server.Controllers
                     data = content.ToArray();
                 }
 
-                writer.Write(PacketFrame.Signature);
-                writer.Write((ushort) packet.Command);
+                writer.Write(PacketDescription.Signature);
+                writer.Write((ushort) packet.PacketType);
                 writer.Write(data.Length);
                 writer.Write(data);
             }
 
             var buffer = new ArraySegment<byte>(stream.ToArray());
 
-            await socket.SendAsync(buffer, WebSocketMessageType.Binary, true, CancellationToken.None);
+            await socket.SendAsync(buffer, WebSocketMessageType.Binary, true, token);
         }
     }
 }

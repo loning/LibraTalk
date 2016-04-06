@@ -37,12 +37,9 @@
     <!-- A reference to the entire .NET Framework is automatically included -->
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Packets\EstablishConnectionPacket.cs" />
-    <Compile Include="Packets\LibraTalkCommand.cs" />
+    <Compile Include="Packets\HelloPacket.cs" />
     <Compile Include="Packets\Packet.cs" />
-    <Compile Include="Packets\PacketFrame.cs" />
-    <Compile Include="Packets\PacketFrameHeader.cs" />
-    <Compile Include="Packets\ProfilePackets.cs" />
+    <Compile Include="Packets\PacketDescription.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />

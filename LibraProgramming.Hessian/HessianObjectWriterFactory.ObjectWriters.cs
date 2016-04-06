@@ -100,6 +100,24 @@ namespace LibraProgramming.Hessian
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        private class GuidSerializer : IObjectSerializer
+        {
+            public void Serialize(HessianOutputWriter writer, object graph)
+            {
+                var bytes = ((Guid) graph).ToByteArray();
+                writer.WriteBytes(bytes);
+            }
+
+            public object Deserialize(HessianInputReader reader)
+            {
+                var bytes = reader.ReadBytes();
+                return new Guid(bytes);
+            }
+        }
+
 /*
         /// <summary>
         /// 

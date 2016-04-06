@@ -1,10 +1,27 @@
 ﻿namespace LibraProgramming.Communication.Protocol.Packets
 {
-    public abstract class Packet
+    /// <summary>
+    /// 
+    /// </summary>
+    public interface IPacket
     {
-         public abstract LibraTalkCommand Command
-         {
-             get;
-         }
+        PacketType PacketType
+        {
+            get;
+        }
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public interface IIncomingPacket : IPacket
+    {
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public interface IOutgoingPacket : IPacket
+    {
     }
 }
