@@ -22,10 +22,9 @@
             FontSize="16">
             <controls:SimpleConsoleCommandProcessor>
                 <controls:ConsoleCommand
-                    CommandName="get-profile"
-                    ExecuteCommand="OnGetUserProfile">
-                    <controls:ConsoleCommandOption OptionName="force" />
-                </controls:ConsoleCommand>
+                    CommandName="who-am-i"
+                    ExecuteCommand="OnGetUserProfile"
+                />
                 <controls:ConsoleCommand
                     CommandName="write-profile"
                     ExecuteCommand="OnWriteUserProfile"

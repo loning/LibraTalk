@@ -45,11 +45,13 @@ namespace LibraTalk.Windows.Client.Views
             return id;
         }
 
-        private async void OnGetUserProfile(ConsoleCommand sender, ExecuteConsoleCommandEventArgs args)
+        private void OnGetUserProfile(ConsoleCommand sender, ExecuteConsoleCommandEventArgs args)
         {
             var deferral = args.GetDeferral();
 
-            if (null == profile || args.Options.Any(option => "force" == option.Item1))
+            service.WhoAmI();
+
+            /*if (null == profile || args.Options.Any(option => "force" == option.Item1))
             {
 //                profile = await userProvider.GetProfileAsync();
                 args.Console.WriteLine("Get-Profile: Profile retrieved", LogLevel.Information);
@@ -60,7 +62,7 @@ namespace LibraTalk.Windows.Client.Views
             }
 
             args.Console.WriteLine(String.Format("Get-Profile: Name: \"{0}\"", profile.Name), LogLevel.Information);
-            args.Console.WriteLine(String.Format("Get-Profile: Id: \"{0}\"", profile.Id), LogLevel.Information);
+            args.Console.WriteLine(String.Format("Get-Profile: Id: \"{0}\"", profile.Id), LogLevel.Information);*/
 
             deferral.Complete();
         }

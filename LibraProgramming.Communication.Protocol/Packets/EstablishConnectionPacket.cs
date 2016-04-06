@@ -2,9 +2,9 @@
 
 namespace LibraProgramming.Communication.Protocol.Packets
 {
-    [DataContract]
-    public class EstablishConnectionPacket : PacketFrame
+    [DataContract(Name = "establish")]
+    public class EstablishConnectionPacket : Packet
     {
-
+        public override LibraTalkCommand Command => LibraTalkCommand.EstablishConnection;
     }
 }

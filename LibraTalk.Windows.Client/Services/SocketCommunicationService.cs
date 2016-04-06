@@ -79,44 +79,60 @@ namespace LibraTalk.Windows.Client.Services
             }
         }
 
+        public bool WhoAmI()
+        {
+            if (CommunicationServiceState.Connected != State)
+            {
+                return false;
+            }
+
+            try
+            {
+                using (var stream = socket.OutputStream.AsStreamForWrite())
+                {
+                    var packet = new ProfileRequestPacket();
+                    SendPacket(stream, packet);
+                }
+
+                return true;
+            }
+            catch (WebException exception)
+            {
+                State = CommunicationServiceState.Failed;
+
+                var status = WebSocketError.GetStatus(exception.HResult);
+
+                Debug.WriteLine("Error: {0}", status);
+
+                return false;
+            }
+        }
+
         private void SendPacket<TPacket>(Stream stream, TPacket packet)
-            where TPacket : PacketFrame
+            where TPacket : Packet
         {
             if (null == packet)
             {
                 throw new ArgumentNullException(nameof(packet));
             }
 
-            var frame = CreateFrame(packet);
-            var header = CreateHeader(PacketFrame.EstablishCommand, frame.Length);
-
-            stream.Write(header, 0, header.Length);
-            stream.Write(frame, 0, frame.Length);
-        }
-
-        private static byte[] CreateHeader(ushort command, long length)
-        {
-            var stream = new MemoryStream();
-
-            using (var writer = new StreamWriter(stream))
+            using (var writer = new BinaryWriter(stream))
             {
+                byte[] data;
+
+                using (var buffer = new MemoryStream())
+                {
+                    var serializer = new DataContractHessianSerializer(typeof (TPacket));
+
+                    serializer.WriteObject(buffer, packet);
+
+                    data = buffer.ToArray();
+                }
+
                 writer.Write(PacketFrame.Signature);
-                writer.Write(command);
-                writer.Write(length);
-            }
-
-            return stream.ToArray();
-        }
-
-        private static byte[] CreateFrame(object packet)
-        {
-            using (var stream = new MemoryStream())
-            {
-                var serializer = new DataContractHessianSerializer(packet.GetType());
-
-                serializer.WriteObject(stream, packet);
-
-                return stream.ToArray();
+                writer.Write((ushort) packet.Command);
+                writer.Write(data.Length);
+                writer.Write(data);
             }
         }
 
@@ -130,6 +146,12 @@ namespace LibraTalk.Windows.Client.Services
 
         private void OnSocketMessageReceived(MessageWebSocket sender, MessageWebSocketMessageReceivedEventArgs args)
         {
+            if (SocketMessageType.Binary == args.MessageType)
+            {
+                var stream = args.GetDataStream().AsStreamForRead();
+
+
+            }
         }
     }
 }

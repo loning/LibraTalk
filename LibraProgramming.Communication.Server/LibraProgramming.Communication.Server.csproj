@@ -143,6 +143,10 @@
       <Project>{9c390baa-348b-4665-8503-a3f1dcca4c64}</Project>
       <Name>LibraProgramming.Grains.Interfaces</Name>
     </ProjectReference>
+    <ProjectReference Include="..\LibraProgramming.Hessian\LibraProgramming.Hessian.csproj">
+      <Project>{1f1a0080-fb43-41a8-b334-01762a0f0cc5}</Project>
+      <Name>LibraProgramming.Hessian</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

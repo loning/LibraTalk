@@ -12,7 +12,7 @@ namespace LibraProgramming.Grains.Interfaces
         /// Gets the player name.
         /// </summary>
         /// <returns></returns>
-//        Task<UserProfile> GetUserProfileAsync();
+        Task<UserProfile> GetUserProfileAsync();
 
         /// <summary>
         /// Sets name for the player.
