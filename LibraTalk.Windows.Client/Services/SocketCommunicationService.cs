@@ -80,7 +80,7 @@ namespace LibraTalk.Windows.Client.Services
             packetReceived = new WeakEvent<TypedEventHandler<SocketCommunicationService, PacketReceivedEventArgs>>();
         }
 
-        public async Task ConnectAsync()
+        public async Task ConnectAsync(Guid sessionId)
         {
             socket = new MessageWebSocket();
 
@@ -93,7 +93,10 @@ namespace LibraTalk.Windows.Client.Services
 
                 State = CommunicationServiceState.EstablishConnection;
 
-                await SendPacketAsync(socket.OutputStream.AsStreamForWrite(), new HelloPacket());
+                await SendPacketAsync(socket.OutputStream.AsStreamForWrite(), new HelloPacket
+                {
+                    SessionId = sessionId
+                });
 
                 State = CommunicationServiceState.Connected;
             }
@@ -107,7 +110,7 @@ namespace LibraTalk.Windows.Client.Services
             }
         }
 
-        public Task WhoAmI(Guid userid)
+        public Task GetNameAsync()
         {
             if (CommunicationServiceState.Connected != State)
             {
@@ -116,9 +119,65 @@ namespace LibraTalk.Windows.Client.Services
 
             try
             {
-                var packet = new ProfileRequestPacket
+                var packet = new CommandPacket
                 {
-                    UserId = userid
+                    Command = Command.QueryProfile
+                };
+
+                return SendPacketAsync(socket.OutputStream.AsStreamForWrite(), packet);
+            }
+            catch (WebException exception)
+            {
+                State = CommunicationServiceState.Failed;
+
+                var status = WebSocketError.GetStatus(exception.HResult);
+
+                Debug.WriteLine("Error: {0}", status);
+
+                return Task.CompletedTask;
+            }
+        }
+
+        public Task SetNameAsync(string name)
+        {
+            if (CommunicationServiceState.Connected != State)
+            {
+                return Task.CompletedTask;
+            }
+
+            try
+            {
+                var packet = new UpdateProfileRequestPacket
+                {
+                    UserName = name
+                };
+
+                return SendPacketAsync(socket.OutputStream.AsStreamForWrite(), packet);
+            }
+            catch (WebException exception)
+            {
+                State = CommunicationServiceState.Failed;
+
+                var status = WebSocketError.GetStatus(exception.HResult);
+
+                Debug.WriteLine("Error: {0}", status);
+
+                return Task.CompletedTask;
+            }
+        }
+
+        public Task QueryTimeAsync()
+        {
+            if (CommunicationServiceState.Connected != State)
+            {
+                return Task.CompletedTask;
+            }
+
+            try
+            {
+                var packet = new CommandPacket
+                {
+                    Command = Command.QueryTime
                 };
 
                 return SendPacketAsync(socket.OutputStream.AsStreamForWrite(), packet);
@@ -156,8 +215,6 @@ namespace LibraTalk.Windows.Client.Services
                 throw new ArgumentNullException(nameof(packet));
             }
 
-//            var stream = new MemoryStream();
-
             using (var writer = new BinaryWriter(new MemoryStream()))
             {
                 var content = GetSerializedPacket(packet);
@@ -168,14 +225,14 @@ namespace LibraTalk.Windows.Client.Services
                 writer.Write(content);
                 writer.Flush();
 
-//                stream.Seek(0L, SeekOrigin.Begin);
+                writer.BaseStream.Seek(0L, SeekOrigin.Begin);
 
                 await writer.BaseStream.CopyToAsync(outgoing);
                 await outgoing.FlushAsync();
             }
         }
 
-        private static TPacket ReceivePacket<TPacket>(Stream stream)
+        private static TPacket LoadPacketContent<TPacket>(Stream stream)
             where TPacket : IIncomingPacket
         {
             var serializer = new DataContractHessianSerializer(typeof (TPacket));
@@ -220,17 +277,32 @@ namespace LibraTalk.Windows.Client.Services
 
             switch (packet.PacketType)
             {
-                case PacketType.Profile:
+                case PacketType.QueryProfileResponse:
                 {
                     var content = packet.Content;
-                    ProfileResponsePacket profilePacket;
+                    QueryProfileResponsePacket response;
 
                     using (var memoryStream = new MemoryStream(content.Array, content.Offset, content.Count))
                     {
-                        profilePacket = ReceivePacket<ProfileResponsePacket>(memoryStream);
+                        response = LoadPacketContent<QueryProfileResponsePacket>(memoryStream);
                     }
 
-                    packetReceived.Invoke(this, new PacketReceivedEventArgs(profilePacket));
+                    packetReceived.Invoke(this, new PacketReceivedEventArgs(response));
+
+                    break;
+                }
+
+                case PacketType.DateTime:
+                {
+                    var content = packet.Content;
+                    DateTimeResponsePacket response;
+
+                    using (var memoryStream = new MemoryStream(content.Array, content.Offset, content.Count))
+                    {
+                        response = LoadPacketContent<DateTimeResponsePacket>(memoryStream);
+                    }
+
+                    packetReceived.Invoke(this, new PacketReceivedEventArgs(response));
 
                     break;
                 }

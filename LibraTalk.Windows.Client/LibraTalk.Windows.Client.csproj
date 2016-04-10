@@ -118,7 +118,7 @@
     <Compile Include="Services\IApplicationOptionsProvider.cs" />
     <Compile Include="Services\Packet.cs" />
     <Compile Include="Services\SocketCommunicationService.cs" />
-    <Compile Include="Services\UserProvider.cs" />
+    <Compile Include="Services\Session.cs" />
     <Compile Include="ViewModels\DeferUpdate.cs" />
     <Compile Include="ViewModels\HostPageViewModel.cs" />
     <Compile Include="ViewModels\Interfaces\ICleanupRequired.cs" />

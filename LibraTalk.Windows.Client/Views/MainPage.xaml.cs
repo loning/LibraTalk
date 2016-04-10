@@ -24,43 +24,21 @@ namespace LibraTalk.Windows.Client.Views
             service.PacketReceived += OnCommunicationServicePacketReceived;
             InitializeComponent();
         }
-
-        private static Guid GetUserId()
-        {
-            const string key = "Chat.UserName";
-
-            Guid id;
-
-            var value = ApplicationData.Current.LocalSettings.Values[key];
-
-            if (null == value)
-            {
-                id = Guid.NewGuid();
-                ApplicationData.Current.LocalSettings.Values[key] = id;
-            }
-            else
-            {
-                id = (Guid)value;
-            }
-
-            return id;
-        }
-
-        private void OnGetUserProfile(ConsoleCommand sender, ExecuteConsoleCommandEventArgs args)
-        {
-//            var deferral = args.GetDeferral();
-
-            service.WhoAmI(GetUserId());
-
-//            deferral.Complete();
-        }
-
-        private async void OnWriteUserProfile(ConsoleCommand sender, ExecuteConsoleCommandEventArgs args)
+        
+        private async void OnQueryProfile(ConsoleCommand sender, ExecuteConsoleCommandEventArgs args)
         {
             var deferral = args.GetDeferral();
 
-//            await userProvider.SetProfileAsync(profile);
-            args.Console.WriteLine("Write-Profile: Ok", LogLevel.Success);
+            await service.GetNameAsync();
+
+            deferral.Complete();
+        }
+
+        private async void OnUpdateProfile(ConsoleCommand sender, ExecuteConsoleCommandEventArgs args)
+        {
+            var deferral = args.GetDeferral();
+
+            await service.SetNameAsync(args.Arguments.First());
 
             deferral.Complete();
         }
@@ -71,7 +49,7 @@ namespace LibraTalk.Windows.Client.Views
 
             if (null == profile)
             {
-                args.Console.WriteLine("Set-Profile: Get-Profile command sould be executed first.", LogLevel.Error);
+                args.Console.WriteLine("Set-QueryProfileResponse: Get-QueryProfileResponse command sould be executed first.", LogLevel.Error);
             }
             else
             {
@@ -80,12 +58,12 @@ namespace LibraTalk.Windows.Client.Views
                 if (args.Options.Any(option => "name" == option.Item1))
                 {
                     profile.Name = arg;
-                    args.Console.WriteLine("Set-Profile: Name updated", LogLevel.Success);
+                    args.Console.WriteLine("Set-QueryProfileResponse: Name updated", LogLevel.Success);
                 }
                 else if (args.Options.Any(option => "id" == option.Item1))
                 {
                     profile.Id = Guid.Parse(arg);
-                    args.Console.WriteLine("Set-Profile: Id updated", LogLevel.Success);
+                    args.Console.WriteLine("Set-QueryProfileResponse: Id updated", LogLevel.Success);
                 }
             }
 
@@ -152,6 +130,7 @@ namespace LibraTalk.Windows.Client.Views
             deferral.Complete();
         }
 
+/*
         private async void OnMessageReceived(UserProvider sender, ReceivingMessageEventArgs args)
         {
             var print = new DispatchedHandler(() =>
@@ -172,7 +151,9 @@ namespace LibraTalk.Windows.Client.Views
                 await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, print);
             }
         }
+*/
 
+/*
         private async void OnPollingCancelled(UserProvider sender, PollingCancelledEventArgs args)
         {
             var print = new DispatchedHandler(() =>
@@ -189,6 +170,7 @@ namespace LibraTalk.Windows.Client.Views
                 await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, print);
             }
         }
+*/
 
         private void OnClearMessage(ConsoleCommand sender, ExecuteConsoleCommandEventArgs args)
         {
@@ -203,9 +185,9 @@ namespace LibraTalk.Windows.Client.Views
         {
             var packet = args.Packet;
 
-            if (PacketType.Profile == packet.PacketType)
+            if (PacketType.QueryProfileResponse == packet.PacketType)
             {
-                var profile = (ProfileResponsePacket) args.Packet;
+                var profile = (QueryProfileResponsePacket) args.Packet;
 
                 var print = new DispatchedHandler(() =>
                 {
@@ -230,7 +212,7 @@ namespace LibraTalk.Windows.Client.Views
         private async void OnContentPageLoaded(object sender, RoutedEventArgs e)
         {
 //            var temp = SocketActivityInformation.AllSockets;
-            await service.ConnectAsync();
+            await service.ConnectAsync(Session.GetId());
         }
     }
 }

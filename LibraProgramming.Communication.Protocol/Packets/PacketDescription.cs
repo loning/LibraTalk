@@ -13,12 +13,27 @@
         /// <summary>
         /// 
         /// </summary>
-        Profile,
+        QueryProfileResponse,
 
         /// <summary>
         /// 
         /// </summary>
-        Command
+        UpdateProfileRequest,
+
+        /// <summary>
+        /// 
+        /// </summary>
+        Command,
+
+        /// <summary>
+        /// 
+        /// </summary>
+        CommandWithPayload,
+
+        /// <summary>
+        /// 
+        /// </summary>
+        DateTime
     }
 
     public class PacketDescription

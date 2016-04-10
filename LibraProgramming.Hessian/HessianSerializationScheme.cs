@@ -24,10 +24,10 @@ namespace LibraProgramming.Hessian
             Element = element;
         }
 
-        public static HessianSerializationScheme CreateFromType(Type type, IObjectSerializerFactory factory)
+        public static HessianSerializationScheme CreateFromType(Type type)
         {
             var catalog = new Dictionary<Type, ISerializationElement>();
-            var element = CreateSerializationElement(type, catalog, factory);
+            var element = CreateSerializationElement(type, catalog);
 
             return new HessianSerializationScheme(type, element);
         }
@@ -42,20 +42,22 @@ namespace LibraProgramming.Hessian
             return Element.Deserialize(reader, context);
         }
 
-        private static ISerializationElement CreateSerializationElement(Type type, IDictionary<Type, ISerializationElement> catalog, IObjectSerializerFactory factory)
+        private static ISerializationElement CreateSerializationElement(Type type, IDictionary<Type, ISerializationElement> catalog)
         {
             var info = type.GetTypeInfo();
 
             if (IsSimpleType(info))
             {
-                var serializer = factory.GetSerializer(type);
+                var resolver = HessianObjectSerializerResolver.Current;
+                var serializer = resolver.GetSerializer(type);
+
                 return new ValueElement(type, serializer);
             }
             
-            return BuildSerializationObject(type, catalog, factory);
+            return BuildSerializationObject(type, catalog);
         }
 
-        private static ISerializationElement BuildSerializationObject(Type type, IDictionary<Type, ISerializationElement> catalog, IObjectSerializerFactory factory)
+        private static ISerializationElement BuildSerializationObject(Type type, IDictionary<Type, ISerializationElement> catalog)
         {
             ISerializationElement existing;
 
@@ -91,7 +93,7 @@ namespace LibraProgramming.Hessian
                     continue;
                 }
 
-                var prop = new PropertyElement(property, CreateSerializationElement(property.PropertyType, catalog, factory));
+                var prop = new PropertyElement(property, CreateSerializationElement(property.PropertyType, catalog));
 
                 properties.Add(prop);
             }

@@ -10,11 +10,20 @@ namespace LibraProgramming.Communication.Protocol.Packets
     public class HelloPacket : IOutgoingPacket, IIncomingPacket
     {
         public PacketType PacketType => PacketType.Hello;
+
+        [DataMember(Name = "sid")]
+        public Guid SessionId
+        {
+            get;
+            set;
+        }
     }
 
+//    public enum Command
     public enum Command
     {
-
+        QueryProfile = 0x01,
+        QueryTime
     }
 
     /// <summary>
@@ -23,7 +32,7 @@ namespace LibraProgramming.Communication.Protocol.Packets
     [DataContract(Name = "packet.command")]
     public class CommandPacket : IOutgoingPacket, IIncomingPacket
     {
-        public PacketType PacketType => PacketType.Command;
+        public virtual PacketType PacketType => PacketType.Command;
 
         [DataMember(Name = "cmd")]
         public Command Command
@@ -36,13 +45,13 @@ namespace LibraProgramming.Communication.Protocol.Packets
     /// <summary>
     /// 
     /// </summary>
-    [DataContract(Name = "packet.profile")]
-    public class ProfileRequestPacket : IOutgoingPacket, IIncomingPacket
+    [DataContract(Name = "packet.command.payload")]
+    public class CommandPacket<TPayload> : CommandPacket
     {
-        public PacketType PacketType => PacketType.Profile;
+        public override PacketType PacketType => PacketType.CommandWithPayload;
 
-        [DataMember(Name = "id")]
-        public Guid UserId
+        [DataMember(Name = "payload")]
+        public TPayload Payload
         {
             get;
             set;
@@ -53,9 +62,9 @@ namespace LibraProgramming.Communication.Protocol.Packets
     /// 
     /// </summary>
     [DataContract(Name = "packet.profile")]
-    public class ProfileResponsePacket : IOutgoingPacket, IIncomingPacket
+    public class QueryProfileResponsePacket : IOutgoingPacket, IIncomingPacket
     {
-        public PacketType PacketType => PacketType.Profile;
+        public PacketType PacketType => PacketType.QueryProfileResponse;
 
         [DataMember(Name = "id")]
         public Guid UserId
@@ -66,6 +75,38 @@ namespace LibraProgramming.Communication.Protocol.Packets
 
         [DataMember(Name = "name")]
         public string UserName
+        {
+            get;
+            set;
+        }
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    [DataContract(Name = "packet.profile")]
+    public class UpdateProfileRequestPacket : IOutgoingPacket, IIncomingPacket
+    {
+        public PacketType PacketType => PacketType.UpdateProfileRequest;
+
+        [DataMember(Name = "name")]
+        public string UserName
+        {
+            get;
+            set;
+        }
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    [DataContract(Name = "packet.datetime")]
+    public class DateTimeResponsePacket : IOutgoingPacket, IIncomingPacket
+    {
+        public PacketType PacketType => PacketType.DateTime;
+
+        [DataMember(Name = "now")]
+        public DateTime NowUtc
         {
             get;
             set;

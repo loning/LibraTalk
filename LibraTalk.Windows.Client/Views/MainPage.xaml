@@ -22,12 +22,14 @@
             FontSize="16">
             <controls:SimpleConsoleCommandProcessor>
                 <controls:ConsoleCommand
-                    CommandName="who-am-i"
-                    ExecuteCommand="OnGetUserProfile"
+                    CommandName="whoami"
+                    ExecuteCommand="OnQueryProfile"
                 />
                 <controls:ConsoleCommand
-                    CommandName="write-profile"
-                    ExecuteCommand="OnWriteUserProfile"
+                    CommandName="update"
+                    MinArgumentsCount="1"
+                    MaxArgumentsCount="1"
+                    ExecuteCommand="OnUpdateProfile"
                 />
                 <controls:ConsoleCommand
                     CommandName="set-profile"

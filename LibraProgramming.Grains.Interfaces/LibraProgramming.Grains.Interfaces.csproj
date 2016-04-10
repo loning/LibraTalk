@@ -73,6 +73,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IDateTimeGrain.cs" />
     <Compile Include="RoomMessage.cs" />
     <Compile Include="PublishMessage.cs" />
     <Compile Include="IChatRoomGrain.cs" />

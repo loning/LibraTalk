@@ -35,8 +35,7 @@ namespace LibraProgramming.Hessian
                 throw new ArgumentNullException(nameof(stream));
             }
 
-            var factory = new HessianObjectSerializerFactory();
-            var scheme = HessianSerializationScheme.CreateFromType(type, factory);
+            var scheme = HessianSerializationScheme.CreateFromType(type);
 
             using (var writer = new HessianOutputWriter(stream))
             {
@@ -57,8 +56,7 @@ namespace LibraProgramming.Hessian
                 throw new ArgumentNullException(nameof(stream));
             }
 
-            var factory = new HessianObjectSerializerFactory();
-            var scheme = HessianSerializationScheme.CreateFromType(type, factory);
+            var scheme = HessianSerializationScheme.CreateFromType(type);
 
             using (var reader = new HessianInputReader(stream))
             {

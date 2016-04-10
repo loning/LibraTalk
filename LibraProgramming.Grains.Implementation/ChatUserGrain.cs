@@ -29,12 +29,10 @@ namespace LibraProgramming.Grains.Implementation
         {
             return Task.FromResult(new UserProfile
             {
-                Id = this.GetPrimaryKey(),
                 Name = State.Name
             });
         }
 
-/*
         Task IChatUser.SetProfileAsync(UserProfile profile)
         {
             if (null == profile)
@@ -42,18 +40,10 @@ namespace LibraProgramming.Grains.Implementation
                 throw new ArgumentNullException(nameof(profile));
             }
 
-            if (this.GetPrimaryKey() != profile.Id)
-            {
-                throw new ArgumentOutOfRangeException();
-            }
-
             State.Name = profile.Name;
-
-            logger.Info($"LibraProgramming.Grains.Implementation.ChatUser.SetName | Changing for user: {profile.Id} to: {State.Name}");
 
             return WriteStateAsync();
         }
-*/
 
 /*
         Task IChatUser.PublishMessageAsync(PublishMessage message)

@@ -19,7 +19,7 @@ namespace LibraProgramming.Grains.Interfaces
         /// </summary>
         /// <param name="profile"></param>
         /// <returns></returns>
-//        Task SetProfileAsync(UserProfile profile);
+        Task SetProfileAsync(UserProfile profile);
 
 //        Task PublishMessageAsync(PublishMessage message);
     }
