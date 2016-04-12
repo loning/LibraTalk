@@ -194,6 +194,34 @@ namespace LibraTalk.Windows.Client.Services
             }
         }
 
+        public Task SendMessageAsync(string text)
+        {
+            if (CommunicationServiceState.Connected != State)
+            {
+                return Task.CompletedTask;
+            }
+
+            try
+            {
+                var packet = new PublishMessagePacket
+                {
+                    Message = text
+                };
+
+                return SendPacketAsync(socket.OutputStream.AsStreamForWrite(), packet);
+            }
+            catch (WebException exception)
+            {
+                State = CommunicationServiceState.Failed;
+
+                var status = WebSocketError.GetStatus(exception.HResult);
+
+                Debug.WriteLine("Error: {0}", status);
+
+                return Task.CompletedTask;
+            }
+        }
+
         private static byte[] GetSerializedPacket<TPacket>(TPacket packet)
             where TPacket : IOutgoingPacket
         {

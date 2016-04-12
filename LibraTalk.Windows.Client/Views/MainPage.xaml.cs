@@ -74,20 +74,12 @@ namespace LibraTalk.Windows.Client.Views
         {
             var deferral = args.GetDeferral();
 
-            if (0 <= args.Arguments.Count)
-            {
-//                await userProvider.PublishMessageAsync(args.Arguments.First());
-                args.Console.WriteLine("Publish-Message: Ok", LogLevel.Success);
-            }
-            else
-            {
-                args.Console.WriteLine("Publish-Message: Unknown error.", LogLevel.Error);
-            }
+            await service.SendMessageAsync(args.Arguments.First());
 
             deferral.Complete();
         }
 
-        private async void OnJoinRoomMessage(ConsoleCommand sender, ExecuteConsoleCommandEventArgs args)
+        /*private async void OnJoinRoomMessage(ConsoleCommand sender, ExecuteConsoleCommandEventArgs args)
         {
             var deferral = args.GetDeferral();
 
@@ -102,8 +94,9 @@ namespace LibraTalk.Windows.Client.Views
             }
 
             deferral.Complete();
-        }
+        }*/
 
+/*
         private void OnPollRoomMessage(ConsoleCommand sender, ExecuteConsoleCommandEventArgs args)
         {
             var deferral = args.GetDeferral();
@@ -129,6 +122,7 @@ namespace LibraTalk.Windows.Client.Views
 
             deferral.Complete();
         }
+*/
 
 /*
         private async void OnMessageReceived(UserProvider sender, ReceivingMessageEventArgs args)
@@ -185,26 +179,36 @@ namespace LibraTalk.Windows.Client.Views
         {
             var packet = args.Packet;
 
-            if (PacketType.QueryProfileResponse == packet.PacketType)
+            switch (packet.PacketType)
             {
-                var profile = (QueryProfileResponsePacket) args.Packet;
-
-                var print = new DispatchedHandler(() =>
+                case PacketType.QueryProfileResponse:
                 {
-                    CommandWindow
-                        .WriteLine(
-                            String.Format("Who-am-i: ({0:D})\"{1}\"", profile.UserId, profile.UserName),
-                            LogLevel.Information
-                        );
-                });
+                    var profile = (QueryProfileResponsePacket) args.Packet;
 
-                if (Dispatcher.HasThreadAccess)
-                {
-                    print.Invoke();
+                    var print = new DispatchedHandler(() =>
+                    {
+                        CommandWindow
+                            .WriteLine(
+                                String.Format("Whoami: ({0:D})\"{1}\"", profile.UserId, profile.UserName),
+                                LogLevel.Information
+                            );
+                    });
+
+                    if (Dispatcher.HasThreadAccess)
+                    {
+                        print.Invoke();
+                    }
+                    else
+                    {
+                        await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, print);
+                    }
+                    break;
                 }
-                else
+
+                case PacketType.QueryMessageResponse:
                 {
-                    await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, print);
+
+                    break;
                 }
             }
         }

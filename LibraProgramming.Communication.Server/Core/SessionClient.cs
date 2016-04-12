@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.Eventing.Reader;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
@@ -32,13 +33,7 @@ namespace LibraProgramming.Communication.Server.Core
             cancellationToken = CancellationToken.None;
         }
 
-        public Task StartAsync()
-        {
-//            Task.Run(MessageLoopAsync, cancellationToken).ConfigureAwait(false);
-            return MessageLoopAsync();
-        }
-
-        private async Task MessageLoopAsync()
+        public async Task StartAsync()
         {
             while (true)
             {
@@ -88,12 +83,12 @@ namespace LibraProgramming.Communication.Server.Core
                         var request = await Socket.ReadPacketAsync<UpdateProfileRequestPacket>(description, cancellationToken);
                         var user = GrainClient.GrainFactory.GetGrain<IChatUser>(SessionId);
 
-                            var profile = new UserProfile
+                        var profile = new UserProfile
                         {
                             Name = request.UserName
                         };
 
-                            var packet = new QueryProfileResponsePacket
+                        var packet = new QueryProfileResponsePacket
                         {
                             UserId = SessionId,
                             UserName = request.UserName
@@ -104,6 +99,13 @@ namespace LibraProgramming.Communication.Server.Core
                                 user.SetProfileAsync(profile),
                                 Socket.SendPacketAsync(packet, cancellationToken)
                             );
+
+                        break;
+                    }
+
+                    case PacketType.PublishMessageRequest:
+                    {
+                        var request = await Socket.ReadPacketAsync<PublishMessagePacket>(description, cancellationToken);
 
                         break;
                     }

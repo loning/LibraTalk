@@ -33,7 +33,17 @@
         /// <summary>
         /// 
         /// </summary>
-        DateTime
+        DateTime,
+
+        /// <summary>
+        /// 
+        /// </summary>
+        PublishMessageRequest,
+
+        /// <summary>
+        /// 
+        /// </summary>
+        QueryMessageResponse
     }
 
     public class PacketDescription

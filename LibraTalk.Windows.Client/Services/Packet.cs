@@ -8,7 +8,7 @@ namespace LibraTalk.Windows.Client.Services
         public ArraySegment<byte> Content
         {
             get;
-        } 
+        }
 
         public Packet(PacketType packetType, int contentLength, byte[] content)
             : base(packetType, contentLength)

@@ -26,19 +26,19 @@
                     ExecuteCommand="OnQueryProfile"
                 />
                 <controls:ConsoleCommand
-                    CommandName="update"
+                    CommandName="set-name"
                     MinArgumentsCount="1"
                     MaxArgumentsCount="1"
                     ExecuteCommand="OnUpdateProfile"
                 />
-                <controls:ConsoleCommand
+                <!--<controls:ConsoleCommand
                     CommandName="set-profile"
                     MaxArgumentsCount="1"
                     MinArgumentsCount="1"
                     ExecuteCommand="OnSetUserProfile">
                     <controls:ConsoleCommandOption OptionName="name" />
                     <controls:ConsoleCommandOption OptionName="id" />
-                </controls:ConsoleCommand>
+                </controls:ConsoleCommand>-->
                 <controls:ConsoleCommand
                     CommandName="publish-message"
                     IsDefault="True"
@@ -46,7 +46,7 @@
                     MaxArgumentsCount="1"
                     ExecuteCommand="OnPublishMessage"
                 />
-                <controls:ConsoleCommand
+                <!--<controls:ConsoleCommand
                     CommandName="join-room"
                     MinArgumentsCount="1"
                     MaxArgumentsCount="1"
@@ -57,7 +57,7 @@
                     ExecuteCommand="OnPollRoomMessage">
                     <controls:ConsoleCommandOption OptionName="enable" />
                     <controls:ConsoleCommandOption OptionName="disable" />
-                </controls:ConsoleCommand>
+                </controls:ConsoleCommand>-->
                 <controls:ConsoleCommand
                     CommandName="clear"
                     ExecuteCommand="OnClearMessage"

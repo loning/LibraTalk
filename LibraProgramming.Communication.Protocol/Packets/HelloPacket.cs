@@ -19,7 +19,19 @@ namespace LibraProgramming.Communication.Protocol.Packets
         }
     }
 
-//    public enum Command
+    [DataContract(Name = "packet.message")]
+    public class PublishMessagePacket : IOutgoingPacket, IIncomingPacket
+    {
+        public PacketType PacketType => PacketType.PublishMessageRequest;
+
+        [DataMember(Name = "text")]
+        public string Message
+        {
+            get;
+            set;
+        }
+    }
+
     public enum Command
     {
         QueryProfile = 0x01,
