@@ -5,6 +5,7 @@ using Orleans;
 
 namespace LibraProgramming.Grains.Implementation
 {
+/*
     public class DateTimeGrain : IDateTimeGrain
     {
         public Task<DateTime> GetTimeAsync()
@@ -25,4 +26,5 @@ namespace LibraProgramming.Grains.Implementation
             }
         }
     }
+*/
 }

@@ -2,6 +2,7 @@
 
 namespace LibraProgramming.Grains.Interfaces
 {
+/*
     [Serializable]
     public class PublishMessage
     {
@@ -11,4 +12,5 @@ namespace LibraProgramming.Grains.Interfaces
              set;
          }
     }
+*/
 }

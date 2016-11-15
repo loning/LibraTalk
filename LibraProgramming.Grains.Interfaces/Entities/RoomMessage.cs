@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace LibraProgramming.Grains.Interfaces
+namespace LibraProgramming.Grains.Interfaces.Entities
 {
     public class RoomMessage
     {
@@ -11,12 +11,6 @@ namespace LibraProgramming.Grains.Interfaces
          }
 
         public Guid PublisherId
-        {
-            get;
-            set;
-        }
-
-        public string PublisherNick
         {
             get;
             set;

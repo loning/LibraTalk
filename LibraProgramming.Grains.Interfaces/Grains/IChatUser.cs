@@ -1,7 +1,8 @@
 using System.Threading.Tasks;
+using LibraProgramming.Grains.Interfaces.Entities;
 using Orleans;
 
-namespace LibraProgramming.Grains.Interfaces
+namespace LibraProgramming.Grains.Interfaces.Grains
 {
     /// <summary>
     /// Grain interface IChatUser
@@ -21,6 +22,18 @@ namespace LibraProgramming.Grains.Interfaces
         /// <returns></returns>
         Task SetProfileAsync(UserProfile profile);
 
-//        Task PublishMessageAsync(PublishMessage message);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        Task SetCurrentRoomAsync(IChatRoom value);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        Task PublishMessageAsync(UserMessage message);
     }
 }
