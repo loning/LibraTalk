@@ -121,10 +121,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bootstraps\WebApiBootstrap.cs" />
-    <Compile Include="Controllers\NexusController.cs" />
-    <Compile Include="Core\SessionClient.cs" />
-    <Compile Include="Core\SessionManager.cs" />
-    <Compile Include="Core\WebSocketExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -148,6 +144,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Controllers\" />
+    <Folder Include="Core\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
