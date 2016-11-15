@@ -14,7 +14,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>LibraProgramming.Communication.Server</RootNamespace>
-    <AssemblyName>LibraProgramming.Communication.Server</AssemblyName>
+    <AssemblyName>LibraProgramming.Web.API</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
@@ -141,17 +141,9 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\LibraProgramming.Communication.Protocol\LibraProgramming.Communication.Protocol.csproj">
-      <Project>{c423b122-d7e8-423e-b293-0c5eca98e0fd}</Project>
-      <Name>LibraProgramming.Communication.Protocol</Name>
-    </ProjectReference>
     <ProjectReference Include="..\LibraProgramming.Grains.Interfaces\LibraProgramming.Grains.Interfaces.csproj">
       <Project>{9c390baa-348b-4665-8503-a3f1dcca4c64}</Project>
       <Name>LibraProgramming.Grains.Interfaces</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\LibraProgramming.Hessian\LibraProgramming.Hessian.csproj">
-      <Project>{1f1a0080-fb43-41a8-b334-01762a0f0cc5}</Project>
-      <Name>LibraProgramming.Hessian</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

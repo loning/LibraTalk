@@ -29,17 +29,17 @@ namespace LibraProgramming.Grains.Host
 {
     internal class OrleansHostWrapper : IDisposable
     {
-        private SiloHost _siloHost;
+        private SiloHost silo;
 
         public bool Debug
         {
             get
             {
-                return _siloHost != null && _siloHost.Debug;
+                return silo != null && silo.Debug;
             }
             set
             {
-                _siloHost.Debug = value;
+                silo.Debug = value;
             }
         }
 
@@ -51,28 +51,27 @@ namespace LibraProgramming.Grains.Host
 
         public bool Run()
         {
-            bool ok = false;
+            var ok = false;
 
             try
             {
-                _siloHost.InitializeOrleansSilo();
+                silo.InitializeOrleansSilo();
 
-                ok = _siloHost.StartOrleansSilo();
+                ok = silo.StartOrleansSilo();
 
                 if (ok)
                 {
-                    Console.WriteLine(string.Format("Successfully started Orleans silo '{0}' as a {1} node.", _siloHost.Name, _siloHost.Type));
+                    Console.WriteLine($"Successfully started Orleans silo '{silo.Name}' as a {silo.Type} node.");
                 }
                 else
                 {
-                    throw new SystemException(string.Format("Failed to start Orleans silo '{0}' as a {1} node.", _siloHost.Name, _siloHost.Type));
+                    throw new SystemException($"Failed to start Orleans silo '{silo.Name}' as a {silo.Type} node.");
                 }
             }
             catch (Exception exc)
             {
-                _siloHost.ReportStartupError(exc);
-                var msg = string.Format("{0}:\n{1}\n{2}", exc.GetType().FullName, exc.Message, exc.StackTrace);
-                Console.WriteLine(msg);
+                silo.ReportStartupError(exc);
+                Console.WriteLine($"{exc.GetType().FullName}:\n{exc.Message}\n{exc.StackTrace}");
             }
 
             return ok;
@@ -80,19 +79,17 @@ namespace LibraProgramming.Grains.Host
 
         public bool Stop()
         {
-            bool ok = false;
+            var ok = false;
 
             try
             {
-                _siloHost.StopOrleansSilo();
-
-                Console.WriteLine(string.Format("Orleans silo '{0}' shutdown.", _siloHost.Name));
+                silo.StopOrleansSilo();
+                Console.WriteLine($"Orleans silo '{silo.Name}' shutdown.");
             }
             catch (Exception exc)
             {
-                _siloHost.ReportStartupError(exc);
-                var msg = string.Format("{0}:\n{1}\n{2}", exc.GetType().FullName, exc.Message, exc.StackTrace);
-                Console.WriteLine(msg);
+                silo.ReportStartupError(exc);
+                Console.WriteLine($"{exc.GetType().FullName}:\n{exc.Message}\n{exc.StackTrace}");
             }
 
             return ok;
@@ -100,7 +97,7 @@ namespace LibraProgramming.Grains.Host
 
         private void Init()
         {
-            _siloHost.LoadOrleansConfig();
+            silo.LoadOrleansConfig();
         }
 
         private bool ParseArguments(string[] args)
@@ -174,14 +171,14 @@ namespace LibraProgramming.Grains.Host
                 }
             }
 
-            _siloHost = new SiloHost(siloName)
+            silo = new SiloHost(siloName)
             {
                 ConfigFileName = configFileName
             };
 
             if (deploymentId != null)
             {
-                _siloHost.DeploymentId = deploymentId;
+                silo.DeploymentId = deploymentId;
             }
 
             return true;
@@ -206,8 +203,8 @@ Where:
 
         protected virtual void Dispose(bool dispose)
         {
-            _siloHost.Dispose();
-            _siloHost = null;
+            silo.Dispose();
+            silo = null;
         }
     }
 }
