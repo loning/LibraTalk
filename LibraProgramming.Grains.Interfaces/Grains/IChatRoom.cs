@@ -6,10 +6,10 @@ namespace LibraProgramming.Grains.Interfaces.Grains
 {
     public interface IChatRoom : IGrainWithStringKey
     {
-        Task AdmitUserAsync(IChatUser user);
+        Task JoinAsync(IChatUser user);
 
-        Task QuitUserAsync(IChatUser user);
+        Task LeaveAsync(IChatUser user);
 
-        Task PublishMessageAsync(IChatUser user, UserMessage message);
+        Task PublishAsync(IChatUser user, UserMessage message);
     }
 }

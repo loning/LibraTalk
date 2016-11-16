@@ -2,7 +2,7 @@
 <%@ Import Namespace="System.IO" %>
 <%@ Import Namespace="System.Web.Hosting" %>
 <%@ Import Namespace="System.Web.Http" %>
-<%@ Import Namespace="LibraProgramming.Communication.Server.Bootstraps" %>
+<%@ Import Namespace="LibraProgramming.Web.Services.Bootstraps" %>
 <%@ Import Namespace="Orleans" %>
 
 <script language="c#" type="text/C#" runat="server">

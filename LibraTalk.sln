@@ -1,10 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibraProgramming.Windows.Locator", "LibraProgramming.Windows.Locator\LibraProgramming.Windows.Locator.csproj", "{F5D1F73F-3DE8-430D-BA05-63DCD5979F3A}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibraProgramming.Grains.Interfaces", "LibraProgramming.Grains.Interfaces\LibraProgramming.Grains.Interfaces.csproj", "{9C390BAA-348B-4665-8503-A3F1DCCA4C64}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibraProgramming.Grains.Implementation", "LibraProgramming.Grains.Implementation\LibraProgramming.Grains.Implementation.csproj", "{EBC0C14D-B578-47B0-AD80-FB757B12CA06}"
@@ -16,7 +14,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		readme.md = readme.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibraProgramming.Communication.Server", "LibraProgramming.Communication.Server\LibraProgramming.Communication.Server.csproj", "{DA9C91C1-2BC1-41EE-BF34-47A5172ECEFD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibraProgramming.Web.Services", "LibraProgramming.Web.Services\LibraProgramming.Web.Services.csproj", "{DA9C91C1-2BC1-41EE-BF34-47A5172ECEFD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,22 +28,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{F5D1F73F-3DE8-430D-BA05-63DCD5979F3A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F5D1F73F-3DE8-430D-BA05-63DCD5979F3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F5D1F73F-3DE8-430D-BA05-63DCD5979F3A}.Debug|ARM.ActiveCfg = Debug|ARM
-		{F5D1F73F-3DE8-430D-BA05-63DCD5979F3A}.Debug|ARM.Build.0 = Debug|ARM
-		{F5D1F73F-3DE8-430D-BA05-63DCD5979F3A}.Debug|x64.ActiveCfg = Debug|x64
-		{F5D1F73F-3DE8-430D-BA05-63DCD5979F3A}.Debug|x64.Build.0 = Debug|x64
-		{F5D1F73F-3DE8-430D-BA05-63DCD5979F3A}.Debug|x86.ActiveCfg = Debug|x86
-		{F5D1F73F-3DE8-430D-BA05-63DCD5979F3A}.Debug|x86.Build.0 = Debug|x86
-		{F5D1F73F-3DE8-430D-BA05-63DCD5979F3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F5D1F73F-3DE8-430D-BA05-63DCD5979F3A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F5D1F73F-3DE8-430D-BA05-63DCD5979F3A}.Release|ARM.ActiveCfg = Release|ARM
-		{F5D1F73F-3DE8-430D-BA05-63DCD5979F3A}.Release|ARM.Build.0 = Release|ARM
-		{F5D1F73F-3DE8-430D-BA05-63DCD5979F3A}.Release|x64.ActiveCfg = Release|x64
-		{F5D1F73F-3DE8-430D-BA05-63DCD5979F3A}.Release|x64.Build.0 = Release|x64
-		{F5D1F73F-3DE8-430D-BA05-63DCD5979F3A}.Release|x86.ActiveCfg = Release|x86
-		{F5D1F73F-3DE8-430D-BA05-63DCD5979F3A}.Release|x86.Build.0 = Release|x86
 		{9C390BAA-348B-4665-8503-A3F1DCCA4C64}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9C390BAA-348B-4665-8503-A3F1DCCA4C64}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9C390BAA-348B-4665-8503-A3F1DCCA4C64}.Debug|ARM.ActiveCfg = Debug|Any CPU

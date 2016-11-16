@@ -13,8 +13,8 @@
     <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>LibraProgramming.Communication.Server</RootNamespace>
-    <AssemblyName>LibraProgramming.Web.API</AssemblyName>
+    <RootNamespace>LibraProgramming.Web.Services</RootNamespace>
+    <AssemblyName>LibraProgramming.Web.Services</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
@@ -121,6 +121,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bootstraps\WebApiBootstrap.cs" />
+    <Compile Include="Controllers\ChatController.cs" />
+    <Compile Include="Controllers\ProfileController.cs" />
+    <Compile Include="Models\UserDescriptorModel.cs" />
+    <Compile Include="Models\UserProfileModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -146,7 +150,6 @@
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Controllers\" />
     <Folder Include="Core\" />
   </ItemGroup>
   <PropertyGroup>

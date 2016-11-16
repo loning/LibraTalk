@@ -14,7 +14,7 @@ namespace LibraProgramming.Grains.Implementation.Grains
     {
         private IAsyncStream<RoomMessage> messages;
 
-        async Task IChatRoom.AdmitUserAsync(IChatUser user)
+        async Task IChatRoom.JoinAsync(IChatUser user)
         {
             if (null == user)
             {
@@ -30,7 +30,7 @@ namespace LibraProgramming.Grains.Implementation.Grains
             }
         }
 
-        async Task IChatRoom.QuitUserAsync(IChatUser user)
+        async Task IChatRoom.LeaveAsync(IChatUser user)
         {
             if (null == user)
             {
@@ -46,7 +46,7 @@ namespace LibraProgramming.Grains.Implementation.Grains
             }
         }
 
-        async Task IChatRoom.PublishMessageAsync(IChatUser user, UserMessage message)
+        async Task IChatRoom.PublishAsync(IChatUser user, UserMessage message)
         {
             if (null == user)
             {

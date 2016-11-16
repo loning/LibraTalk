@@ -84,7 +84,7 @@ namespace LibraProgramming.Grains.Implementation.Grains
                 throw new InvalidOperationException();
             }
 
-            return room.PublishMessageAsync(this, message);
+            return room.PublishAsync(this, message);
         }
     }
 }

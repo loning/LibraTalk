@@ -1,6 +1,6 @@
 ﻿using System.Web.Http;
 
-namespace LibraProgramming.Communication.Server.Bootstraps
+namespace LibraProgramming.Web.Services.Bootstraps
 {
     public static class WebApiBootstrap
     {
