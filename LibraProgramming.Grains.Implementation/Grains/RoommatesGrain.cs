@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using LibraProgramming.Grains.Interfaces.Grains;
 using Orleans;
@@ -78,6 +79,11 @@ namespace LibraProgramming.Grains.Implementation.Grains
             var id = user.GetPrimaryKey();
 
             return Task.FromResult(State.Users.Exists(roommate => SameUser(roommate, id)));
+        }
+
+        Task<IReadOnlyCollection<IChatUser>> IRoommates.GetUsersAsync()
+        {
+            return Task.FromResult<IReadOnlyCollection<IChatUser>>(new ReadOnlyCollection<IChatUser>(State.Users));
         }
 
         /// <summary>

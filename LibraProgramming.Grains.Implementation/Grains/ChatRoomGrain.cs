@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using LibraProgramming.Grains.Interfaces;
 using LibraProgramming.Grains.Interfaces.Entities;
@@ -65,6 +66,13 @@ namespace LibraProgramming.Grains.Implementation.Grains
             {
                 // publish message to stream
             }
+        }
+
+        Task<IReadOnlyCollection<IChatUser>> IChatRoom.GetUsersAsync()
+        {
+            return GrainFactory
+                .GetGrain<IRoommates>(this.GetPrimaryKeyString())
+                .GetUsersAsync();
         }
 
         public override Task OnActivateAsync()

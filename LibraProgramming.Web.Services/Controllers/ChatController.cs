@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -8,11 +9,42 @@ using Orleans;
 
 namespace LibraProgramming.Web.Services.Controllers
 {
-    // PUT http://localhost:8080/api/chat/room1
-    // DELETE http://localhost:8080/api/chat/room1
-
+    /// <summary>
+    /// 
+    /// </summary>
     public class ChatController : ApiController
     {
+        /// <summary>
+        /// GET http://localhost:8080/api/chat/room1
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<IHttpActionResult> Get(string id)
+        {
+            if (String.IsNullOrEmpty(id))
+            {
+                return NotFound();
+            }
+
+            var chat = GrainClient.GrainFactory.GetGrain<IChatRoom>(id);
+            var users = await chat.GetUsersAsync();
+
+            return Ok(
+                users
+                    .Select(user => new UserDescriptorModel
+                    {
+                        User = user.GetPrimaryKey()
+                    })
+                    .ToArray()
+            );
+        }
+
+        /// <summary>
+        /// PUT http://localhost:8080/api/chat/room1
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="descriptor"></param>
+        /// <returns></returns>
         public async Task<IHttpActionResult> Put(string id, [FromBody] UserDescriptorModel descriptor)
         {
             if (String.IsNullOrEmpty(id))
@@ -33,6 +65,12 @@ namespace LibraProgramming.Web.Services.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// DELETE http://localhost:8080/api/chat/room1
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="descriptor"></param>
+        /// <returns></returns>
         public async Task<IHttpActionResult> Delete(string id, [FromBody] UserDescriptorModel descriptor)
         {
             if (String.IsNullOrEmpty(id))

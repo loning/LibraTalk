@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using LibraProgramming.Grains.Interfaces.Entities;
 using Orleans;
 
@@ -11,5 +12,7 @@ namespace LibraProgramming.Grains.Interfaces.Grains
         Task LeaveAsync(IChatUser user);
 
         Task PublishAsync(IChatUser user, UserMessage message);
+
+        Task<IReadOnlyCollection<IChatUser>> GetUsersAsync();
     }
 }
