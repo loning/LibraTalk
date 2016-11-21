@@ -7,7 +7,7 @@ namespace LibraProgramming.Grains.Interfaces.Grains
     /// <summary>
     /// Chat room grain.
     /// </summary>
-    public interface IRoommates : IGrainWithStringKey
+    public interface IRoommates : IGrainWithGuidKey
     {
         /// <summary>
         /// 

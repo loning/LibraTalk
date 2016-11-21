@@ -73,6 +73,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Entities\UserMessage.cs" />
+    <Compile Include="Grains\IActiveChatRooms.cs" />
+    <Compile Include="Grains\IRegisteredRooms.cs" />
     <Compile Include="Grains\IChatRoom.cs" />
     <Compile Include="IDateTimeGrain.cs" />
     <Compile Include="Entities\RoomMessage.cs" />

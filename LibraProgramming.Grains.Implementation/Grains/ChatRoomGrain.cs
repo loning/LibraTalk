@@ -10,9 +10,10 @@ using Orleans.Streams;
 
 namespace LibraProgramming.Grains.Implementation.Grains
 {
-    [StatelessWorker]
     public class ChatRoomGrain : Grain, IChatRoom
     {
+        private const string RoomsNamespace = "$ROOMS";
+
         private IAsyncStream<RoomMessage> messages;
 
         async Task IChatRoom.JoinAsync(IChatUser user)
@@ -22,7 +23,18 @@ namespace LibraProgramming.Grains.Implementation.Grains
                 throw new ArgumentNullException(nameof(user));
             }
 
-            var roommates = GrainFactory.GetGrain<IRoommates>(this.GetPrimaryKeyString());
+            var room = this.GetPrimaryKeyString();
+            var rooms = GrainFactory.GetGrain<IRegisteredRooms>(RoomsNamespace);
+            var list = await rooms.GetRoomsAsync();
+
+            Guid id;
+
+            if (false == list.TryGetValue(room, out id))
+            {
+                id = await rooms.OpenRoomAsync(room);
+            }
+
+            var roommates = GrainFactory.GetGrain<IRoommates>(id);
             var accepted = await roommates.AddUserAsync(user);
 
             if (accepted)
@@ -38,7 +50,18 @@ namespace LibraProgramming.Grains.Implementation.Grains
                 throw new ArgumentNullException(nameof(user));
             }
 
-            var roommates = GrainFactory.GetGrain<IRoommates>(this.GetPrimaryKeyString());
+            var room = this.GetPrimaryKeyString();
+            var rooms = GrainFactory.GetGrain<IRegisteredRooms>(RoomsNamespace);
+            var list = await rooms.GetRoomsAsync();
+
+            Guid id;
+
+            if (false == list.TryGetValue(room, out id))
+            {
+                throw new ArgumentException("No room found");
+            }
+
+            var roommates = GrainFactory.GetGrain<IRoommates>(id);
             var removed = await roommates.RemoveUserAsync(user);
 
             if (removed)
@@ -59,29 +82,67 @@ namespace LibraProgramming.Grains.Implementation.Grains
                 throw new ArgumentNullException(nameof(message));
             }
 
-            var roommates = GrainFactory.GetGrain<IRoommates>(this.GetPrimaryKeyString());
+            var room = this.GetPrimaryKeyString();
+            var rooms = GrainFactory.GetGrain<IRegisteredRooms>(RoomsNamespace);
+            var list = await rooms.GetRoomsAsync();
+
+            Guid id;
+
+            if (false == list.TryGetValue(room, out id))
+            {
+                throw new ArgumentException("No room found");
+            }
+
+            var roommates = GrainFactory.GetGrain<IRoommates>(id);
             var present = await roommates.HasUserAsync(user);
 
             if (present)
             {
-                // publish message to stream
+                await messages.OnNextAsync(new RoomMessage
+                {
+                    Id = 1,
+                    Date = DateTime.UtcNow,
+                    PublisherId = user.GetPrimaryKey(),
+                    Text = message.Text
+                });
             }
         }
 
-        Task<IReadOnlyCollection<IChatUser>> IChatRoom.GetUsersAsync()
+        async Task<IReadOnlyCollection<IChatUser>> IChatRoom.GetUsersAsync()
         {
-            return GrainFactory
-                .GetGrain<IRoommates>(this.GetPrimaryKeyString())
-                .GetUsersAsync();
+            var room = this.GetPrimaryKeyString();
+            var rooms = GrainFactory.GetGrain<IRegisteredRooms>(RoomsNamespace);
+            var list = await rooms.GetRoomsAsync();
+
+            Guid id;
+
+            if (false == list.TryGetValue(room, out id))
+            {
+                throw new ArgumentException("No room found");
+            }
+
+            var roommates = GrainFactory.GetGrain<IRoommates>(id);
+            var users = await roommates.GetUsersAsync();
+
+            return users;
         }
 
-        public override Task OnActivateAsync()
+        public override async Task OnActivateAsync()
         {
             var provider = GetStreamProvider("SMSProvider");
+            var rooms = GrainFactory.GetGrain<IRegisteredRooms>(RoomsNamespace);
+            var list = await rooms.GetRoomsAsync();
 
-            messages = provider.GetStream<RoomMessage>(Streams.Id, this.GetPrimaryKeyString());
+            Guid id;
 
-            return base.OnActivateAsync();
+            if (false == list.TryGetValue(this.GetPrimaryKeyString(), out id))
+            {
+                throw new ArgumentException("No room found");
+            }
+
+            messages = provider.GetStream<RoomMessage>(id, RoomsNamespace);
+
+            await base.OnActivateAsync();
         }
     }
 }

@@ -2,6 +2,10 @@
 {
     public sealed class UserMessage
     {
-        
+        public string Text
+        {
+            get;
+            set;
+        }
     }
 }

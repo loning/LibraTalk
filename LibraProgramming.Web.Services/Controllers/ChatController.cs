@@ -57,6 +57,10 @@ namespace LibraProgramming.Web.Services.Controllers
                 return StatusCode(HttpStatusCode.NoContent);
             }
 
+            var rooms = GrainClient.GrainFactory.GetGrain<IActiveChatRooms>(0);
+            var room = await rooms.GetRoomAsync(id);
+
+
             var chat = GrainClient.GrainFactory.GetGrain<IChatRoom>(id);
             var user = GrainClient.GrainFactory.GetGrain<IChatUser>(descriptor.User);
 
