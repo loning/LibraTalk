@@ -7,13 +7,13 @@ namespace LibraProgramming.Grains.Interfaces.Grains
     /// <summary>
     /// Grain interface IChatUser
     /// </summary>
-	public interface IChatUser : IGrainWithGuidKey
+	public interface IUserProfile : IGrainWithGuidKey
     {
         /// <summary>
         /// Gets the player name.
         /// </summary>
         /// <returns></returns>
-        Task<UserProfile> GetUserProfileAsync();
+        Task<UserProfile> GetProfileAsync();
 
         /// <summary>
         /// Sets name for the player.
@@ -21,19 +21,5 @@ namespace LibraProgramming.Grains.Interfaces.Grains
         /// <param name="profile"></param>
         /// <returns></returns>
         Task SetProfileAsync(UserProfile profile);
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        Task SetCurrentRoomAsync(IChatRoom value);
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="message"></param>
-        /// <returns></returns>
-        Task PublishMessageAsync(UserMessage message);
     }
 }

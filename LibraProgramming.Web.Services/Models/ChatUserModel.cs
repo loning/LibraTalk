@@ -5,7 +5,7 @@ namespace LibraProgramming.Web.Services.Models
 {
     [Serializable]
     [DataContract]
-    public class UserDescriptorModel
+    public class ChatUserModel
     {
         [DataMember(Name = "user")]
         public Guid User

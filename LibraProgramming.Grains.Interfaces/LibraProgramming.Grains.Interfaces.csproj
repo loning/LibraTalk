@@ -73,14 +73,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Entities\UserMessage.cs" />
-    <Compile Include="Grains\IActiveChatRooms.cs" />
-    <Compile Include="Grains\IRegisteredRooms.cs" />
+    <Compile Include="Grains\IChat.cs" />
+    <Compile Include="Grains\IRoomsProvider.cs" />
     <Compile Include="Grains\IChatRoom.cs" />
     <Compile Include="IDateTimeGrain.cs" />
     <Compile Include="Entities\RoomMessage.cs" />
     <Compile Include="PublishMessage.cs" />
     <Compile Include="Grains\IRoommates.cs" />
-    <Compile Include="Grains\IChatUser.cs" />
+    <Compile Include="Grains\IUserProfile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\orleans.codegen.cs" />
     <Compile Include="Streams.cs" />

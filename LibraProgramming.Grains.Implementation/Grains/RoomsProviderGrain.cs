@@ -11,7 +11,7 @@ namespace LibraProgramming.Grains.Implementation.Grains
     /// <summary>
     /// Persistent rooms state.
     /// </summary>
-    public sealed class RegisteredRoomsState
+    public sealed class RoomsProviderState
     {
         /// <summary>
         /// Gets or sets an list of the rooms.
@@ -27,15 +27,56 @@ namespace LibraProgramming.Grains.Implementation.Grains
     /// 
     /// </summary>
     [StorageProvider(ProviderName = "MemoryStore")]
-    public class RegisteredRoomsGrain : Grain<RegisteredRoomsState>, IRegisteredRooms
+    public class RoomsProviderGrain : Grain<RoomsProviderState>, IRoomsProvider
     {
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
-        Task<IReadOnlyDictionary<string, Guid>> IRegisteredRooms.GetRoomsAsync()
+        Task<IReadOnlyDictionary<string, Guid>> IRoomsProvider.GetAllRoomsAsync()
         {
             return Task.FromResult<IReadOnlyDictionary<string, Guid>>(new ReadOnlyDictionary<string, Guid>(State.Rooms));
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="alias"></param>
+        /// <returns></returns>
+        async Task<Guid> IRoomsProvider.GetOrAddRoomAsync(string alias)
+        {
+            Guid id;
+
+            if (State.Rooms.TryGetValue(alias, out id))
+            {
+                return id;
+            }
+
+            id = Guid.NewGuid();
+            State.Rooms.Add(alias, id);
+
+            await WriteStateAsync();
+
+            return id;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="alias"></param>
+        /// <returns></returns>
+        async Task<bool> IRoomsProvider.RemoveRoomAsync(string alias)
+        {
+            var succeeded = State.Rooms.Remove(alias);
+
+            if (false == succeeded)
+            {
+                return false;
+            }
+
+            await WriteStateAsync();
+
+            return true;
         }
 
         /// <summary>

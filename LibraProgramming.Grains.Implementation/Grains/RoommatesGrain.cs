@@ -13,7 +13,7 @@ namespace LibraProgramming.Grains.Implementation.Grains
     /// </summary>
     public class RoomGrainState
     {
-        public List<IChatUser> Users
+        public List<IUserProfile> Users
         {
             get;
             set;
@@ -26,7 +26,7 @@ namespace LibraProgramming.Grains.Implementation.Grains
     [StorageProvider(ProviderName = "MemoryStore")]
     public class RoommatesGrain : Grain<RoomGrainState>, IRoommates
     {
-        async Task<bool> IRoommates.AddUserAsync(IChatUser user)
+        async Task<bool> IRoommates.AddUserAsync(IUserProfile user)
         {
             if (null == user)
             {
@@ -47,7 +47,7 @@ namespace LibraProgramming.Grains.Implementation.Grains
             return true;
         }
 
-        async Task<bool> IRoommates.RemoveUserAsync(IChatUser user)
+        async Task<bool> IRoommates.RemoveUserAsync(IUserProfile user)
         {
             if (null == user)
             {
@@ -69,7 +69,7 @@ namespace LibraProgramming.Grains.Implementation.Grains
             return true;
         }
 
-        Task<bool> IRoommates.HasUserAsync(IChatUser user)
+        Task<bool> IRoommates.HasUserAsync(IUserProfile user)
         {
             if (null == user)
             {
@@ -81,9 +81,9 @@ namespace LibraProgramming.Grains.Implementation.Grains
             return Task.FromResult(State.Users.Exists(roommate => SameUser(roommate, id)));
         }
 
-        Task<IReadOnlyCollection<IChatUser>> IRoommates.GetUsersAsync()
+        Task<IReadOnlyCollection<IUserProfile>> IRoommates.GetUsersAsync()
         {
-            return Task.FromResult<IReadOnlyCollection<IChatUser>>(new ReadOnlyCollection<IChatUser>(State.Users));
+            return Task.FromResult<IReadOnlyCollection<IUserProfile>>(new ReadOnlyCollection<IUserProfile>(State.Users));
         }
 
         /// <summary>
@@ -95,13 +95,13 @@ namespace LibraProgramming.Grains.Implementation.Grains
         {
             if (null == State.Users)
             {
-                State.Users = new List<IChatUser>();
+                State.Users = new List<IUserProfile>();
             }
 
             return base.OnActivateAsync();
         }
 
-        private static bool SameUser(IChatUser user, Guid id)
+        private static bool SameUser(IUserProfile user, Guid id)
         {
             return user.GetPrimaryKey() == id;
         }

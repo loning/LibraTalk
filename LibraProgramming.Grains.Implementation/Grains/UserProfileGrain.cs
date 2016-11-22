@@ -11,7 +11,7 @@ namespace LibraProgramming.Grains.Implementation.Grains
     /// <summary>
     /// Chat user grain internal state object.
     /// </summary>
-    public class ChatUserGrainState
+    public class UserProfileState
     {
         public string Name
         {
@@ -24,7 +24,7 @@ namespace LibraProgramming.Grains.Implementation.Grains
     /// Grain implementation class ChatUserGrain.
     /// </summary>
     [StorageProvider(ProviderName = "MemoryStore")]
-    public class ChatUserGrain : Grain<ChatUserGrainState>, IChatUser
+    public class UserProfileGrain : Grain<UserProfileState>, IUserProfile
     {
         private IChatRoom room;
         private Logger logger;
@@ -38,13 +38,14 @@ namespace LibraProgramming.Grains.Implementation.Grains
 
             logger = GetLogger("ChatUserGrain");
 
-            logger.Info($"LibraProgramming.Grains.Implementation.Grains.ChatUserGrain.OnActivateAsync | Initializing state for user: {this.GetPrimaryKey()}");
+            logger.Info($"LibraProgramming.Grains.Implementation.Grains.UserProfileGrain | Initializing state for user: {this.GetPrimaryKey()}");
 
             return base.OnActivateAsync();
         }
 
-        Task<UserProfile> IChatUser.GetUserProfileAsync()
+        Task<UserProfile> IUserProfile.GetProfileAsync()
         {
+            logger.Info($"LibraProgramming.Grains.Implementation.Grains.UserProfileGrain | GetProfileAsync for user: {this.GetPrimaryKey()}");
             return Task.FromResult(
                 new UserProfile
                 {
@@ -53,7 +54,7 @@ namespace LibraProgramming.Grains.Implementation.Grains
             );
         }
 
-        Task IChatUser.SetProfileAsync(UserProfile profile)
+        Task IUserProfile.SetProfileAsync(UserProfile profile)
         {
             if (null == profile)
             {
@@ -62,29 +63,9 @@ namespace LibraProgramming.Grains.Implementation.Grains
 
             State.Name = profile.Name;
 
+            logger.Info($"LibraProgramming.Grains.Implementation.Grains.UserProfileGrain | SetProfileAsync for user: {this.GetPrimaryKey()}");
+
             return WriteStateAsync();
-        }
-
-        Task IChatUser.SetCurrentRoomAsync(IChatRoom value)
-        {
-            room = value;
-
-            return TaskDone.Done;
-        }
-
-        Task IChatUser.PublishMessageAsync(UserMessage message)
-        {
-            if (null == message)
-            {
-                throw new ArgumentNullException(nameof(message));
-            }
-
-            if (null == room)
-            {
-                throw new InvalidOperationException();
-            }
-
-            return room.PublishAsync(this, message);
         }
     }
 }

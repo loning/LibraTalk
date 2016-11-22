@@ -5,14 +5,17 @@ using Orleans;
 
 namespace LibraProgramming.Grains.Interfaces.Grains
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public interface IChatRoom : IGrainWithStringKey
     {
-        Task JoinAsync(IChatUser user);
+        Task JoinAsync(IUserProfile user);
 
-        Task LeaveAsync(IChatUser user);
+        Task LeaveAsync(IUserProfile user);
 
-        Task PublishAsync(IChatUser user, UserMessage message);
+        Task PublishAsync(IUserProfile user, UserMessage message);
 
-        Task<IReadOnlyCollection<IChatUser>> GetUsersAsync();
+        Task<IReadOnlyCollection<IUserProfile>> GetUsersAsync();
     }
 }

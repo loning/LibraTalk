@@ -123,7 +123,7 @@
     <Compile Include="Bootstraps\WebApiBootstrap.cs" />
     <Compile Include="Controllers\ChatController.cs" />
     <Compile Include="Controllers\ProfileController.cs" />
-    <Compile Include="Models\UserDescriptorModel.cs" />
+    <Compile Include="Models\ChatUserModel.cs" />
     <Compile Include="Models\UserProfileModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

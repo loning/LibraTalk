@@ -16,7 +16,7 @@ namespace LibraProgramming.Grains.Implementation.Grains
 
         private IAsyncStream<RoomMessage> messages;
 
-        async Task IChatRoom.JoinAsync(IChatUser user)
+        async Task IChatRoom.JoinAsync(IUserProfile user)
         {
             if (null == user)
             {
@@ -24,7 +24,7 @@ namespace LibraProgramming.Grains.Implementation.Grains
             }
 
             var room = this.GetPrimaryKeyString();
-            var rooms = GrainFactory.GetGrain<IRegisteredRooms>(RoomsNamespace);
+            var rooms = GrainFactory.GetGrain<IRoomsProvider>(RoomsNamespace);
             var list = await rooms.GetRoomsAsync();
 
             Guid id;
@@ -43,7 +43,7 @@ namespace LibraProgramming.Grains.Implementation.Grains
             }
         }
 
-        async Task IChatRoom.LeaveAsync(IChatUser user)
+        async Task IChatRoom.LeaveAsync(IUserProfile user)
         {
             if (null == user)
             {
@@ -51,7 +51,7 @@ namespace LibraProgramming.Grains.Implementation.Grains
             }
 
             var room = this.GetPrimaryKeyString();
-            var rooms = GrainFactory.GetGrain<IRegisteredRooms>(RoomsNamespace);
+            var rooms = GrainFactory.GetGrain<IRoomsProvider>(RoomsNamespace);
             var list = await rooms.GetRoomsAsync();
 
             Guid id;
@@ -70,7 +70,7 @@ namespace LibraProgramming.Grains.Implementation.Grains
             }
         }
 
-        async Task IChatRoom.PublishAsync(IChatUser user, UserMessage message)
+        async Task IChatRoom.PublishAsync(IUserProfile user, UserMessage message)
         {
             if (null == user)
             {
@@ -83,7 +83,7 @@ namespace LibraProgramming.Grains.Implementation.Grains
             }
 
             var room = this.GetPrimaryKeyString();
-            var rooms = GrainFactory.GetGrain<IRegisteredRooms>(RoomsNamespace);
+            var rooms = GrainFactory.GetGrain<IRoomsProvider>(RoomsNamespace);
             var list = await rooms.GetRoomsAsync();
 
             Guid id;
@@ -108,10 +108,10 @@ namespace LibraProgramming.Grains.Implementation.Grains
             }
         }
 
-        async Task<IReadOnlyCollection<IChatUser>> IChatRoom.GetUsersAsync()
+        async Task<IReadOnlyCollection<IUserProfile>> IChatRoom.GetUsersAsync()
         {
             var room = this.GetPrimaryKeyString();
-            var rooms = GrainFactory.GetGrain<IRegisteredRooms>(RoomsNamespace);
+            var rooms = GrainFactory.GetGrain<IRoomsProvider>(RoomsNamespace);
             var list = await rooms.GetRoomsAsync();
 
             Guid id;
@@ -130,7 +130,7 @@ namespace LibraProgramming.Grains.Implementation.Grains
         public override async Task OnActivateAsync()
         {
             var provider = GetStreamProvider("SMSProvider");
-            var rooms = GrainFactory.GetGrain<IRegisteredRooms>(RoomsNamespace);
+            var rooms = GrainFactory.GetGrain<IRoomsProvider>(RoomsNamespace);
             var list = await rooms.GetRoomsAsync();
 
             Guid id;

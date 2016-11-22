@@ -31,7 +31,7 @@ namespace LibraProgramming.Web.Services.Controllers
 
             return Ok(
                 users
-                    .Select(user => new UserDescriptorModel
+                    .Select(user => new ChatUserModel
                     {
                         User = user.GetPrimaryKey()
                     })
@@ -43,59 +43,61 @@ namespace LibraProgramming.Web.Services.Controllers
         /// PUT http://localhost:8080/api/chat/room1
         /// </summary>
         /// <param name="id"></param>
-        /// <param name="descriptor"></param>
+        /// <param name="model"></param>
         /// <returns></returns>
-        public async Task<IHttpActionResult> Put(string id, [FromBody] UserDescriptorModel descriptor)
+        public async Task<IHttpActionResult> Put(string id, [FromBody] ChatUserModel model)
         {
             if (String.IsNullOrEmpty(id))
             {
                 return NotFound();
             }
 
-            if (false == IsModelValid(descriptor))
+            if (false == IsModelValid(model))
             {
                 return StatusCode(HttpStatusCode.NoContent);
             }
 
-            var rooms = GrainClient.GrainFactory.GetGrain<IActiveChatRooms>(0);
-            var room = await rooms.GetRoomAsync(id);
+            var chat = GrainClient.GrainFactory.GetGrain<IChat>(0);
+            var succeeded = await chat.JoinUserAsync(id, model.User);
 
+            if (succeeded)
+            {
+                return Ok();
+            }
 
-            var chat = GrainClient.GrainFactory.GetGrain<IChatRoom>(id);
-            var user = GrainClient.GrainFactory.GetGrain<IChatUser>(descriptor.User);
-
-            await chat.JoinAsync(user);
-
-            return Ok();
+            return NotFound();
         }
 
         /// <summary>
         /// DELETE http://localhost:8080/api/chat/room1
         /// </summary>
         /// <param name="id"></param>
-        /// <param name="descriptor"></param>
+        /// <param name="model"></param>
         /// <returns></returns>
-        public async Task<IHttpActionResult> Delete(string id, [FromBody] UserDescriptorModel descriptor)
+        public async Task<IHttpActionResult> Delete(string id, [FromBody] ChatUserModel model)
         {
             if (String.IsNullOrEmpty(id))
             {
                 return NotFound();
             }
 
-            if (false == IsModelValid(descriptor))
+            if (false == IsModelValid(model))
             {
-                return StatusCode(HttpStatusCode.NoContent);
+                return BadRequest();
             }
 
-            var chat = GrainClient.GrainFactory.GetGrain<IChatRoom>(id);
-            var user = GrainClient.GrainFactory.GetGrain<IChatUser>(descriptor.User);
+            var chat = GrainClient.GrainFactory.GetGrain<IChat>(0);
+            var succeeded = await chat.LeaveUserAsync(id, model.User);
 
-            await chat.LeaveAsync(user);
+            if (succeeded)
+            {
+                return Ok();
+            }
 
-            return Ok();
+            return NotFound();
         }
 
-        private static bool IsModelValid(UserDescriptorModel model)
+        private static bool IsModelValid(ChatUserModel model)
         {
             if (null == model)
             {
