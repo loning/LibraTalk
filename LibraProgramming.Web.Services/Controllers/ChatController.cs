@@ -17,17 +17,17 @@ namespace LibraProgramming.Web.Services.Controllers
         /// <summary>
         /// GET http://localhost:8080/api/chat/room1
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="alias"></param>
         /// <returns></returns>
-        public async Task<IHttpActionResult> Get(string id)
+        public async Task<IHttpActionResult> Get([FromUri(Name = "id")] string alias)
         {
-            if (String.IsNullOrEmpty(id))
+            if (String.IsNullOrEmpty(alias))
             {
                 return NotFound();
             }
 
-            var chat = GrainClient.GrainFactory.GetGrain<IChatRoom>(id);
-            var users = await chat.GetUsersAsync();
+            var chat = GrainClient.GrainFactory.GetGrain<IChat>(0);
+            var users = await chat.GetUsersAsync(alias);
 
             return Ok(
                 users

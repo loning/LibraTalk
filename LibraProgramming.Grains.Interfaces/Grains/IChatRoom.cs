@@ -5,6 +5,7 @@ using Orleans;
 
 namespace LibraProgramming.Grains.Interfaces.Grains
 {
+/*
     /// <summary>
     /// 
     /// </summary>
@@ -18,4 +19,5 @@ namespace LibraProgramming.Grains.Interfaces.Grains
 
         Task<IReadOnlyCollection<IUserProfile>> GetUsersAsync();
     }
+*/
 }

@@ -23,10 +23,10 @@ namespace LibraProgramming.Grains.Implementation.Grains
         /// <returns></returns>
         async Task<bool> IChat.JoinUserAsync(string alias, Guid user)
         {
-            var rooms = GrainClient.GrainFactory.GetGrain<IRoomsProvider>(Rooms);
-            var profile = GrainClient.GrainFactory.GetGrain<IUserProfile>(user);
+            var rooms = GrainFactory.GetGrain<IRoomsProvider>(Rooms);
+            var profile = GrainFactory.GetGrain<IUserProfile>(user);
             var id = await rooms.GetOrAddRoomAsync(alias);
-            var roommates = GrainClient.GrainFactory.GetGrain<IRoommates>(id);
+            var roommates = GrainFactory.GetGrain<IRoommates>(id);
 
             return await roommates.AddUserAsync(profile);
         }
@@ -38,9 +38,9 @@ namespace LibraProgramming.Grains.Implementation.Grains
         /// <returns></returns>
         async Task<IReadOnlyCollection<IUserProfile>> IChat.GetUsersAsync(string alias)
         {
-            var rooms = GrainClient.GrainFactory.GetGrain<IRoomsProvider>(Rooms);
+            var rooms = GrainFactory.GetGrain<IRoomsProvider>(Rooms);
             var id = await rooms.GetOrAddRoomAsync(alias);
-            var roommates = GrainClient.GrainFactory.GetGrain<IRoommates>(id);
+            var roommates = GrainFactory.GetGrain<IRoommates>(id);
 
             return await roommates.GetUsersAsync();
         }
@@ -53,10 +53,10 @@ namespace LibraProgramming.Grains.Implementation.Grains
         /// <returns></returns>
         async Task<bool> IChat.LeaveUserAsync(string alias, Guid user)
         {
-            var rooms = GrainClient.GrainFactory.GetGrain<IRoomsProvider>(Rooms);
-            var profile = GrainClient.GrainFactory.GetGrain<IUserProfile>(user);
+            var rooms = GrainFactory.GetGrain<IRoomsProvider>(Rooms);
+            var profile = GrainFactory.GetGrain<IUserProfile>(user);
             var id = await rooms.GetOrAddRoomAsync(alias);
-            var roommates = GrainClient.GrainFactory.GetGrain<IRoommates>(id);
+            var roommates = GrainFactory.GetGrain<IRoommates>(id);
 
             return await roommates.RemoveUserAsync(profile);
         }

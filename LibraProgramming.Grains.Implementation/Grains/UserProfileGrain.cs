@@ -26,7 +26,6 @@ namespace LibraProgramming.Grains.Implementation.Grains
     [StorageProvider(ProviderName = "MemoryStore")]
     public class UserProfileGrain : Grain<UserProfileState>, IUserProfile
     {
-        private IChatRoom room;
         private Logger logger;
 
         public override Task OnActivateAsync()

@@ -10,6 +10,7 @@ using Orleans.Streams;
 
 namespace LibraProgramming.Grains.Implementation.Grains
 {
+/*
     public class ChatRoomGrain : Grain, IChatRoom
     {
         private const string RoomsNamespace = "$ROOMS";
@@ -145,4 +146,5 @@ namespace LibraProgramming.Grains.Implementation.Grains
             await base.OnActivateAsync();
         }
     }
+*/
 }
