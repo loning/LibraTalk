@@ -19,3 +19,5 @@ $R = Invoke-WebRequest -Uri "$base/chat/$chat" -Method Put -ContentType "applica
 
 # who is in room1?
 Invoke-WebRequest -Uri "$base/chat/$chat" -Method Get -Headers @{"Accept"="application/json"} | Select-Object -ExpandProperty Content
+
+Invoke-WebRequest -Uri "$base/poll/$chat" -Method Get -Headers @{"Accept"="application/json"} | Select-Object -ExpandProperty Content

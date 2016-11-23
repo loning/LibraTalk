@@ -122,7 +122,9 @@
   <ItemGroup>
     <Compile Include="Bootstraps\WebApiBootstrap.cs" />
     <Compile Include="Controllers\ChatController.cs" />
+    <Compile Include="Controllers\PollController.cs" />
     <Compile Include="Controllers\ProfileController.cs" />
+    <Compile Include="Core\ChatObserver.cs" />
     <Compile Include="Models\ChatUserModel.cs" />
     <Compile Include="Models\UserProfileModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -149,9 +151,7 @@
   <ItemGroup>
     <Content Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Core\" />
-  </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

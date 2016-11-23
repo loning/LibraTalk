@@ -2,15 +2,9 @@
 
 namespace LibraProgramming.Grains.Interfaces.Entities
 {
-    public class RoomMessage
+    public class ChatMessage
     {
-         public long Id
-         {
-             get;
-             set;
-         }
-
-        public Guid PublisherId
+        public Guid Author
         {
             get;
             set;

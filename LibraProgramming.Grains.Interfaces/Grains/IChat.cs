@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using LibraProgramming.Grains.Interfaces.Entities;
 using Orleans;
 
 namespace LibraProgramming.Grains.Interfaces.Grains
@@ -32,5 +33,14 @@ namespace LibraProgramming.Grains.Interfaces.Grains
         /// <param name="user"></param>
         /// <returns></returns>
         Task<bool> LeaveUserAsync(string alias, Guid user);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="alias"></param>
+        /// <param name="author"></param>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        Task PublishMessageAsync(string alias, Guid author, UserMessage message);
     }
 }
