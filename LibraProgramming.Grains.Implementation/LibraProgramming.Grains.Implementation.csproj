@@ -73,7 +73,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Grains\ChatGrain.cs" />
-    <Compile Include="Grains\RoomsProviderGrain.cs" />
+    <Compile Include="Grains\RoomsGrain.cs" />
     <Compile Include="Grains\RoommatesGrain.cs" />
     <Compile Include="Grains\UserProfileGrain.cs" />
     <Compile Include="DateTimeGrain.cs" />

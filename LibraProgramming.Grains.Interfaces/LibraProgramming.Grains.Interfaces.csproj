@@ -72,9 +72,10 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Entities\Room.cs" />
     <Compile Include="Entities\UserMessage.cs" />
     <Compile Include="Grains\IChat.cs" />
-    <Compile Include="Grains\IRoomsProvider.cs" />
+    <Compile Include="Grains\IRooms.cs" />
     <Compile Include="Entities\ChatMessage.cs" />
     <Compile Include="Grains\IRoommates.cs" />
     <Compile Include="Grains\IUserProfile.cs" />

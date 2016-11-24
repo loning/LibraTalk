@@ -16,6 +16,21 @@ namespace LibraProgramming.Grains.Interfaces.Grains
         /// </summary>
         /// <param name="alias"></param>
         /// <returns></returns>
+        Task<Room> GetRoomAsync(string alias);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="alias"></param>
+        /// <param name="description"></param>
+        /// <returns></returns>
+        Task<Room> RegisterRoomAsync(string alias, string description);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="alias"></param>
+        /// <returns></returns>
         Task<IReadOnlyCollection<IUserProfile>> GetUsersAsync(string alias);
 
         /// <summary>

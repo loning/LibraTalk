@@ -38,44 +38,42 @@ namespace LibraProgramming.Web.Services.Controllers
         /// <summary>
         /// PUT http://localhost:8080/api/profile/d0a0ee8d-e08b-48ad-92ea-f2a9f3fd25d8
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="userid"></param>
         /// <param name="profile"></param>
         /// <returns></returns>
-        public async Task<IHttpActionResult> Put(Guid id, [FromBody] UserProfileModel profile)
+        public async Task<IHttpActionResult> Post(
+            [FromUri(Name = "id")] Guid userid,
+            [FromBody] UserProfileModel profile)
         {
-            if (Guid.Empty == id)
+            if (Guid.Empty == userid)
             {
                 return NotFound();
             }
 
             if (false == IsModelValid(profile))
             {
-                return StatusCode(HttpStatusCode.NoContent);
+                return BadRequest();
             }
 
-            var user = GrainClient.GrainFactory.GetGrain<IUserProfile>(id);
+            var user = GrainClient.GrainFactory.GetGrain<IUserProfile>(userid);
 
             await user.SetProfileAsync(new UserProfile
             {
                 Name = profile.Name
             });
 
-            return Ok();
+            return Created(
+                new Uri(Url.Link("DefaultApi", new { id = userid })),
+                new UserProfileModel
+                {
+                    Name = profile.Name
+                }
+            );
         }
 
         private static bool IsModelValid(UserProfileModel model)
         {
-            if (null == model)
-            {
-                return false;
-            }
-
-            if (String.IsNullOrEmpty(model.Name))
-            {
-                return false;
-            }
-
-            return true;
+            return null != model && false == String.IsNullOrEmpty(model.Name);
         }
     }
 }

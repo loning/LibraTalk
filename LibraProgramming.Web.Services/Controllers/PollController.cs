@@ -33,10 +33,10 @@ namespace LibraProgramming.Web.Services.Controllers
         /// <returns></returns>
         public async Task<IHttpActionResult> Get([FromUri(Name = "id")] string alias)
         {
-            const string test = "$ROOMS";
+            var chat = GrainClient.GrainFactory.GetGrain<IChat>(0);
+            var id = await chat.GetRoomAsync(alias);
 
-            var rooms = GrainClient.GrainFactory.GetGrain<IRoomsProvider>(test);
-            var id = await rooms.GetOrAddRoomAsync(alias);
+            /*var id = await rooms.GetOrAddRoomAsync(alias);
             var stream = provider.GetStream<ChatMessage>(id, test);
 
             var observer = new ChatObserver();
@@ -49,7 +49,7 @@ namespace LibraProgramming.Web.Services.Controllers
             finally
             {
                 await observer.ReleaseAsync();
-            }
+            }*/
 
             return Ok();
         }
