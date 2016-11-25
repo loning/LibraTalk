@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using LibraProgramming.Grains.Interfaces.Entities;
@@ -12,6 +8,9 @@ using Orleans;
 
 namespace LibraProgramming.Web.Services.Controllers
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class MessageController : ApiController
     {
         /// <summary>
@@ -19,11 +18,9 @@ namespace LibraProgramming.Web.Services.Controllers
         /// </summary>
         /// <param name="alias"></param>
         /// <param name="model"></param>
-        /// <returns></returns>
-        public async Task<IHttpActionResult> Post(
-            [FromUri(Name = "id")] string alias,
-            [FromBody] PostMessageModel model
-        )
+        /// <returns>
+        /// </returns>
+        public async Task<IHttpActionResult> Post([FromUri(Name = "id")] string alias, [FromBody] PostMessageModel model)
         {
             if (String.IsNullOrEmpty(alias))
             {
@@ -42,7 +39,10 @@ namespace LibraProgramming.Web.Services.Controllers
                 Text = model.Text
             });
 
-            var link = Url.Link("DefaultApi", new { id = Guid.NewGuid() });
+            var link = Url.Link("DefaultApi", new
+            {
+                id = Guid.NewGuid()
+            });
 
             return Created(new Uri(link), new PostedMessageModel());
         }

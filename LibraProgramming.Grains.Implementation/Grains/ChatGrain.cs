@@ -15,8 +15,6 @@ namespace LibraProgramming.Grains.Implementation.Grains
     [StatelessWorker]
     public class ChatGrain : Grain, IChat
     {
-        private const string Rooms = "$ROOMS";
-
         /// <summary>
         /// 
         /// </summary>
@@ -25,7 +23,7 @@ namespace LibraProgramming.Grains.Implementation.Grains
         /// <returns></returns>
         async Task<Room> IChat.RegisterRoomAsync(string alias, string description)
         {
-            var rooms = GrainFactory.GetGrain<IRooms>(Rooms);
+            var rooms = GrainFactory.GetGrain<IRooms>(Configuration.Namespace);
             var room = await rooms.GetRoomAsync(alias);
 
             if (null == room)
@@ -43,7 +41,7 @@ namespace LibraProgramming.Grains.Implementation.Grains
         /// <returns></returns>
         async Task<Room> IChat.GetRoomAsync(string alias)
         {
-            var rooms = GrainFactory.GetGrain<IRooms>(Rooms);
+            var rooms = GrainFactory.GetGrain<IRooms>(Configuration.Namespace);
             return await rooms.GetRoomAsync(alias);
         }
 
@@ -54,7 +52,7 @@ namespace LibraProgramming.Grains.Implementation.Grains
         /// <returns></returns>
         async Task<IReadOnlyCollection<IUserProfile>> IChat.GetUsersAsync(string alias)
         {
-            var rooms = GrainFactory.GetGrain<IRooms>(Rooms);
+            var rooms = GrainFactory.GetGrain<IRooms>(Configuration.Namespace);
             var room = await rooms.GetRoomAsync(alias);
 
             if (null == room)
@@ -76,7 +74,7 @@ namespace LibraProgramming.Grains.Implementation.Grains
         /// <returns></returns>
         async Task<bool> IChat.JoinUserAsync(string alias, Guid user)
         {
-            var rooms = GrainFactory.GetGrain<IRooms>(Rooms);
+            var rooms = GrainFactory.GetGrain<IRooms>(Configuration.Namespace);
             var room = await rooms.GetRoomAsync(alias);
 
             if (null == room)
@@ -89,6 +87,9 @@ namespace LibraProgramming.Grains.Implementation.Grains
 
             if (await roommates.AddUserAsync(profile))
             {
+                var observer = GrainFactory.GetGrain<IChatObserver>(room.Id);
+
+                await observer.SubscribeAsync();
 
                 return true;
             }
@@ -104,7 +105,7 @@ namespace LibraProgramming.Grains.Implementation.Grains
         /// <returns></returns>
         async Task<bool> IChat.LeaveUserAsync(string alias, Guid user)
         {
-            var rooms = GrainFactory.GetGrain<IRooms>(Rooms);
+            var rooms = GrainFactory.GetGrain<IRooms>(Configuration.Namespace);
             var room = await rooms.GetRoomAsync(alias);
 
             if (null == room)
@@ -127,7 +128,7 @@ namespace LibraProgramming.Grains.Implementation.Grains
         /// <returns></returns>
         async Task IChat.PublishMessageAsync(string alias, Guid author, UserMessage message)
         {
-            var rooms = GrainFactory.GetGrain<IRooms>(Rooms);
+            var rooms = GrainFactory.GetGrain<IRooms>(Configuration.Namespace);
             var room = await rooms.GetRoomAsync(alias);
 
             if (null == room)
@@ -143,8 +144,8 @@ namespace LibraProgramming.Grains.Implementation.Grains
                 return;
             }
 
-            var provider = GetStreamProvider("SMSProvider");
-            var stream = provider.GetStream<ChatMessage>(room.Id, Rooms);
+            var provider = GetStreamProvider(Configuration.StreamProviderName);
+            var stream = provider.GetStream<ChatMessage>(room.Id, Configuration.Namespace);
 
             await stream.OnNextAsync(new ChatMessage
             {

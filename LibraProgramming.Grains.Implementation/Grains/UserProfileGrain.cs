@@ -35,16 +35,16 @@ namespace LibraProgramming.Grains.Implementation.Grains
                 State.Name = "John Doe";
             }
 
-            logger = GetLogger("ChatUserGrain");
+            logger = GetLogger("UserProfileGrain");
 
-            logger.Info($"LibraProgramming.Grains.Implementation.Grains.UserProfileGrain | Initializing state for user: {this.GetPrimaryKey()}");
+            logger.Info($"Initializing state for user: {this.GetPrimaryKey()}");
 
             return base.OnActivateAsync();
         }
 
         Task<UserProfile> IUserProfile.GetProfileAsync()
         {
-            logger.Info($"LibraProgramming.Grains.Implementation.Grains.UserProfileGrain | GetProfileAsync for user: {this.GetPrimaryKey()}");
+            logger.Info($"GetProfileAsync for user: {this.GetPrimaryKey()}");
             return Task.FromResult(
                 new UserProfile
                 {
@@ -62,7 +62,7 @@ namespace LibraProgramming.Grains.Implementation.Grains
 
             State.Name = profile.Name;
 
-            logger.Info($"LibraProgramming.Grains.Implementation.Grains.UserProfileGrain | SetProfileAsync for user: {this.GetPrimaryKey()}");
+            logger.Info($"SetProfileAsync for user: {this.GetPrimaryKey()}");
 
             return WriteStateAsync();
         }
