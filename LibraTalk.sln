@@ -11,6 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibraProgramming.Grains.Hos
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FC5D5C76-79BB-4E17-B58A-748D623900E1}"
 	ProjectSection(SolutionItems) = preProject
+		index.html = index.html
 		readme.md = readme.md
 		service-trace.ps1 = service-trace.ps1
 	EndProjectSection

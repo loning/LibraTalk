@@ -45,6 +45,7 @@ if ($R.StatusCode -eq 200)
 	"Successfuly added user to chat."
 }
 
+"Polling chat..."
 Invoke-WebRequest -Uri "$base/poll/$chat" -Method Get -Headers @{"Accept"="application/json"} | Select-Object -ExpandProperty Content
 
 # publish message into chat stream
