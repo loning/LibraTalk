@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
@@ -52,10 +52,9 @@
       <p>Simple chat poll linter for test purpose.</p>
       <!-- <p><a class="btn btn-primary btn-lg" href="#" role=button>Learn more</a></p> -->
       <div class="row">
-        <label for="relaive-service-url">Enter the chat id</label>
         <div class="input-group">
-          <span class="input-group-addon" id="basic-uri">http://localhost:1609/api/poll/</span>
-          <input type="text" class="form-control" name="room-id" aria-describedby="basic-uri">
+          <span class="input-group-addon" id="basic-uri">http://localhost:1607/api/poll/</span>
+          <input type="text" class="form-control" name="room-id" id="room-id" aria-describedby="basic-uri">
           <span class="input-group-btn">
             <button id="run-poll" class="btn btn-default" type="button" data-toggle="button" aria-pressed="false">Go!</button>
           </span>
@@ -79,10 +78,21 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-    <script type="text/javascript">
-      $("#run-poll").on("click", function(){
-        var $button = $(this).button("toggle");
-      });
-    </script>
+  <script type="text/javascript">
+      $(document)
+          .ready(function() {
+              $("#run-poll")
+                  .on("click",
+                      function () {
+                          var path = $("#basic-uri").text() + $("#room-id").val();
+
+                          $.get(path,
+                              function(data) {
+                                  alert("test");
+                              }
+                          );
+                      });
+          });
+  </script>
   </body>
 </html>
